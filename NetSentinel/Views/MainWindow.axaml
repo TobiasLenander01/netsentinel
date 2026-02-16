@@ -15,6 +15,6 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <TextBlock Text="Tobbe är tönt" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    <TextBlock Text="Victor är tönt" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
 </Window>
