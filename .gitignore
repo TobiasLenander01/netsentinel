@@ -1,0 +1,32 @@
+## --- .NET / C# Specifics ---
+[Bb]in/
+[Oo]bj/
+*.user
+*.userosscache
+*.sln.doccache
+*.suo
+*.user
+*.userosscache
+*.sln.doccache
+*.suo
+
+## --- VS Code Specifics ---
+.vscode/
+# Note: Un-comment the line below if you want to share workspace settings
+#!.vscode/settings.json
+.history/
+*.code-workspace
+
+## --- Avalonia Specifics ---
+# Cache for the Avalonia XAML Previewer
+.avalonia/
+# If using Nuke or other build tools
+.nuke/
+
+## --- OS Generated ---
+.DS_Store
+Thumbs.db
+
+## --- Publish / Output ---
+publish/
+appsettings.Development.json
