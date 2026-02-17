@@ -4,8 +4,8 @@
     xmlns:shad="clr-namespace:ShadUI;assembly=ShadUI"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="600"
-    Height="800" Width="1000"
+    mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
+    Height="800" Width="1200"
     x:Class="NetSentinel.Views.MainWindow"
     x:DataType="vm:MainWindowViewModel"
     Icon="/Assets/avalonia-logo.ico"
@@ -15,25 +15,17 @@
 
         <shad:Sidebar Grid.Column="0"
             Expanded="{Binding #Toggler.IsChecked}"
-            MinWidth="56"
-            Width="250"
+            MinWidth="70"
+            Width="260"
             Background="{DynamicResource CardBackgroundColor}"
-            BorderThickness="0,0,1,0">
+            BorderThickness="0,0,1,0"
+            Padding="12">
 
-            <shad:Sidebar.Header>
-                <StackPanel Margin="10,15" Orientation="Horizontal" Spacing="10">
-                    <Border Background="Black" CornerRadius="6" Width="24" Height="24">
-                        <LucideIcon Kind="ShieldCheck" Size="16" StrokeWidth="3" Foreground="White" />
-                    </Border>
+            <StackPanel Spacing="4">
 
-                    <TextBlock Text="NetSentinel"
-                        VerticalAlignment="Center"
-                        FontWeight="SemiBold"
-                        IsVisible="{Binding $parent[shad:Sidebar].Expanded}" />
-                </StackPanel>
-            </shad:Sidebar.Header>
-
-            <StackPanel Spacing="4" Margin="0,10">
+                <TextBlock Text="Platform" Classes="Caption Muted" FontWeight="SemiBold"
+                    Margin="12,0,0,8"
+                    IsVisible="{Binding $parent[shad:Sidebar].Expanded}" />
 
                 <shad:SidebarItem Content="Dashboard" Command="{Binding GoToDashboardCommand}">
                     <shad:SidebarItem.Icon>
@@ -64,29 +56,29 @@
             <Border DockPanel.Dock="Top"
                 BorderBrush="{DynamicResource BorderColor}"
                 BorderThickness="0,0,0,1"
-                Padding="16">
-                <StackPanel Orientation="Horizontal" Spacing="16">
+                Padding="20,16">
+                <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
 
-                    <ToggleButton Name="Toggler"
-                        Classes="Ghost"
-                        Padding="4"
-                        Width="32" Height="32">
-                        <LucideIcon Kind="Menu" Size="20" StrokeWidth="2" />
+                    <ToggleButton Name="Toggler" Classes="Ghost" Padding="4" Width="32" Height="32">
+                        <LucideIcon Kind="PanelLeft" Size="20" />
                     </ToggleButton>
 
-                    <Separator Classes="Vertical" Height="16" />
+                    <Separator Classes="Vertical" Height="20" />
 
-                    <TextBlock
-                        Text="PLACEHOLDER"
-                        VerticalAlignment="Center"
-                        Classes="Small" />
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="Application" Classes="Muted" VerticalAlignment="Center" />
+                        <TextBlock Text="/" Classes="Muted" VerticalAlignment="Center" />
+                        <TextBlock
+                            Text="{Binding Navigator.CurrentView.Title, FallbackValue='Home'}"
+                            Foreground="{DynamicResource Foreground}" VerticalAlignment="Center" />
+                    </StackPanel>
+
                 </StackPanel>
             </Border>
 
-            <ContentControl Margin="20" Content="{Binding Navigator.CurrentView}" />
+            <ContentControl Margin="30" Content="{Binding Navigator.CurrentView}" />
 
         </DockPanel>
-
     </Grid>
 
 </shad:Window>
