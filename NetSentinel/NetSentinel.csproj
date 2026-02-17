@@ -1,4 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- PROJECT SETTINGS-->
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
@@ -7,11 +9,13 @@
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
 
+  <!-- FOLDERS AND RESOURCES-->
   <ItemGroup>
     <Folder Include="Models\" />
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
 
+  <!-- NUGET PACKAGE REFERENCES-->
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.3.12" />
     <PackageReference Include="Avalonia.Desktop" Version="11.3.12" />

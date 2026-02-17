@@ -1,5 +1,4 @@
 ﻿using Avalonia;
-using HotAvalonia;
 using System;
 
 namespace NetSentinel;
@@ -18,6 +17,5 @@ sealed class Program
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithInterFont()
-            .LogToTrace()
-            .UseHotReload();
+            .LogToTrace();
 }
