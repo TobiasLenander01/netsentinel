@@ -26,11 +26,12 @@ public partial class App : Application
         var collection = new ServiceCollection();
 
         // Register Services (The Singletons)
-        collection.AddSingleton<IAppNavigator, AppNavigator>();
+        collection.AddSingleton<IAppNavigator, NavigationService>();
 
         // Register ViewModels
-        // We use Transient for the Main Window so it gets a fresh instance on startup
         collection.AddTransient<MainWindowViewModel>();
+        collection.AddTransient<DashboardViewModel>();
+        collection.AddTransient<EmployeesViewModel>();
 
         // 2. Build the Service Provider
         Services = collection.BuildServiceProvider();
@@ -39,14 +40,11 @@ public partial class App : Application
         {
             DisableAvaloniaDataAnnotationValidation();
 
-            // 3. Resolve the ViewModel
-            // Instead of 'new MainWindowViewModel()', we ask the container for it.
-            // The container sees the constructor needs IAppNavigator, finds it, and injects it.
-            var mainViewModel = Services.GetRequiredService<MainWindowViewModel>();
-
+            // 3. Resolve the ViewModel for the MainWindow and set it as the DataContext
+            var mainWindowViewModel = Services.GetRequiredService<MainWindowViewModel>();
             desktop.MainWindow = new MainWindow
             {
-                DataContext = mainViewModel
+                DataContext = mainWindowViewModel
             };
         }
 

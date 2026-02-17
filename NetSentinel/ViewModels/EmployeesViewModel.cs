@@ -6,20 +6,18 @@ namespace NetSentinel.ViewModels;
 
 public partial class EmployeesViewModel : ViewModelBase
 {
-    private readonly IAppNavigator _navigator;
-
     [ObservableProperty]
     private string _title = "Employee Management";
 
     // Inject the navigator so we can go back
-    public EmployeesViewModel(IAppNavigator navigator)
+    public EmployeesViewModel(IAppNavigator navigator) : base(navigator)
     {
-        _navigator = navigator;
+        
     }
 
     [RelayCommand]
     private void GoBack()
     {
-        _navigator.GoBack();
+        Navigator.GoBack();
     }
 }

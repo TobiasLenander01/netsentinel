@@ -5,14 +5,16 @@ using NetSentinel.ViewModels;
 
 namespace NetSentinel;
 
-public partial class AppNavigator : ObservableObject, IAppNavigator
+public partial class NavigationService : ObservableObject, IAppNavigator
 {
+    // Stack to keep track of navigation history
     private readonly Stack<ViewModelBase> _navigationStack = new();
 
+    // Current view being displayed
     [ObservableProperty]
     private ViewModelBase _currentView;
 
-    public AppNavigator()
+    public NavigationService()
     {
         // Set initial view
         _currentView = new DashboardViewModel(this);
