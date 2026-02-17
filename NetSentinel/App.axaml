@@ -3,7 +3,7 @@
     x:Class="NetSentinel.App"
     xmlns:local="using:NetSentinel"
     xmlns:shad="clr-namespace:ShadUI;assembly=ShadUI"
-    RequestedThemeVariant="Light">
+    RequestedThemeVariant="Default">
 
     <Application.DataTemplates>
         <local:ViewLocator />

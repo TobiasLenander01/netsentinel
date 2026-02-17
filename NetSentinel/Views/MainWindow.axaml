@@ -1,17 +1,92 @@
-<shad:Window
-    xmlns="https://github.com/avaloniaui"
+<shad:Window xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="using:NetSentinel.ViewModels"
     xmlns:shad="clr-namespace:ShadUI;assembly=ShadUI"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="600"
     Height="800" Width="1000"
     x:Class="NetSentinel.Views.MainWindow"
     x:DataType="vm:MainWindowViewModel"
     Icon="/Assets/avalonia-logo.ico"
-    Title="NetSentinel">
+    Title="Net Sentinel">
 
-    <ContentControl Content="{Binding Navigator.CurrentView}" />
+    <Grid ColumnDefinitions="Auto, *">
+
+        <shad:Sidebar Grid.Column="0"
+            Expanded="{Binding #Toggler.IsChecked}"
+            MinWidth="56"
+            Width="250"
+            Background="{DynamicResource CardBackgroundColor}"
+            BorderThickness="0,0,1,0">
+
+            <shad:Sidebar.Header>
+                <StackPanel Margin="10,15" Orientation="Horizontal" Spacing="10">
+                    <Border Background="Black" CornerRadius="6" Width="24" Height="24">
+                        <LucideIcon Kind="ShieldCheck" Size="16" StrokeWidth="3" Foreground="White" />
+                    </Border>
+
+                    <TextBlock Text="NetSentinel"
+                        VerticalAlignment="Center"
+                        FontWeight="SemiBold"
+                        IsVisible="{Binding $parent[shad:Sidebar].Expanded}" />
+                </StackPanel>
+            </shad:Sidebar.Header>
+
+            <StackPanel Spacing="4" Margin="0,10">
+
+                <shad:SidebarItem Content="Dashboard" Command="{Binding GoToDashboardCommand}">
+                    <shad:SidebarItem.Icon>
+                        <LucideIcon Kind="LayoutDashboard" Size="20" StrokeWidth="1.5" />
+                    </shad:SidebarItem.Icon>
+                </shad:SidebarItem>
+
+                <shad:SidebarItem Content="Employees" Command="{Binding GoToEmployeesCommand}">
+                    <shad:SidebarItem.Icon>
+                        <LucideIcon Kind="Users" Size="20" StrokeWidth="1.5" />
+                    </shad:SidebarItem.Icon>
+                </shad:SidebarItem>
+
+            </StackPanel>
+
+            <shad:Sidebar.Footer>
+                <shad:SidebarItem Content="Settings" Command="{Binding GoToSettingsCommand}">
+                    <shad:SidebarItem.Icon>
+                        <LucideIcon Kind="Settings" Size="20" StrokeWidth="1.5" />
+                    </shad:SidebarItem.Icon>
+                </shad:SidebarItem>
+            </shad:Sidebar.Footer>
+        </shad:Sidebar>
+
+
+        <DockPanel Grid.Column="1">
+
+            <Border DockPanel.Dock="Top"
+                BorderBrush="{DynamicResource BorderColor}"
+                BorderThickness="0,0,0,1"
+                Padding="16">
+                <StackPanel Orientation="Horizontal" Spacing="16">
+
+                    <ToggleButton Name="Toggler"
+                        Classes="Ghost"
+                        Padding="4"
+                        Width="32" Height="32">
+                        <LucideIcon Kind="Menu" Size="20" StrokeWidth="2" />
+                    </ToggleButton>
+
+                    <Separator Classes="Vertical" Height="16" />
+
+                    <TextBlock
+                        Text="PLACEHOLDER"
+                        VerticalAlignment="Center"
+                        Classes="Small" />
+                </StackPanel>
+            </Border>
+
+            <ContentControl Margin="20" Content="{Binding Navigator.CurrentView}" />
+
+        </DockPanel>
+
+    </Grid>
 
 </shad:Window>
