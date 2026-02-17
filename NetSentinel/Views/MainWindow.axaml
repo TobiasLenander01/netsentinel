@@ -15,6 +15,6 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <ContentControl Content="{Binding Navigator.CurrentView}" />
+    <ContentControl Content="{Binding Navigator.CurrentView}"/>
 
 </Window>

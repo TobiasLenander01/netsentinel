@@ -5,10 +5,16 @@ using NetSentinel.ViewModels;
 
 namespace NetSentinel;
 
+/// <summary>
+/// The purpose of this class is to manage the navigation between different views in the application.
+/// It maintains a stack of view models to allow for navigating back to previous views. 
+/// The AppNavigator has a public static instance that is available to all view models which
+/// removes the need for dependency injection and allows for easy navigation from any view model.
+/// </summary>
+
 public partial class AppNavigator : ObservableObject
 {
     public static AppNavigator Instance { get; } = new();
-
     private readonly Stack<ViewModelBase> _navigationStack = new();
 
     [ObservableProperty]
@@ -19,34 +25,35 @@ public partial class AppNavigator : ObservableObject
         _currentView = new Test1ViewModel();
     }
 
-    public void NavigateTo(ViewModelBase viewModel)
+    private void NavigateTo(ViewModelBase viewModel)
     {
         _navigationStack.Push(CurrentView);
         CurrentView = viewModel;
     }
 
-    public void NavigateTo<T>() where T : ViewModelBase, new()
-    {
-        NavigateTo(new T());
-    }
-
-    public bool GoBack()
+    [RelayCommand]
+    public void GoBack()
     {
         if (_navigationStack.Count == 0)
-            return false;
+            return;
 
         CurrentView = _navigationStack.Pop();
-        return true;
     }
 
-    public bool CanGoBack => _navigationStack.Count > 0;
+    [RelayCommand]
+    public void GoToTest1()
+    {
+        NavigateTo(new Test1ViewModel());
+    }
 
     [RelayCommand]
-    private void GoToTest1() => NavigateTo<Test1ViewModel>();
+    public void GoToTest2()
+    {
+        NavigateTo(new Test2ViewModel());
+    }
 
-    [RelayCommand]
-    private void GoToTest2() => NavigateTo<Test2ViewModel>();
-
-    [RelayCommand]
-    private void NavigateBack() => GoBack();
+    public bool CanGoBack()
+    {
+        return _navigationStack.Count > 0;
+    }
 }
