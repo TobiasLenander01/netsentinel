@@ -7,11 +7,11 @@ namespace NetSentinel.ViewModels;
 public partial class DashboardViewModel : ViewModelBase
 {
     [ObservableProperty]
-    private string _testMessage = "Welcome to NetSentinel";
+    private string _title = "Dashboard";
 
     public DashboardViewModel(IAppNavigator navigator) : base(navigator)
     {
-        
+        Title = _title;
     }
 
     [RelayCommand]

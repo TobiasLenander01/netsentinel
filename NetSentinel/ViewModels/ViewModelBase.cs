@@ -8,7 +8,8 @@ public partial class ViewModelBase : ObservableObject
     // Accessible by any class that inherits from ViewModelBase
     public IAppNavigator Navigator { get; }
 
-    public virtual string Title => "NetSentinel";
+    // The title of the view, defaults to "View"
+    public virtual string Title { get; set; } = "View";
 
     public ViewModelBase(IAppNavigator navigator)
     {

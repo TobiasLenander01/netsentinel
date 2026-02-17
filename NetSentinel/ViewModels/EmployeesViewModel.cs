@@ -7,12 +7,12 @@ namespace NetSentinel.ViewModels;
 public partial class EmployeesViewModel : ViewModelBase
 {
     [ObservableProperty]
-    private string _title = "Employee Management";
+    private string _title = "Employees";
 
     // Inject the navigator so we can go back
     public EmployeesViewModel(IAppNavigator navigator) : base(navigator)
     {
-        
+        Title = _title;
     }
 
     [RelayCommand]

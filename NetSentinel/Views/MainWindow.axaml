@@ -55,28 +55,19 @@
 
             <Border DockPanel.Dock="Top"
                 BorderBrush="{DynamicResource BorderColor}"
-                BorderThickness="0,0,0,1"
+                BorderThickness="0,0,0,0"
                 Padding="20,16">
                 <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
 
-                    <ToggleButton IsChecked="True" Name="Toggler" Classes="Ghost" Padding="4" Width="32" Height="32">
+                    <ToggleButton IsChecked="True" Name="Toggler" Classes="Ghost" Padding="4"
+                        Width="32" Height="32">
                         <LucideIcon Kind="PanelLeft" Size="20" />
                     </ToggleButton>
-
-                    <Separator Classes="Vertical" Height="20" />
-
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <TextBlock Text="Application" Classes="Muted" VerticalAlignment="Center" />
-                        <TextBlock Text="/" Classes="Muted" VerticalAlignment="Center" />
-                        <TextBlock
-                            Text="{Binding Navigator.CurrentView.Title, FallbackValue='Home'}"
-                            Foreground="{DynamicResource Foreground}" VerticalAlignment="Center" />
-                    </StackPanel>
 
                 </StackPanel>
             </Border>
 
-            <ContentControl Margin="30" Content="{Binding Navigator.CurrentView}" />
+            <ContentControl Margin="10" Content="{Binding Navigator.CurrentView}" />
 
         </DockPanel>
     </Grid>
