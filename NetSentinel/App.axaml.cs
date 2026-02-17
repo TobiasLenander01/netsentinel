@@ -8,6 +8,7 @@ using System;
 using NetSentinel.Interfaces;
 using NetSentinel.ViewModels;
 using NetSentinel.Views;
+using NetSentinel.Services;
 
 namespace NetSentinel;
 

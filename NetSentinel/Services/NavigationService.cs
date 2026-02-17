@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using NetSentinel.Interfaces;
 using NetSentinel.ViewModels;
 
-namespace NetSentinel;
+namespace NetSentinel.Services;
 
 public partial class NavigationService : ObservableObject, IAppNavigator
 {
