@@ -10,7 +10,10 @@
     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20">
         <TextBlock Text="Test View 2" FontSize="24" HorizontalAlignment="Center"/>
         <Button Content="Go to Test View 1"
-                Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).GoToTest1Command}"
+                Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Navigator.GoToTest1Command}"
+                HorizontalAlignment="Center"/>
+        <Button Content="Go Back"
+                Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Navigator.NavigateBackCommand}"
                 HorizontalAlignment="Center"/>
     </StackPanel>
 </UserControl>
