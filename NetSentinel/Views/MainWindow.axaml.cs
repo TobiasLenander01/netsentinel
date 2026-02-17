@@ -1,8 +1,6 @@
-using Avalonia.Controls;
-
 namespace NetSentinel.Views;
 
-public partial class MainWindow : Window
+public partial class MainWindow : ShadUI.Window
 {
     public MainWindow()
     {

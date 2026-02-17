@@ -11,6 +11,7 @@
 
   <!-- FOLDERS AND RESOURCES-->
   <ItemGroup>
+    <Folder Include="Controls\" />
     <Folder Include="Interfaces\" />
     <Folder Include="Models\" />
     <AvaloniaResource Include="Assets\**" />
@@ -30,6 +31,7 @@
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
     <PackageReference Include="HotAvalonia" Version="3.1.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.3" />
+    <PackageReference Include="ShadUI" Version="0.1.6" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Views\DashboardView.axaml.cs">
