@@ -7,7 +7,7 @@ public partial class MainWindowViewModel : ViewModelBase
 {
     public MainWindowViewModel(IAppNavigator navigator) : base(navigator)
     {
-        
+
     }
 
     [RelayCommand]
@@ -21,11 +21,10 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         Navigator.GoToEmployees();
     }
-    
-    // You'll need to add this method to your NavigationService first
+
     [RelayCommand]
     public void GoToSettings()
     {
-        // Navigator.GoToSettings(); // Uncomment once added to service
+        Navigator.GoToSettings();
     }
 }

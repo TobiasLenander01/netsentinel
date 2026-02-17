@@ -8,9 +8,10 @@ namespace NetSentinel.Interfaces;
 
 public interface IAppNavigator
 {
-    ViewModelBase CurrentView { get; set; } 
-    
+    ViewModelBase CurrentView { get; set; }
+
     void GoToDashboard();
     void GoToEmployees();
+    void GoToSettings();
     void GoBack();
 }

@@ -5,7 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
-    Height="800" Width="1200"
+    Height="1000" Width="1400"
     x:Class="NetSentinel.Views.MainWindow"
     x:DataType="vm:MainWindowViewModel"
     Icon="/Assets/avalonia-logo.ico"
@@ -59,7 +59,7 @@
                 Padding="20,16">
                 <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
 
-                    <ToggleButton Name="Toggler" Classes="Ghost" Padding="4" Width="32" Height="32">
+                    <ToggleButton IsChecked="True" Name="Toggler" Classes="Ghost" Padding="4" Width="32" Height="32">
                         <LucideIcon Kind="PanelLeft" Size="20" />
                     </ToggleButton>
 

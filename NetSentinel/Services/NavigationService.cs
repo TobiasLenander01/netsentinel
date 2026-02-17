@@ -40,6 +40,12 @@ public partial class NavigationService : ObservableObject, IAppNavigator
             NavigateTo(new EmployeesViewModel(this));
     }
 
+    public void GoToSettings()
+    {
+        if (CurrentView is not SettingsViewModel)
+            NavigateTo(new SettingsViewModel(this));
+    }
+
     public void GoBack()
     {
         if (_navigationStack.Count > 0)
