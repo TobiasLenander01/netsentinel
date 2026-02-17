@@ -1,0 +1,16 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:NetSentinel.ViewModels"
+    x:Class="NetSentinel.Views.DashboardView"
+    x:DataType="vm:DashboardViewModel">
+
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20">
+        <TextBlock Text="Dashboard" FontSize="24" HorizontalAlignment="Center" />
+        <TextBlock Text="{Binding TestMessage}" FontSize="16" HorizontalAlignment="Center" />
+
+        <Button Content="Go to Employees"
+            Command="{Binding GoToEmployeesCommand}"
+            HorizontalAlignment="Center" />
+
+    </StackPanel>
+</UserControl>

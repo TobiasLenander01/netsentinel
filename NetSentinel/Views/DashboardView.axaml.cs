@@ -2,9 +2,9 @@ using Avalonia.Controls;
 
 namespace NetSentinel.Views;
 
-public partial class Test2View : UserControl
+public partial class DashboardView : UserControl
 {
-    public Test2View()
+    public DashboardView()
     {
         InitializeComponent();
     }
