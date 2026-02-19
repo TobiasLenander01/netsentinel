@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.Extensions.DependencyInjection;
 using NetSentinel.Interfaces;
 using NetSentinel.ViewModels;
 
@@ -7,23 +9,22 @@ namespace NetSentinel.Services;
 
 public partial class NavigationService : ObservableObject, IAppNavigator
 {
-    // Stack to keep track of navigation history
-    private readonly Stack<ViewModelBase> _navigationStack = new();
+    private readonly Stack<ViewModelBase> _navigationHistoryStack = new();
+    private readonly IServiceProvider _serviceProvider;
 
     // Current view being displayed
     [ObservableProperty]
-    private ViewModelBase _currentView;
+    private ViewModelBase? _currentView;
 
-    public NavigationService()
+    public NavigationService(IServiceProvider serviceProvider)
     {
-        // Set initial view
-        _currentView = new DashboardViewModel(this);
+        _serviceProvider = serviceProvider;
     }
 
     private void NavigateTo(ViewModelBase viewModel)
     {
         if (CurrentView != null)
-            _navigationStack.Push(CurrentView);
+            _navigationHistoryStack.Push(CurrentView);
 
         CurrentView = viewModel;
     }
@@ -31,24 +32,33 @@ public partial class NavigationService : ObservableObject, IAppNavigator
     public void GoToDashboard()
     {
         if (CurrentView is not DashboardViewModel)
-            NavigateTo(new DashboardViewModel(this));
+        {
+            var dashboard = _serviceProvider.GetRequiredService<DashboardViewModel>();
+            NavigateTo(dashboard);
+        }
     }
 
     public void GoToEmployees()
     {
         if (CurrentView is not EmployeesViewModel)
-            NavigateTo(new EmployeesViewModel(this));
+        {
+            var employees = _serviceProvider.GetRequiredService<EmployeesViewModel>();
+            NavigateTo(employees);
+        }
     }
 
     public void GoToSettings()
     {
         if (CurrentView is not SettingsViewModel)
-            NavigateTo(new SettingsViewModel(this));
+        {
+            var settings = _serviceProvider.GetRequiredService<SettingsViewModel>();
+            NavigateTo(settings);
+        }
     }
 
     public void GoBack()
     {
-        if (_navigationStack.Count > 0)
-            CurrentView = _navigationStack.Pop();
+        if (_navigationHistoryStack.Count > 0)
+            CurrentView = _navigationHistoryStack.Pop();
     }
 }

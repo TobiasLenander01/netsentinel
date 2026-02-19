@@ -23,30 +23,25 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        // 1. Setup Dependency Injection
+        // SETUP DEPENDENCY INJECTION
+
+        // 1. Create a Service Collection and register services and viewmodels
         var collection = new ServiceCollection();
-
-        // Register Services (The Singletons)
-        collection.AddSingleton<IAppNavigator, NavigationService>();
-
-        // Register ViewModels
+        collection.AddSingleton<IAppNavigator, NavigationService>(sp => new NavigationService(sp));
         collection.AddTransient<MainWindowViewModel>();
         collection.AddTransient<DashboardViewModel>();
         collection.AddTransient<EmployeesViewModel>();
+        collection.AddTransient<SettingsViewModel>();
 
         // 2. Build the Service Provider
         Services = collection.BuildServiceProvider();
 
+        // 3. Use the service provider to create the main window and set its DataContext
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             DisableAvaloniaDataAnnotationValidation();
-
-            // 3. Resolve the ViewModel for the MainWindow and set it as the DataContext
-            var mainWindowViewModel = Services.GetRequiredService<MainWindowViewModel>();
-            desktop.MainWindow = new MainWindow
-            {
-                DataContext = mainWindowViewModel
-            };
+            desktop.MainWindow = new MainWindow { DataContext = Services.GetRequiredService<MainWindowViewModel>() };
+            Services.GetRequiredService<IAppNavigator>().GoToDashboard();
         }
 
         base.OnFrameworkInitializationCompleted();
