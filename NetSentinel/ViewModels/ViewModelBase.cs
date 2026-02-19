@@ -5,8 +5,8 @@ namespace NetSentinel.ViewModels;
 
 public partial class ViewModelBase : ObservableObject
 {
-    // Accessible by any class that inherits from ViewModelBase
     public IAppNavigator Navigator { get; }
+
     [ObservableProperty]
     private string _title = "Placeholder Title";
 
