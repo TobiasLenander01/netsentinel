@@ -7,9 +7,8 @@ public partial class ViewModelBase : ObservableObject
 {
     // Accessible by any class that inherits from ViewModelBase
     public IAppNavigator Navigator { get; }
-
-    // The title of the view, defaults to "View"
-    public virtual string Title { get; set; } = "View";
+    [ObservableProperty]
+    private string _title = "Placeholder Title";
 
     public ViewModelBase(IAppNavigator navigator)
     {
