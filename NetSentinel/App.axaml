@@ -12,4 +12,13 @@
     <Application.Styles>
         <shad:ShadTheme />
     </Application.Styles>
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceInclude x:Key="Dark" Source="avares://NetSentinel/Resources/Dark.axaml" />
+                <ResourceInclude x:Key="Light" Source="avares://NetSentinel/Resources/Light.axaml" />
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
 </Application>
