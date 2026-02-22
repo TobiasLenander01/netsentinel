@@ -7,12 +7,16 @@ using NetSentinel.ViewModels;
 
 namespace NetSentinel.Services;
 
-public partial class NavigationService : ObservableObject, IAppNavigator
+/// <summary>
+/// Implementation of the navigation functionality.
+/// Purpose: Used by the viewmodels to switch view.
+/// </summary>
+
+public partial class NavigationService : ObservableObject, INavigation
 {
     private readonly Stack<ViewModelBase> _navigationHistoryStack = new();
     private readonly IServiceProvider _serviceProvider;
 
-    // Current view being displayed
     [ObservableProperty]
     private ViewModelBase? _currentView;
 

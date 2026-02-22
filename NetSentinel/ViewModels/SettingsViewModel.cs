@@ -6,7 +6,7 @@ namespace NetSentinel.ViewModels;
 
 public partial class SettingsViewModel : ViewModelBase
 {
-    public SettingsViewModel(IAppNavigator navigator) : base(navigator)
+    public SettingsViewModel(INavigation navigator) : base(navigator)
     {
         Title = "Settings";
     }

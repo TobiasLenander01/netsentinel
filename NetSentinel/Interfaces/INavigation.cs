@@ -6,7 +6,7 @@ namespace NetSentinel.Interfaces;
 /// Exposes navigation methods for the app. ViewModels can call these to change the current view.
 /// </summary>
 
-public interface IAppNavigator
+public interface INavigation
 {
     ViewModelBase CurrentView { get; set; }
 

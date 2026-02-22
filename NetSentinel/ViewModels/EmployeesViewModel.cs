@@ -6,7 +6,7 @@ namespace NetSentinel.ViewModels;
 
 public partial class EmployeesViewModel : ViewModelBase
 {
-    public EmployeesViewModel(IAppNavigator navigator) : base(navigator)
+    public EmployeesViewModel(INavigation navigator) : base(navigator)
     {
         Title = "Employees";
     }

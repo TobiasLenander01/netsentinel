@@ -3,14 +3,20 @@ using NetSentinel.Interfaces;
 
 namespace NetSentinel.ViewModels;
 
+/// <summary>
+/// The base / superclass for the viewmodels.
+/// Each viewmodel inherits properties and methods
+/// from this class.
+/// </summary>
+
 public partial class ViewModelBase : ObservableObject
 {
-    public IAppNavigator Navigator { get; }
+    public INavigation Navigator { get; }
 
     [ObservableProperty]
     private string _title = "Placeholder Title";
 
-    public ViewModelBase(IAppNavigator navigator)
+    public ViewModelBase(INavigation navigator)
     {
         Navigator = navigator;
     }

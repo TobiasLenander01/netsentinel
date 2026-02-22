@@ -6,6 +6,12 @@ using NetSentinel.Interfaces;
 
 namespace NetSentinel.ViewModels;
 
+/// <summary>
+/// Viewmodel for the main window. Implements logic
+/// for the sidebar with buttons for switching view
+/// and to toggle theme (Dark / Light mode).
+/// </summary>
+
 public partial class MainWindowViewModel : ViewModelBase
 {
     [ObservableProperty]
@@ -15,7 +21,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public string ThemeToggleText => IsDarkMode ? "Light Mode" : "Dark Mode";
     public string ThemeToggleIcon => IsDarkMode ? "Sun" : "Moon";
 
-    public MainWindowViewModel(IAppNavigator navigator) : base(navigator)
+    public MainWindowViewModel(INavigation navigator) : base(navigator)
     {
         if (Application.Current != null)
         {

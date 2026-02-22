@@ -6,7 +6,7 @@ namespace NetSentinel.ViewModels;
 
 public partial class DashboardViewModel : ViewModelBase
 {
-    public DashboardViewModel(IAppNavigator navigator) : base(navigator)
+    public DashboardViewModel(INavigation navigator) : base(navigator)
     {
         Title = "Dashboard";
     }
