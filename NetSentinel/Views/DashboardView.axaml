@@ -10,6 +10,8 @@
 
         <TextBlock Text="{Binding Title}" Classes="h1" />
 
+        <Button Command="{Binding TestAddDeviceCommand}" Content="Add Device"/>
+
         <shad:Card Padding="20">
             <TextBlock Text="I am a Card!" />
         </shad:Card>
