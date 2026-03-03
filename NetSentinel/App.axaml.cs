@@ -40,7 +40,7 @@ public partial class App : Application
 
         // Register services, viewmodels etc
         builder.Services.AddSingleton<INavigation, NavigationService>(sp => new NavigationService(sp));
-        builder.Services.AddDbContext<DatabaseContext>(options => options.UseAzureSql(connectionString));
+        builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(connectionString));
         builder.Services.AddTransient<MainWindowViewModel>();
         builder.Services.AddTransient<DashboardViewModel>();
         builder.Services.AddTransient<EmployeesViewModel>();
