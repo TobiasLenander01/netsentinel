@@ -3,8 +3,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="using:NetSentinel.ViewModels"
     xmlns:shad="clr-namespace:ShadUI;assembly=ShadUI"
-    x:Class="NetSentinel.Views.EmployeesView"
-    x:DataType="vm:EmployeesViewModel">
+    x:Class="NetSentinel.Views.DevicesView"
+    x:DataType="vm:DevicesViewModel">
 
     <StackPanel Spacing="20" Margin="40">
 

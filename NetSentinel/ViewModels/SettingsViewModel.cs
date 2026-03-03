@@ -1,12 +1,12 @@
 using System;
 using CommunityToolkit.Mvvm.ComponentModel;
-using NetSentinel.Interfaces;
+using NetSentinel.Services;
 
 namespace NetSentinel.ViewModels;
 
 public partial class SettingsViewModel : ViewModelBase
 {
-    public SettingsViewModel(INavigation navigator) : base(navigator)
+    public SettingsViewModel(NavigationService navigator) : base(navigator)
     {
         Title = "Settings";
     }

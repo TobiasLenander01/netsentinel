@@ -34,9 +34,9 @@
                     </shad:SidebarItem.Icon>
                 </shad:SidebarItem>
 
-                <shad:SidebarItem Content="Employees" Command="{Binding GoToEmployeesCommand}">
+                <shad:SidebarItem Content="Devices" Command="{Binding GoToDevicesCommand}">
                     <shad:SidebarItem.Icon>
-                        <LucideIcon Kind="Users" Size="20" StrokeWidth="1.5" />
+                        <LucideIcon Kind="Laptop" Size="20" StrokeWidth="1.5" />
                     </shad:SidebarItem.Icon>
                 </shad:SidebarItem>
 

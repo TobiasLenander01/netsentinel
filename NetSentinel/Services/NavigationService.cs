@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
-using NetSentinel.Interfaces;
 using NetSentinel.ViewModels;
 
 namespace NetSentinel.Services;
@@ -12,7 +11,7 @@ namespace NetSentinel.Services;
 /// Purpose: Used by the viewmodels to switch view.
 /// </summary>
 
-public partial class NavigationService : ObservableObject, INavigation
+public partial class NavigationService : ObservableObject
 {
     private readonly Stack<ViewModelBase> _navigationHistoryStack = new();
     private readonly IServiceProvider _serviceProvider;
@@ -37,17 +36,17 @@ public partial class NavigationService : ObservableObject, INavigation
     {
         if (CurrentView is not DashboardViewModel)
         {
-            var dashboard = _serviceProvider.GetRequiredService<DashboardViewModel>();
-            NavigateTo(dashboard);
+            var dashboardView = _serviceProvider.GetRequiredService<DashboardViewModel>();
+            NavigateTo(dashboardView);
         }
     }
 
-    public void GoToEmployees()
+    public void GoToDevices()
     {
-        if (CurrentView is not EmployeesViewModel)
+        if (CurrentView is not DevicesViewModel)
         {
-            var employees = _serviceProvider.GetRequiredService<EmployeesViewModel>();
-            NavigateTo(employees);
+            var devicesView = _serviceProvider.GetRequiredService<DevicesViewModel>();
+            NavigateTo(devicesView);
         }
     }
 
@@ -55,8 +54,8 @@ public partial class NavigationService : ObservableObject, INavigation
     {
         if (CurrentView is not SettingsViewModel)
         {
-            var settings = _serviceProvider.GetRequiredService<SettingsViewModel>();
-            NavigateTo(settings);
+            var settingsView = _serviceProvider.GetRequiredService<SettingsViewModel>();
+            NavigateTo(settingsView);
         }
     }
 
