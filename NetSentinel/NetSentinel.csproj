@@ -12,7 +12,6 @@
   <!-- FOLDERS AND RESOURCES-->
   <ItemGroup>
     <Folder Include="Database\" />
-    <Folder Include="Models\" />
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
 
