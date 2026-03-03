@@ -9,6 +9,11 @@ using NetSentinel.Interfaces;
 using NetSentinel.ViewModels;
 using NetSentinel.Views;
 using NetSentinel.Services;
+using NetSentinel.Database;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
 
 namespace NetSentinel;
 
@@ -30,17 +35,19 @@ public partial class App : Application
     public override void OnFrameworkInitializationCompleted()
     {
         // SETUP DEPENDENCY INJECTION
+        var builder = Host.CreateApplicationBuilder();
+        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-        // 1. Create a Service Collection and register services and viewmodels
-        var collection = new ServiceCollection();
-        collection.AddSingleton<INavigation, NavigationService>(sp => new NavigationService(sp));
-        collection.AddTransient<MainWindowViewModel>();
-        collection.AddTransient<DashboardViewModel>();
-        collection.AddTransient<EmployeesViewModel>();
-        collection.AddTransient<SettingsViewModel>();
+        // Register services, viewmodels etc
+        builder.Services.AddSingleton<INavigation, NavigationService>(sp => new NavigationService(sp));
+        builder.Services.AddDbContext<DatabaseContext>(options => options.UseAzureSql(connectionString));
+        builder.Services.AddTransient<MainWindowViewModel>();
+        builder.Services.AddTransient<DashboardViewModel>();
+        builder.Services.AddTransient<EmployeesViewModel>();
+        builder.Services.AddTransient<SettingsViewModel>();
 
         // 2. Build the Service Provider
-        Services = collection.BuildServiceProvider();
+        Services = builder.Services.BuildServiceProvider();
 
         // 3. Use the service provider to create the main window and set its DataContext
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)

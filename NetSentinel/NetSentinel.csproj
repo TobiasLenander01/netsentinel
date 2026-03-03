@@ -11,6 +11,7 @@
 
   <!-- FOLDERS AND RESOURCES-->
   <ItemGroup>
+    <Folder Include="Database\" />
     <Folder Include="Models\" />
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
@@ -29,7 +30,9 @@
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
     <PackageReference Include="HotAvalonia" Version="3.1.0" />
     <PackageReference Include="Lucide.Avalonia" Version="0.1.59" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.3" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.3" />
     <PackageReference Include="ShadUI" Version="0.1.6" />
   </ItemGroup>
   <ItemGroup>
