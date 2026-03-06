@@ -2,7 +2,7 @@
 using Avalonia.Styling;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using NetSentinel.Interfaces;
+using NetSentinel.Services;
 
 namespace NetSentinel.ViewModels;
 
@@ -21,7 +21,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public string ThemeToggleText => IsDarkMode ? "Light Mode" : "Dark Mode";
     public string ThemeToggleIcon => IsDarkMode ? "Sun" : "Moon";
 
-    public MainWindowViewModel(INavigation navigator) : base(navigator)
+    public MainWindowViewModel(NavigationService navigator) : base(navigator)
     {
         if (Application.Current != null)
         {
@@ -37,9 +37,9 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    public void GoToEmployees()
+    public void GoToDevices()
     {
-        Navigator.GoToEmployees();
+        Navigator.GoToDevices();
     }
 
     [RelayCommand]

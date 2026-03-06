@@ -16,12 +16,4 @@ public class Device
     [MaxLength(17)]
     [Required]
     public string MACAddress {get; set;} = string.Empty;
-
-    public Device (string name, string ipAddress, string macAddress)
-    {
-        Name = name;
-        IPAddress = ipAddress;
-        MACAddress = macAddress;
-    }
-
 }

@@ -5,14 +5,12 @@ using System.Linq;
 using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using NetSentinel.Interfaces;
 using NetSentinel.ViewModels;
 using NetSentinel.Views;
 using NetSentinel.Services;
 using NetSentinel.Database;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 
 namespace NetSentinel;
@@ -39,11 +37,11 @@ public partial class App : Application
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
         // Register services, viewmodels etc
-        builder.Services.AddSingleton<INavigation, NavigationService>(sp => new NavigationService(sp));
+        builder.Services.AddSingleton<NavigationService>(sp => new NavigationService(sp));
         builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(connectionString));
         builder.Services.AddTransient<MainWindowViewModel>();
         builder.Services.AddTransient<DashboardViewModel>();
-        builder.Services.AddTransient<EmployeesViewModel>();
+        builder.Services.AddTransient<DevicesViewModel>();
         builder.Services.AddTransient<SettingsViewModel>();
         builder.Services.AddScoped<DeviceService>();
 
@@ -55,7 +53,7 @@ public partial class App : Application
         {
             DisableAvaloniaDataAnnotationValidation();
             desktop.MainWindow = new MainWindow { DataContext = Services.GetRequiredService<MainWindowViewModel>() };
-            Services.GetRequiredService<INavigation>().GoToDashboard();
+            Services.GetRequiredService<NavigationService>().GoToDashboard();
         }
 
         base.OnFrameworkInitializationCompleted();
