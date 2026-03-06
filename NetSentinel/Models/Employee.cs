@@ -18,7 +18,7 @@ public class Employee
     public List<Device> Devices {get; set;} = new();
 
     [Required]
-    public Department Department {get; set;}
+    public Department? Department {get; set;}
 
     public Employee(){}
 

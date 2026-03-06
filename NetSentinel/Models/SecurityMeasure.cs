@@ -14,6 +14,7 @@ public class SecurityMeasure
     [MaxLength(200)]
     public string Result { get; set; } = string.Empty;
 
+    [Required]
     public Incident? Incident { get; set; }
 
     public SecurityMeasure()
