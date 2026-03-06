@@ -18,6 +18,11 @@ public class DatabaseContext : DbContext
 {
     // define database tables
     public DbSet<Device> Devices {get; set;}
+    public DbSet<Employee> Employees {get; set;}
+    public DbSet<Incident> Incidents {get; set;}
+    public DbSet<SecurityMeasure> SecurityMeasures {get; set;}
+    public DbSet<Department> Departments {get; set;}
+
 
     public DatabaseContext (DbContextOptions<DatabaseContext> options) : base(options) {}
 }

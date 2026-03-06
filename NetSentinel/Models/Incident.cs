@@ -19,7 +19,8 @@ public class Incident
 
     public Status Status {get; set;}
 
-    public Device Device {get; set;}
+    [Required]
+    public Device? Device {get; set;}
 
     public List<SecurityMeasure> SecurityMeasures = new();
 
