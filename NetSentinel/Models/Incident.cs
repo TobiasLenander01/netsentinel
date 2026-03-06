@@ -22,7 +22,7 @@ public class Incident
     [Required]
     public Device? Device {get; set;}
 
-    public List<SecurityMeasure> SecurityMeasures = new();
+    public List<SecurityMeasure> SecurityMeasures { get; set; } = new();
 
     public Incident() {}
 
