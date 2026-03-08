@@ -20,6 +20,7 @@ public class Incident
     public Status Status {get; set;}
 
     [Required]
+    public int DeviceId {get; set;}
     public Device? Device {get; set;}
 
     public List<SecurityMeasure> SecurityMeasures { get; set; } = new();

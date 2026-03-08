@@ -28,6 +28,14 @@ public partial class DevicesViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    private async Task DeleteDeviceAsync(Device device)
+    {
+        await _deviceService.DeleteDevice(device);
+        Devices.Remove(device);
+        IsEmpty = Devices.Count == 0;
+    }
+
+    [RelayCommand]
     private async Task LoadDevicesAsync()
     {
         IsLoading = true;

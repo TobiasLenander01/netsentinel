@@ -20,6 +20,8 @@ public class Device
 
     public List<Incident> Incidents {get; set;} = new();
 
+    public bool HasIncidents => Incidents.Count > 0;
+
     [Required]
     public Employee? Owner {get; set;}
 }

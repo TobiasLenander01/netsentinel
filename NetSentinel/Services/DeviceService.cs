@@ -26,13 +26,13 @@ public class DeviceService
     // read (all)
     public async Task<List<Device>> ReadAllDevicesAsync()
     {
-        return await _dbContext.Devices.ToListAsync();
+        return await _dbContext.Devices.Include(d => d.Owner).Include(d => d.Incidents).ToListAsync();
     }
 
     // read (single)
     public async Task<Device?> ReadSingleDeviceAsync(int id)
     {
-        return await _dbContext.Devices.FindAsync(id);
+        return await _dbContext.Devices.Include(d => d.Owner).FirstOrDefaultAsync(d => d.Id == id);
     }
 
     // update
