@@ -1,0 +1,47 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:NetSentinel.ViewModels"
+    xmlns:shad="clr-namespace:ShadUI;assembly=ShadUI"
+    x:Class="NetSentinel.Views.AddDeviceView"
+    x:DataType="vm:AddDeviceViewModel"
+    Loaded="OnLoaded">
+
+    <Grid>
+        <StackPanel Spacing="20" Margin="40" Width="400" HorizontalAlignment="Left">
+
+            <TextBlock Text="{Binding Title}" Classes="h2" />
+
+            <StackPanel Spacing="6">
+                <TextBlock Text="Name" />
+                <TextBox Text="{Binding Name}" Watermark="Device name" />
+            </StackPanel>
+
+            <StackPanel Spacing="6">
+                <TextBlock Text="IP Address" />
+                <TextBox Text="{Binding IpAddress}" Watermark="e.g. 192.168.1.1" />
+            </StackPanel>
+
+            <StackPanel Spacing="6">
+                <TextBlock Text="Serial Number" />
+                <TextBox Text="{Binding SerialNumber}" Watermark="e.g. AA-BB-CC-DD-EE-FF" />
+            </StackPanel>
+
+            <StackPanel Spacing="6">
+                <TextBlock Text="Owner" />
+                <ComboBox ItemsSource="{Binding Employees}"
+                    SelectedItem="{Binding SelectedEmployee}"
+                    HorizontalAlignment="Stretch"
+                    PlaceholderText="Select an employee">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
+
+            <Button Content="Save" Classes="Primary" Command="{Binding SaveCommand}" />
+
+        </StackPanel>
+    </Grid>
+</UserControl>

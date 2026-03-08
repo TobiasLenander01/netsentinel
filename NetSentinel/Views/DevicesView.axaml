@@ -15,6 +15,17 @@
             <TextBlock Text="{Binding Title}" Classes="h1" />
 
             <Grid>
+                <Button Content="Add device" Classes="Primary"
+                    Command="{Binding ShowAddDeviceDialogCommand}"
+                    HorizontalAlignment="Left" />
+                <Button Command="{Binding LoadDevicesCommand}" Classes="Secondary" Padding="4"
+                    Width="32"
+                    Height="36" HorizontalAlignment="Right">
+                    <LucideIcon Kind="RefreshCw" Size="20" />
+                </Button>
+            </Grid>
+
+            <Grid>
 
                 <DataGrid x:Name="DataGrid"
                     ItemsSource="{Binding Devices}"
@@ -24,10 +35,25 @@
                     GridLinesVisibility="Horizontal">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="auto" />
+                        <DataGridTextColumn Header="Owner" Binding="{Binding Owner.Name}"
+                            Width="auto" />
                         <DataGridTextColumn Header="IP Address" Binding="{Binding IPAddress}"
                             Width="auto" />
                         <DataGridTextColumn Header="Serial Number" Binding="{Binding SerialNumber}"
                             Width="*" />
+
+                        <DataGridTemplateColumn Header="Status" Width="auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate x:DataType="models:Device">
+                                    <LucideIcon Kind="TriangleAlert" Size="18"
+                                        Foreground="Orange"
+                                        IsVisible="{Binding HasIncidents}"
+                                        HorizontalAlignment="Center"
+                                        Cursor="Hand"
+                                        ToolTip.Tip="{Binding Incidents.Count, StringFormat='This device has {0} incident(s)'}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
 
                         <DataGridTemplateColumn Header="Actions">
                             <DataGridTemplateColumn.CellTemplate>
@@ -37,14 +63,17 @@
                                         HorizontalContentAlignment="Center">
                                         <Button.Flyout>
                                             <MenuFlyout>
-                                                <MenuItem Header="Edit device" />
-                                                <MenuItem Header="Delete device" />
+                                                <MenuItem Header="Edit device" Cursor="Hand" />
+                                                <MenuItem Header="Delete device" Cursor="Hand"
+                                                    Command="{Binding $parent[UserControl].((vm:DevicesViewModel)DataContext).DeleteDeviceCommand}"
+                                                    CommandParameter="{Binding}" />
                                             </MenuFlyout>
                                         </Button.Flyout>
                                     </Button>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
+
                     </DataGrid.Columns>
                 </DataGrid>
 
