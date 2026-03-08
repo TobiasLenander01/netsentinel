@@ -26,7 +26,7 @@
                         <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="auto" />
                         <DataGridTextColumn Header="IP Address" Binding="{Binding IPAddress}"
                             Width="auto" />
-                        <DataGridTextColumn Header="MAC Address" Binding="{Binding MACAddress}"
+                        <DataGridTextColumn Header="Serial Number" Binding="{Binding SerialNumber}"
                             Width="*" />
 
                         <DataGridTemplateColumn Header="Actions">
