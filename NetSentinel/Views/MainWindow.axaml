@@ -80,8 +80,9 @@
                 </StackPanel>
             </Border>
 
-            <ContentControl Margin="10" Content="{Binding Navigator.CurrentView}" />
-
+            <ScrollViewer>
+                <ContentControl Margin="10" Content="{Binding Navigator.CurrentView}" />
+            </ScrollViewer>
         </DockPanel>
     </Grid>
 
