@@ -12,6 +12,11 @@
     Icon="/Assets/avalonia-logo.ico"
     Title="Net Sentinel">
 
+    <shad:Window.Hosts>
+        <shad:DialogHost Manager="{Binding DialogManager}"
+            Owner="{Binding RelativeSource={RelativeSource AncestorType=shad:Window}}" />
+    </shad:Window.Hosts>
+
     <Grid ColumnDefinitions="Auto, *">
 
         <shad:Sidebar Grid.Column="0"

@@ -16,6 +16,7 @@
 
             <Grid>
                 <Button Content="Add device" Classes="Primary"
+                    Command="{Binding ShowAddDeviceDialogCommand}"
                     HorizontalAlignment="Left" />
                 <Button Command="{Binding LoadDevicesCommand}" Classes="Secondary" Padding="4"
                     Width="32"

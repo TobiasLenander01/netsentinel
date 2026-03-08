@@ -3,6 +3,7 @@ using Avalonia.Styling;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using NetSentinel.Services;
+using ShadUI;
 
 namespace NetSentinel.ViewModels;
 
@@ -21,8 +22,12 @@ public partial class MainWindowViewModel : ViewModelBase
     public string ThemeToggleText => IsDarkMode ? "Light Mode" : "Dark Mode";
     public string ThemeToggleIcon => IsDarkMode ? "Sun" : "Moon";
 
-    public MainWindowViewModel(NavigationService navigator) : base(navigator)
+    [ObservableProperty]
+    private DialogManager _dialogManager;
+
+    public MainWindowViewModel(NavigationService navigator, DialogManager dialogManager) : base(navigator)
     {
+        _dialogManager = dialogManager;
         if (Application.Current != null)
         {
             // ActualThemeVariant resolves "Default" into either Light or Dark

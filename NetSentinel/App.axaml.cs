@@ -12,6 +12,7 @@ using NetSentinel.Database;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
+using ShadUI;
 
 namespace NetSentinel;
 
@@ -38,15 +39,22 @@ public partial class App : Application
 
         // Register services, viewmodels etc
         builder.Services.AddSingleton<NavigationService>(sp => new NavigationService(sp));
+        builder.Services.AddSingleton<DialogManager>();
+        builder.Services.AddSingleton<ToastManager>();
         builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(connectionString));
         builder.Services.AddTransient<MainWindowViewModel>();
         builder.Services.AddTransient<DashboardViewModel>();
         builder.Services.AddTransient<DevicesViewModel>();
         builder.Services.AddTransient<SettingsViewModel>();
+        builder.Services.AddTransient<AddDeviceViewModel>();
         builder.Services.AddScoped<DeviceService>();
+        builder.Services.AddScoped<EmployeeService>();
 
         // 2. Build the Service Provider
         Services = builder.Services.BuildServiceProvider();
+
+        // Register dialogs
+        Services.GetRequiredService<DialogManager>().Register<AddDeviceView, AddDeviceViewModel>();
 
         // 3. Use the service provider to create the main window and set its DataContext
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
