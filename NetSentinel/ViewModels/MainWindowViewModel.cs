@@ -25,9 +25,13 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty]
     private DialogManager _dialogManager;
 
-    public MainWindowViewModel(NavigationService navigator, DialogManager dialogManager) : base(navigator)
+    [ObservableProperty]
+    private ToastManager _toastManager;
+
+    public MainWindowViewModel(NavigationService navigator, DialogManager dialogManager, ToastManager toastManager) : base(navigator)
     {
         _dialogManager = dialogManager;
+        _toastManager = toastManager;
         if (Application.Current != null)
         {
             // ActualThemeVariant resolves "Default" into either Light or Dark

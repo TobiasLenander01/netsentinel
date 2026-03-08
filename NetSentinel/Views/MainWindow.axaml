@@ -17,78 +17,83 @@
             Owner="{Binding RelativeSource={RelativeSource AncestorType=shad:Window}}" />
     </shad:Window.Hosts>
 
-    <Grid ColumnDefinitions="Auto, *">
+    <Panel>
+        <shad:ToastHost Manager="{Binding ToastManager}" Position="TopRight" />
 
-        <shad:Sidebar Grid.Column="0"
-            Expanded="{Binding #Toggler.IsChecked}"
-            MinWidth="70"
-            Width="260"
-            Background="{DynamicResource CardBackgroundColor}"
-            BorderThickness="0,0,1,0"
-            Padding="12">
+        <Grid ColumnDefinitions="Auto, *">
 
-            <StackPanel Spacing="4">
+            <shad:Sidebar Grid.Column="0"
+                Expanded="{Binding #Toggler.IsChecked}"
+                MinWidth="70"
+                Width="260"
+                Background="{DynamicResource CardBackgroundColor}"
+                BorderThickness="0,0,1,0"
+                Padding="12">
 
-                <TextBlock Text="Platform" Classes="Caption Muted" FontWeight="SemiBold"
-                    Margin="12,0,0,8"
-                    IsVisible="{Binding $parent[shad:Sidebar].Expanded}" />
-
-                <shad:SidebarItem Content="Dashboard" Command="{Binding GoToDashboardCommand}">
-                    <shad:SidebarItem.Icon>
-                        <LucideIcon Kind="LayoutDashboard" Size="20" StrokeWidth="1.5" />
-                    </shad:SidebarItem.Icon>
-                </shad:SidebarItem>
-
-                <shad:SidebarItem Content="Devices" Command="{Binding GoToDevicesCommand}">
-                    <shad:SidebarItem.Icon>
-                        <LucideIcon Kind="Laptop" Size="20" StrokeWidth="1.5" />
-                    </shad:SidebarItem.Icon>
-                </shad:SidebarItem>
-
-
-            </StackPanel>
-
-            <shad:Sidebar.Footer>
                 <StackPanel Spacing="4">
 
-                    <shad:SidebarItem Content="{Binding ThemeToggleText}"
-                        Command="{Binding ToggleThemeCommand}">
+                    <TextBlock Text="Platform" Classes="Caption Muted" FontWeight="SemiBold"
+                        Margin="12,0,0,8"
+                        IsVisible="{Binding $parent[shad:Sidebar].Expanded}" />
+
+                    <shad:SidebarItem Content="Dashboard" Command="{Binding GoToDashboardCommand}">
                         <shad:SidebarItem.Icon>
-                            <LucideIcon Kind="{Binding ThemeToggleIcon}" Size="20" StrokeWidth="1.5" />
+                            <LucideIcon Kind="LayoutDashboard" Size="20" StrokeWidth="1.5" />
                         </shad:SidebarItem.Icon>
                     </shad:SidebarItem>
 
-                    <shad:SidebarItem Content="Settings" Command="{Binding GoToSettingsCommand}">
+                    <shad:SidebarItem Content="Devices" Command="{Binding GoToDevicesCommand}">
                         <shad:SidebarItem.Icon>
-                            <LucideIcon Kind="Settings" Size="20" StrokeWidth="1.5" />
+                            <LucideIcon Kind="Laptop" Size="20" StrokeWidth="1.5" />
                         </shad:SidebarItem.Icon>
                     </shad:SidebarItem>
 
-                </StackPanel>
-            </shad:Sidebar.Footer>
-        </shad:Sidebar>
-
-
-        <DockPanel Grid.Column="1">
-
-            <Border DockPanel.Dock="Top"
-                BorderBrush="{DynamicResource BorderColor}"
-                BorderThickness="0,0,0,0"
-                Padding="20,16">
-                <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
-
-                    <ToggleButton IsChecked="True" Name="Toggler" Classes="Ghost" Padding="4"
-                        Width="32" Height="32">
-                        <LucideIcon Kind="PanelLeft" Size="20" />
-                    </ToggleButton>
 
                 </StackPanel>
-            </Border>
 
-            <ScrollViewer>
-                <ContentControl Margin="10" Content="{Binding Navigator.CurrentView}" />
-            </ScrollViewer>
-        </DockPanel>
-    </Grid>
+                <shad:Sidebar.Footer>
+                    <StackPanel Spacing="4">
+
+                        <shad:SidebarItem Content="{Binding ThemeToggleText}"
+                            Command="{Binding ToggleThemeCommand}">
+                            <shad:SidebarItem.Icon>
+                                <LucideIcon Kind="{Binding ThemeToggleIcon}" Size="20"
+                                    StrokeWidth="1.5" />
+                            </shad:SidebarItem.Icon>
+                        </shad:SidebarItem>
+
+                        <shad:SidebarItem Content="Settings" Command="{Binding GoToSettingsCommand}">
+                            <shad:SidebarItem.Icon>
+                                <LucideIcon Kind="Settings" Size="20" StrokeWidth="1.5" />
+                            </shad:SidebarItem.Icon>
+                        </shad:SidebarItem>
+
+                    </StackPanel>
+                </shad:Sidebar.Footer>
+            </shad:Sidebar>
+
+
+            <DockPanel Grid.Column="1">
+
+                <Border DockPanel.Dock="Top"
+                    BorderBrush="{DynamicResource BorderColor}"
+                    BorderThickness="0,0,0,0"
+                    Padding="20,16">
+                    <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
+
+                        <ToggleButton IsChecked="True" Name="Toggler" Classes="Ghost" Padding="4"
+                            Width="32" Height="32">
+                            <LucideIcon Kind="PanelLeft" Size="20" />
+                        </ToggleButton>
+
+                    </StackPanel>
+                </Border>
+
+                <ScrollViewer>
+                    <ContentControl Margin="10" Content="{Binding Navigator.CurrentView}" />
+                </ScrollViewer>
+            </DockPanel>
+        </Grid>
+    </Panel>
 
 </shad:Window>
