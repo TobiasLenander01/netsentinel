@@ -50,6 +50,15 @@ public partial class NavigationService : ObservableObject
         }
     }
 
+    public void GoToDepartments()
+    {
+        if (CurrentView is not DepartmentsViewModel)
+        {
+            var departmentsView = _serviceProvider.GetRequiredService<DepartmentsViewModel>();
+            NavigateTo(departmentsView);
+        }
+    }
+
     public void GoToSettings()
     {
         if (CurrentView is not SettingsViewModel)

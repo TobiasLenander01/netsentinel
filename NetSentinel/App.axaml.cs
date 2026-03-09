@@ -47,7 +47,9 @@ public partial class App : Application
         builder.Services.AddTransient<DevicesViewModel>();
         builder.Services.AddTransient<SettingsViewModel>();
         builder.Services.AddTransient<AddDeviceViewModel>();
+        builder.Services.AddTransient<DepartmentsViewModel>();
         builder.Services.AddScoped<DeviceService>();
+        builder.Services.AddScoped<DepartmentService>();
         builder.Services.AddScoped<EmployeeService>();
 
         // 2. Build the Service Provider

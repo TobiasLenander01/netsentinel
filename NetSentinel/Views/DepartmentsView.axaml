@@ -1,0 +1,76 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:NetSentinel.ViewModels"
+    xmlns:models="using:NetSentinel.Models"
+    xmlns:shad="clr-namespace:ShadUI;assembly=ShadUI"
+    x:Class="NetSentinel.Views.DepartmentsView"
+    x:DataType="vm:DepartmentsViewModel"
+    Loaded="OnLoaded">
+
+    <Grid>
+
+        <StackPanel Spacing="20" Margin="40">
+
+            <TextBlock Text="{Binding Title}" Classes="h1" />
+
+            <Grid>
+                <Button Content="Add department" Classes="Primary"
+                    HorizontalAlignment="Left" />
+                <Button Command="{Binding LoadDepartmentsCommand}" Classes="Secondary" Padding="4"
+                    Width="32"
+                    Height="36" HorizontalAlignment="Right">
+                    <LucideIcon Kind="RefreshCw" Size="20" />
+                </Button>
+            </Grid>
+
+            <Grid>
+
+                <DataGrid x:Name="DataGrid"
+                    ItemsSource="{Binding Departments}"
+                    CanUserSortColumns="True"
+                    IsReadOnly="True"
+                    Background="{DynamicResource CardBackgroundColor}"
+                    GridLinesVisibility="Horizontal">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="auto" />
+                        <DataGridTextColumn Header="Location" Binding="{Binding Location}" Width="auto" />
+                        <DataGridTextColumn Header="Employees" Binding="{Binding Employees.Count}" Width="*" />
+
+                        <DataGridTemplateColumn Header="Actions">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate x:DataType="models:Department">
+                                    <Button Content="..." Classes="Ghost Icon"
+                                        HorizontalAlignment="Center"
+                                        HorizontalContentAlignment="Center">
+                                        <Button.Flyout>
+                                            <MenuFlyout>
+                                                <MenuItem Header="Edit department" Cursor="Hand" />
+                                                <MenuItem Header="Delete department" Cursor="Hand"
+                                                    Command="{Binding $parent[UserControl].((vm:DepartmentsViewModel)DataContext).DeleteDepartmentCommand}"
+                                                    CommandParameter="{Binding}" />
+                                            </MenuFlyout>
+                                        </Button.Flyout>
+                                    </Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <TextBlock Text="No departments found."
+                    IsVisible="{Binding IsEmpty}"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Foreground="Gray"
+                    Margin="0,50,0,0" />
+
+                <shad:BusyArea CornerRadius="{DynamicResource LgCornerRadius}"
+                    IsBusy="{Binding IsLoading}" />
+
+            </Grid>
+
+        </StackPanel>
+    </Grid>
+</UserControl>
