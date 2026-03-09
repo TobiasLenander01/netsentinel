@@ -17,11 +17,6 @@
             <Grid>
                 <Button Content="Add department" Classes="Primary"
                     HorizontalAlignment="Left" />
-                <Button Command="{Binding LoadDepartmentsCommand}" Classes="Secondary" Padding="4"
-                    Width="32"
-                    Height="36" HorizontalAlignment="Right">
-                    <LucideIcon Kind="RefreshCw" Size="20" />
-                </Button>
             </Grid>
 
             <Grid>

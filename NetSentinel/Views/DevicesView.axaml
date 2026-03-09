@@ -16,13 +16,8 @@
 
             <Grid>
                 <Button Content="Add device" Classes="Primary"
-                    Command="{Binding ShowAddDeviceDialogCommand}"
+                    Command="{Binding ShowNewDeviceDialogCommand}"
                     HorizontalAlignment="Left" />
-                <Button Command="{Binding LoadDevicesCommand}" Classes="Secondary" Padding="4"
-                    Width="32"
-                    Height="36" HorizontalAlignment="Right">
-                    <LucideIcon Kind="RefreshCw" Size="20" />
-                </Button>
             </Grid>
 
             <Grid>
@@ -63,9 +58,11 @@
                                         HorizontalContentAlignment="Center">
                                         <Button.Flyout>
                                             <MenuFlyout>
-                                                <MenuItem Header="Edit device" Cursor="Hand" />
+                                                <MenuItem Header="Edit device" Cursor="Hand"
+                                                    Command="{Binding $parent[UserControl].((vm:DevicesViewModel)DataContext).ShowEditDeviceDialogCommand}"
+                                                    CommandParameter="{Binding}" />
                                                 <MenuItem Header="Delete device" Cursor="Hand"
-                                                    Command="{Binding $parent[UserControl].((vm:DevicesViewModel)DataContext).DeleteDeviceCommand}"
+                                                    Command="{Binding $parent[UserControl].((vm:DevicesViewModel)DataContext).ShowDeleteDeviceDialogCommand}"
                                                     CommandParameter="{Binding}" />
                                             </MenuFlyout>
                                         </Button.Flyout>
