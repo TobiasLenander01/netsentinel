@@ -49,6 +49,14 @@ public partial class DevicesViewModel : ViewModelBase
             Devices = new ObservableCollection<Device>(deviceList);
             IsEmpty = Devices.Count == 0;
         }
+        catch (Exception ex)
+        {
+            _toastManager
+                .CreateToast("Failed to load devices")
+                .WithContent(ex.Message)
+                .DismissOnClick()
+                .ShowError();
+        }
         finally
         {
             IsLoading = false;

@@ -9,7 +9,7 @@ namespace NetSentinel.ViewModels;
 /// from this class.
 /// </summary>
 
-public partial class ViewModelBase : ObservableObject
+public partial class ViewModelBase : ObservableValidator
 {
     public NavigationService Navigator { get; }
 

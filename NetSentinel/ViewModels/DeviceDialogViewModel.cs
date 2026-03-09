@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -14,68 +15,103 @@ public partial class DeviceDialogViewModel : ViewModelBase
     private readonly DeviceService _deviceService;
     private readonly EmployeeService _employeeService;
     private readonly DialogManager _dialogManager;
+    private readonly ToastManager _toastManager;
 
     private Device _device = new Device();
+    private bool _isEditingExistingDevice = false;
 
     [ObservableProperty]
+    [NotifyDataErrorInfo]
+    [Required(ErrorMessage = "Name is required")]
     private string _name = String.Empty;
 
     [ObservableProperty]
+    [NotifyDataErrorInfo]
+    [Required(ErrorMessage = "IP Address is required")]
     private string _ipAddress = String.Empty;
 
     [ObservableProperty]
+    [NotifyDataErrorInfo]
+    [Required(ErrorMessage = "Serial Number is required")]
     private string _serialNumber = String.Empty;
 
     [ObservableProperty]
     private ObservableCollection<Employee> _employees = new();
 
     [ObservableProperty]
+    [NotifyDataErrorInfo]
+    [Required(ErrorMessage = "Owner is required")]
     private Employee? _selectedEmployee;
 
     [ObservableProperty]
     private bool _isLoading;
 
-    public DeviceDialogViewModel(NavigationService navigator, DialogManager dialogManager, DeviceService deviceService, EmployeeService employeeService) : base(navigator)
+    public DeviceDialogViewModel(NavigationService navigator, DialogManager dialogManager, ToastManager toastManager, DeviceService deviceService, EmployeeService employeeService) : base(navigator)
     {
         Title = "Device Dialog";
         _deviceService = deviceService;
         _employeeService = employeeService;
         _dialogManager = dialogManager;
+        _toastManager = toastManager;
     }
 
     [RelayCommand]
     private async Task LoadNewDeviceAsync()
     {
         Title = "Add Device";
-        InitializeProperties(new Device());
+        _isEditingExistingDevice = false;
+        await InitializeProperties(new Device());
     }
 
     [RelayCommand]
     public async Task LoadExistingDeviceAsync(Device device)
     {
         Title = "Edit Device";
-        InitializeProperties(device);
+        _isEditingExistingDevice = true;
+        await InitializeProperties(device);
     }
 
     [RelayCommand]
     private async Task SaveDeviceAsync()
     {
-        if (SelectedEmployee is null) return;
+        ValidateAllProperties();
+        if (HasErrors)
+            return;
 
-        var device = new Device
+        // Get device properties from form
+        _device.Name = Name;
+        _device.IPAddress = IpAddress;
+        _device.SerialNumber = SerialNumber;
+        _device.Owner = SelectedEmployee;
+
+        try
         {
-            Name = Name,
-            IPAddress = IpAddress,
-            SerialNumber = SerialNumber,
-            Owner = SelectedEmployee
-        };
+            if (_isEditingExistingDevice)
+                await _deviceService.UpdateDeviceAsync(_device);
+            else
+                await _deviceService.AddDeviceAsync(_device);
 
-        await _deviceService.AddDeviceAsync(device);
-        _dialogManager.Close(this, new CloseDialogOptions { Success = true });
+            _dialogManager.Close(this, new CloseDialogOptions { Success = true });
+        }
+        catch (Exception ex)
+        {
+            _toastManager
+                .CreateToast("Failed to save device")
+                .WithContent(ex.Message)
+                .DismissOnClick()
+                .ShowError();
+            _dialogManager.Close(this, new CloseDialogOptions { Success = false });
+        }
+        finally
+        {
+            _dialogManager.Dispose();
+        }
     }
 
-    private async void InitializeProperties(Device device)
+    private async Task InitializeProperties(Device device)
     {
+        ClearErrors();
+
         // Load employees into drop down menu
         IsLoading = true;
         var list = await _employeeService.ReadAllEmployeesAsync();
