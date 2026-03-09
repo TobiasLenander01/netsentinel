@@ -15,7 +15,6 @@ public partial class DeviceDialogViewModel : ViewModelBase
     private readonly DeviceService _deviceService;
     private readonly EmployeeService _employeeService;
     private readonly DialogManager _dialogManager;
-    private readonly ToastManager _toastManager;
 
     private Device _device = new Device();
     private bool _isEditingExistingDevice = false;
@@ -46,13 +45,12 @@ public partial class DeviceDialogViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isLoading;
 
-    public DeviceDialogViewModel(NavigationService navigator, DialogManager dialogManager, ToastManager toastManager, DeviceService deviceService, EmployeeService employeeService) : base(navigator)
+    public DeviceDialogViewModel(NavigationService navigator, DialogManager dialogManager, DeviceService deviceService, EmployeeService employeeService) : base(navigator)
     {
         Title = "Device Dialog";
         _deviceService = deviceService;
         _employeeService = employeeService;
         _dialogManager = dialogManager;
-        _toastManager = toastManager;
     }
 
     [RelayCommand]
@@ -93,13 +91,8 @@ public partial class DeviceDialogViewModel : ViewModelBase
 
             _dialogManager.Close(this, new CloseDialogOptions { Success = true });
         }
-        catch (Exception ex)
+        catch
         {
-            _toastManager
-                .CreateToast("Failed to save device")
-                .WithContent(ex.Message)
-                .DismissOnClick()
-                .ShowError();
             _dialogManager.Close(this, new CloseDialogOptions { Success = false });
         }
         finally
