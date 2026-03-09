@@ -2,9 +2,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="using:NetSentinel.ViewModels"
     xmlns:shad="clr-namespace:ShadUI;assembly=ShadUI"
-    x:Class="NetSentinel.Views.AddDeviceView"
-    x:DataType="vm:AddDeviceViewModel"
-    Loaded="OnLoaded">
+    x:Class="NetSentinel.Views.DeviceDialogView"
+    x:DataType="vm:DeviceDialogViewModel">
 
     <Grid>
         <StackPanel Spacing="20" Margin="40" Width="400" HorizontalAlignment="Left">
@@ -40,7 +39,7 @@
                 </ComboBox>
             </StackPanel>
 
-            <Button Content="Save" Classes="Primary" Command="{Binding SaveCommand}" />
+            <Button Content="Save" Classes="Primary" Command="{Binding SaveDeviceCommand}" />
 
         </StackPanel>
     </Grid>

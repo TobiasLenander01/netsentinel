@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Identity.Client;
 using NetSentinel.Models;
 using NetSentinel.Services;
 using ShadUI;
@@ -15,7 +16,7 @@ public partial class DevicesViewModel : ViewModelBase
     private readonly DeviceService _deviceService;
     private readonly DialogManager _dialogManager;
     private readonly ToastManager _toastManager;
-    private readonly AddDeviceViewModel _addDeviceViewModel;
+    private readonly DeviceDialogViewModel _deviceDialogViewModel;
 
     [ObservableProperty]
     private ObservableCollection<Device> _devices = new();
@@ -26,21 +27,13 @@ public partial class DevicesViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isEmpty;
 
-    public DevicesViewModel(NavigationService navigator, DeviceService deviceService, DialogManager dialogManager, ToastManager toastManager, AddDeviceViewModel addDeviceViewModel) : base(navigator)
+    public DevicesViewModel(NavigationService navigator, DeviceService deviceService, DialogManager dialogManager, ToastManager toastManager, DeviceDialogViewModel deviceDialogViewModel) : base(navigator)
     {
         Title = "Devices";
         _deviceService = deviceService;
         _dialogManager = dialogManager;
         _toastManager = toastManager;
-        _addDeviceViewModel = addDeviceViewModel;
-    }
-
-    [RelayCommand]
-    private async Task DeleteDeviceAsync(Device device)
-    {
-        await _deviceService.DeleteDevice(device);
-        Devices.Remove(device);
-        IsEmpty = Devices.Count == 0;
+        _deviceDialogViewModel = deviceDialogViewModel;
     }
 
     [RelayCommand]
@@ -63,9 +56,10 @@ public partial class DevicesViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    public void ShowAddDeviceDialog()
+    public async Task ShowNewDeviceDialog()
     {
-        _dialogManager.CreateDialog(_addDeviceViewModel)
+        await _deviceDialogViewModel.LoadNewDeviceCommand.ExecuteAsync(null);
+        _dialogManager.CreateDialog(_deviceDialogViewModel)
         .Dismissible()
         .WithSuccessCallback(() =>
             {
@@ -75,6 +69,44 @@ public partial class DevicesViewModel : ViewModelBase
                     .ShowSuccess();
                 _ = LoadDevicesAsync();
             })
+        .Show();
+    }
+
+    [RelayCommand]
+    public async Task ShowEditDeviceDialog(Device device)
+    {
+        await _deviceDialogViewModel.LoadExistingDeviceCommand.ExecuteAsync(device);
+        _dialogManager.CreateDialog(_deviceDialogViewModel)
+        .Dismissible()
+        .WithSuccessCallback(() =>
+            {
+                _toastManager
+                    .CreateToast("Device edited")
+                    .DismissOnClick()
+                    .ShowSuccess();
+                _ = LoadDevicesAsync();
+            })
+        .Show();
+    }
+
+    [RelayCommand]
+    public void ShowDeleteDeviceDialog(Device device)
+    {
+        _dialogManager.CreateDialog(
+            "Are you absolutely sure?", 
+            "This will permanently delete your device.")
+        .WithPrimaryButton("Confirm", async () =>
+        {
+            await _deviceService.DeleteDevice(device);
+            _toastManager.CreateToast("Device deleted")
+                .WithContent("Device deleted successfully!")
+                .DismissOnClick()
+                .ShowSuccess();
+            await LoadDevicesAsync();
+        }, DialogButtonStyle.Destructive)
+        .WithCancelButton("Cancel")
+        .WithMaxWidth(512)
+        .Dismissible()
         .Show();
     }
 }
