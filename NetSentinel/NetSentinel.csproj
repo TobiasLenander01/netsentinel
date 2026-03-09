@@ -14,6 +14,7 @@
     <Folder Include="Database\" />
     <AvaloniaResource Include="Assets\**" />
     <Folder Include="Enums\" />
+    <Folder Include="Interfaces\" />
   </ItemGroup>
 
   <!-- NUGET PACKAGE REFERENCES-->

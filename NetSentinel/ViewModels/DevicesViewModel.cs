@@ -5,13 +5,14 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Identity.Client;
+using NetSentinel.Interfaces;
 using NetSentinel.Models;
 using NetSentinel.Services;
 using ShadUI;
 
 namespace NetSentinel.ViewModels;
 
-public partial class DevicesViewModel : ViewModelBase
+public partial class DevicesViewModel : ViewModelBase, IRefreshable
 {
     private readonly DeviceService _deviceService;
     private readonly DialogManager _dialogManager;
@@ -35,6 +36,8 @@ public partial class DevicesViewModel : ViewModelBase
         _toastManager = toastManager;
         _deviceDialogViewModel = deviceDialogViewModel;
     }
+
+    public Task RefreshAsync() => LoadDevicesAsync();
 
     [RelayCommand]
     private async Task LoadDevicesAsync()

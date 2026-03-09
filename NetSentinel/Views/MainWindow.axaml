@@ -86,10 +86,17 @@
                     Padding="20,16">
                     <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
 
-                        <ToggleButton IsChecked="True" Name="Toggler" Classes="Ghost" Padding="4"
+                        <ToggleButton IsChecked="True" Name="Toggler" Classes="Secondary" Padding="4"
                             Width="32" Height="32">
                             <LucideIcon Kind="PanelLeft" Size="20" />
                         </ToggleButton>
+
+                        <Button Command="{Binding RefreshCurrentViewCommand}"
+                            Classes="Secondary" Padding="4"
+                            Width="32" Height="32"
+                            IsVisible="{Binding CanRefresh}">
+                            <LucideIcon Kind="RefreshCw" Size="20" />
+                        </Button>
 
                     </StackPanel>
                 </Border>

@@ -1,7 +1,9 @@
-﻿using Avalonia;
+﻿using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Styling;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using NetSentinel.Interfaces;
 using NetSentinel.Services;
 using ShadUI;
 
@@ -37,6 +39,20 @@ public partial class MainWindowViewModel : ViewModelBase
             // ActualThemeVariant resolves "Default" into either Light or Dark
             IsDarkMode = Application.Current.ActualThemeVariant == ThemeVariant.Dark;
         }
+        Navigator.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(Navigator.CurrentView))
+                OnPropertyChanged(nameof(CanRefresh));
+        };
+    }
+
+    public bool CanRefresh => Navigator.CurrentView is IRefreshable;
+
+    [RelayCommand]
+    private async Task RefreshCurrentViewAsync()
+    {
+        if (Navigator.CurrentView is IRefreshable refreshable)
+            await refreshable.RefreshAsync();
     }
 
     [RelayCommand]

@@ -18,11 +18,6 @@
                 <Button Content="Add device" Classes="Primary"
                     Command="{Binding ShowNewDeviceDialogCommand}"
                     HorizontalAlignment="Left" />
-                <Button Command="{Binding LoadDevicesCommand}" Classes="Secondary" Padding="4"
-                    Width="32"
-                    Height="36" HorizontalAlignment="Right">
-                    <LucideIcon Kind="RefreshCw" Size="20" />
-                </Button>
             </Grid>
 
             <Grid>

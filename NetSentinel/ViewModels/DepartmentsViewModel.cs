@@ -2,12 +2,13 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using NetSentinel.Interfaces;
 using NetSentinel.Models;
 using NetSentinel.Services;
 
 namespace NetSentinel.ViewModels;
 
-public partial class DepartmentsViewModel : ViewModelBase
+public partial class DepartmentsViewModel : ViewModelBase, IRefreshable
 {
     private readonly DepartmentService _departmentService;
 
@@ -25,6 +26,8 @@ public partial class DepartmentsViewModel : ViewModelBase
         Title = "Departments";
         _departmentService = departmentService;
     }
+
+    public Task RefreshAsync() => LoadDepartmentsAsync();
 
     [RelayCommand]
     private async Task LoadDepartmentsAsync()
