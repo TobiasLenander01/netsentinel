@@ -80,6 +80,12 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    public void GoToSecurityMeasures()
+    {
+        Navigator.GoToSecurityMeasures();
+    }
+
+    [RelayCommand]
     public void GoToSettings()
     {
         Navigator.GoToSettings();

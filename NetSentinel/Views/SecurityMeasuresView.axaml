@@ -1,0 +1,45 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:NetSentinel.ViewModels"
+    xmlns:models="using:NetSentinel.Models"
+    xmlns:shad="clr-namespace:ShadUI;assembly=ShadUI"
+    x:Class="NetSentinel.Views.SecurityMeasuresView"
+    x:DataType="vm:SecurityMeasuresViewModel"
+    Loaded="OnLoaded">
+
+    <Grid>
+
+        <StackPanel Spacing="20" Margin="40">
+
+            <TextBlock Text="{Binding Title}" Classes="h1" />
+
+            <Grid>
+
+                <DataGrid
+                    ItemsSource="{Binding SecurityMeasures}"
+                    CanUserSortColumns="True"
+                    IsReadOnly="True"
+                    Background="{DynamicResource CardBackgroundColor}"
+                    GridLinesVisibility="Horizontal">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="auto" />
+                        <DataGridTextColumn Header="Result" Binding="{Binding Result}" Width="auto" />
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <TextBlock Text="No security measures found."
+                    IsVisible="{Binding IsEmpty}"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Foreground="Gray"
+                    Margin="0,50,0,0" />
+
+                <shad:BusyArea CornerRadius="{DynamicResource LgCornerRadius}"
+                    IsBusy="{Binding IsLoading}" />
+
+            </Grid>
+
+        </StackPanel>
+    </Grid>
+</UserControl>

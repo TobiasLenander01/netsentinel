@@ -50,9 +50,11 @@ public partial class App : Application
         builder.Services.AddTransient<DepartmentDialogViewModel>();
         builder.Services.AddTransient<DepartmentsViewModel>();
         builder.Services.AddTransient<EmployeesViewModel>();
+        builder.Services.AddTransient<SecurityMeasuresViewModel>();
         builder.Services.AddScoped<DeviceService>();
         builder.Services.AddScoped<DepartmentService>();
         builder.Services.AddScoped<EmployeeService>();
+        builder.Services.AddScoped<SecurityMeasureService>();
 
         // 2. Build the Service Provider
         Services = builder.Services.BuildServiceProvider();
