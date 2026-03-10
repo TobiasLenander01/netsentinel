@@ -79,4 +79,21 @@ public partial class DepartmentsViewModel : ViewModelBase, IRefreshable
             })
         .Show();
     }
+
+    [RelayCommand]
+    public async Task ShowEditDepartmentDialog(Department department)
+    {
+        await _departmentDialogViewModel.LoadExistingDepartmentCommand.ExecuteAsync(department);
+        _dialogManager.CreateDialog(_departmentDialogViewModel)
+        .Dismissible()
+        .WithSuccessCallback(() =>
+            {
+                _toastManager
+                    .CreateToast("Department edited")
+                    .DismissOnClick()
+                    .ShowSuccess();
+                _ = LoadDepartmentsAsync();
+            })
+        .Show();
+    }
 }

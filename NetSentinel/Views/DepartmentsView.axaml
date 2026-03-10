@@ -41,7 +41,9 @@
                                         HorizontalContentAlignment="Center">
                                         <Button.Flyout>
                                             <MenuFlyout>
-                                                <MenuItem Header="Edit department" Cursor="Hand" />
+                                                <MenuItem Header="Edit department" Cursor="Hand"
+                                                    Command="{Binding $parent[UserControl].((vm:DepartmentsViewModel)DataContext).ShowEditDepartmentDialogCommand}"
+                                                    CommandParameter="{Binding}" />
                                                 <MenuItem Header="Delete department" Cursor="Hand"
                                                     Command="{Binding $parent[UserControl].((vm:DepartmentsViewModel)DataContext).DeleteDepartmentCommand}"
                                                     CommandParameter="{Binding}" />
