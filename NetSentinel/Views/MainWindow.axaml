@@ -53,6 +53,11 @@
                             <LucideIcon Kind="Building2" Size="20" StrokeWidth="1.5" />
                         </shad:SidebarItem.Icon>
                     </shad:SidebarItem>
+                    <shad:SidebarItem Content="Employees" Command="{Binding GoToEmployeesCommand}">
+                        <shad:SidebarItem.Icon>
+                            <LucideIcon Kind="Users" Size="20" StrokeWidth="1.5" />
+                        </shad:SidebarItem.Icon>
+                    </shad:SidebarItem>
 
                 </StackPanel>
 
