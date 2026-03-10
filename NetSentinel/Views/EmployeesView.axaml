@@ -1,0 +1,29 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:NetSentinel.ViewModels"
+    xmlns:models="using:NetSentinel.Models"
+    xmlns:shad="clr-namespace:ShadUI;assembly=ShadUI"
+    x:Class="NetSentinel.Views.EmployeesView"
+    x:DataType="vm:EmployeesViewModel"
+    Loaded="OnLoaded">
+
+    <StackPanel Spacing="20" Margin="40">
+
+        <TextBlock Text="{Binding Title}" Classes="h1" />
+
+        <DataGrid
+            ItemsSource="{Binding Employees}"
+            CanUserSortColumns="True"
+            IsReadOnly="True"
+            Background="{DynamicResource CardBackgroundColor}"
+            GridLinesVisibility="Horizontal">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Employee No" Binding="{Binding EmployeeNo}" Width="auto" />
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" />
+                <DataGridTextColumn Header="Department" Binding="{Binding Department.Name}" Width="auto" />
+            </DataGrid.Columns>
+        </DataGrid>
+
+    </StackPanel>
+</UserControl>
