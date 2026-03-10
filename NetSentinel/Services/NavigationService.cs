@@ -59,6 +59,15 @@ public partial class NavigationService : ObservableObject
         }
     }
 
+    public void GoToEmployees()
+    {
+        if (CurrentView is not EmployeesViewModel)
+        {
+            var employeesView = _serviceProvider.GetRequiredService<EmployeesViewModel>();
+            NavigateTo(employeesView);
+        }
+    }
+
     public void GoToSettings()
     {
         if (CurrentView is not SettingsViewModel)

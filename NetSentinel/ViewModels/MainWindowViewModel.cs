@@ -74,6 +74,12 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    public void GoToEmployees()
+    {
+        Navigator.GoToEmployees();
+    }
+
+    [RelayCommand]
     public void GoToSettings()
     {
         Navigator.GoToSettings();
