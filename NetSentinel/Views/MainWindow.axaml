@@ -54,6 +54,12 @@
                         </shad:SidebarItem.Icon>
                     </shad:SidebarItem>
 
+                      <shad:SidebarItem Content="Incidents" Command="{Binding GoToIncidentsCommand}">
+                        <shad:SidebarItem.Icon>
+                            <LucideIcon Kind="Bug" Size="20" StrokeWidth="1.5" />
+                        </shad:SidebarItem.Icon>
+                    </shad:SidebarItem>
+
                 </StackPanel>
 
                 <shad:Sidebar.Footer>

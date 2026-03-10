@@ -73,4 +73,14 @@ public partial class NavigationService : ObservableObject
         if (_navigationHistoryStack.Count > 0)
             CurrentView = _navigationHistoryStack.Pop();
     }
+
+    public void GoToIncidents()
+    {
+        if (CurrentView is not IncidentsViewModel)
+        {
+            var incidentsView = _serviceProvider.GetRequiredService<IncidentsViewModel>();
+            NavigateTo(incidentsView);
+        }
+    }
+
 }

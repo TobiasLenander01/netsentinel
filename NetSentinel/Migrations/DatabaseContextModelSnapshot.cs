@@ -202,7 +202,7 @@ namespace NetSentinel.Migrations
             modelBuilder.Entity("NetSentinel.Models.SecurityMeasure", b =>
                 {
                     b.HasOne("NetSentinel.Models.Incident", "Incident")
-                        .WithMany()
+                        .WithMany("SecurityMeasures")
                         .HasForeignKey("IncidentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -223,6 +223,11 @@ namespace NetSentinel.Migrations
             modelBuilder.Entity("NetSentinel.Models.Employee", b =>
                 {
                     b.Navigation("Devices");
+                });
+
+            modelBuilder.Entity("NetSentinel.Models.Incident", b =>
+                {
+                    b.Navigation("SecurityMeasures");
                 });
 #pragma warning restore 612, 618
         }

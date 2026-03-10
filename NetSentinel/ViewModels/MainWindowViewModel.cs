@@ -74,6 +74,12 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    public void GoToIncidents()
+    {
+        Navigator.GoToIncidents();
+    }
+
+    [RelayCommand]
     public void GoToSettings()
     {
         Navigator.GoToSettings();
