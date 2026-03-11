@@ -18,8 +18,6 @@
     </shad:Window.Hosts>
 
     <Panel>
-        <shad:ToastHost Manager="{Binding ToastManager}" Position="TopRight" />
-
         <Grid ColumnDefinitions="Auto, *">
 
             <shad:Sidebar Grid.Column="0"
@@ -117,6 +115,7 @@
                 </ScrollViewer>
             </DockPanel>
         </Grid>
+        <shad:ToastHost Manager="{Binding ToastManager}" Position="TopRight" />
     </Panel>
 
 </shad:Window>
