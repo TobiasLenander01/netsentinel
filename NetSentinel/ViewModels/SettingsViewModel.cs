@@ -21,8 +21,11 @@ public partial class SettingsViewModel : ViewModelBase
     [RelayCommand]
     private async Task SeedDatabaseAsync()
     {
-        await _db.SeedAsync();
-        _toastManager.CreateToast("Database seeded").WithContent("Test data has been inserted.").DismissOnClick().ShowSuccess();
+        bool seeded = await _db.SeedAsync();
+        if (seeded)
+            _toastManager.CreateToast("Database seeded").WithContent("Test data has been inserted.").DismissOnClick().ShowSuccess();
+        else
+            _toastManager.CreateToast("Database is not empty").WithContent("Clear the database first before seeding.").DismissOnClick().ShowWarning();
     }
 
     [RelayCommand]
