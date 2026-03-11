@@ -83,9 +83,10 @@ public partial class DepartmentDialogViewModel : ViewModelBase
 
     private void InitializeProperties(Department department)
     {
-        ClearErrors();
         _department = department;
         Name = department.Name;
         Location = department.Location;
+
+        ClearErrors();
     }
 }

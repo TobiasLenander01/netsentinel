@@ -105,8 +105,6 @@ public partial class SecurityMeasureDialogViewModel : ViewModelBase
 
     private async Task InitializeProperties(SecurityMeasure securityMeasure)
     {
-        ClearErrors();
-
         IsLoading = true;
         var employeeList = await _employeeService.ReadAllEmployeesAsync();
         Employees = new ObservableCollection<Employee>(employeeList);
@@ -119,5 +117,7 @@ public partial class SecurityMeasureDialogViewModel : ViewModelBase
         Result = securityMeasure.Result;
         SelectedEmployee = securityMeasure.PerformedBy;
         SelectedIncident = securityMeasure.Incident;
+
+        ClearErrors();
     }
 }
