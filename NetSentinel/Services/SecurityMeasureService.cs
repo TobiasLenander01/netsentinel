@@ -26,13 +26,13 @@ public class SecurityMeasureService
     // read (all)
     public async Task<List<SecurityMeasure>> ReadAllSecurityMeasuresAsync()
     {
-        return await _dbContext.SecurityMeasures.Include(sm => sm.Incident).ToListAsync();
+        return await _dbContext.SecurityMeasures.Include(sm => sm.Incident).Include(pb => pb.PerformedBy).ToListAsync();
     }
 
     // read (single)
     public async Task<SecurityMeasure?> ReadSingleSecurityMeasureAsync(int id)
     {
-        return await _dbContext.SecurityMeasures.Include(sm => sm.Incident).FirstOrDefaultAsync(sm => sm.Id == id);
+        return await _dbContext.SecurityMeasures.Include(sm => sm.Incident).Include(pb => pb.PerformedBy).FirstOrDefaultAsync(sm => sm.Id == id);
     }
 
     // update
