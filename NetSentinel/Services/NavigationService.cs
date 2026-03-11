@@ -68,6 +68,15 @@ public partial class NavigationService : ObservableObject
         }
     }
 
+    public void GoToSecurityMeasures()
+    {
+        if (CurrentView is not SecurityMeasuresViewModel)
+        {
+            var securityMeasuresView = _serviceProvider.GetRequiredService<SecurityMeasuresViewModel>();
+            NavigateTo(securityMeasuresView);
+        }
+    }
+
     public void GoToSettings()
     {
         if (CurrentView is not SettingsViewModel)
