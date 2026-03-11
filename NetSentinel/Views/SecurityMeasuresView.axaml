@@ -34,14 +34,16 @@
                                 <DataTemplate x:DataType="models:SecurityMeasure">
                                     <TextBlock Text="{Binding Description}"
                                         TextWrapping="Wrap"
+                                        MaxLines="3"
+                                        TextTrimming="CharacterEllipsis"
                                         VerticalAlignment="Center"
                                         Margin="12,8" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTextColumn Header="Result" Binding="{Binding Result}" Width="auto" />
-                        <DataGridTextColumn Header="Performed By" Binding="{Binding PerformedBy.Name}" Width="auto" />
-                        <DataGridTextColumn Header="Incident" Binding="{Binding Incident.Description}" Width="auto" />
+                        <DataGridTextColumn Header="Result" Binding="{Binding Result}" Width="*" />
+                        <DataGridTextColumn Header="Performed By" Binding="{Binding PerformedBy.Name}" Width="*" />
+                        <DataGridTextColumn Header="Incident" Binding="{Binding Incident.Description}" Width="*" />
 
                         <DataGridTemplateColumn Header="Actions" Width="auto">
                             <DataGridTemplateColumn.CellTemplate>
