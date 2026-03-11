@@ -48,7 +48,7 @@
                         <DataGridTemplateColumn Header="Actions" Width="auto">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate x:DataType="models:SecurityMeasure">
-                                    <Button Content="..." Classes="Ghost Icon"
+                                    <Button Content="..." Classes="Secondary"
                                         HorizontalAlignment="Center"
                                         HorizontalContentAlignment="Center">
                                         <Button.Flyout>
@@ -76,11 +76,11 @@
                     Foreground="Gray"
                     Margin="0,50,0,0" />
 
+                    
+                </Grid>
+                
                 <shad:BusyArea CornerRadius="{DynamicResource LgCornerRadius}"
                     IsBusy="{Binding IsLoading}" />
-
-            </Grid>
-
-        </StackPanel>
+            </StackPanel>
     </Grid>
 </UserControl>

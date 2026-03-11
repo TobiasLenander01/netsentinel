@@ -111,7 +111,7 @@
                 </Border>
 
                 <ScrollViewer>
-                    <ContentControl Margin="10" Content="{Binding Navigator.CurrentView}" />
+                    <ContentControl Content="{Binding Navigator.CurrentView}" />
                 </ScrollViewer>
             </DockPanel>
         </Grid>

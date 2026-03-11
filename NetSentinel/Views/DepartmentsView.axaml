@@ -64,11 +64,11 @@
                     Foreground="Gray"
                     Margin="0,50,0,0" />
 
+                    
+                </Grid>
+                
                 <shad:BusyArea CornerRadius="{DynamicResource LgCornerRadius}"
                     IsBusy="{Binding IsLoading}" />
-
-            </Grid>
-
         </StackPanel>
     </Grid>
 </UserControl>
