@@ -14,7 +14,7 @@
 
         <Grid>
             <Button Content="Add incident" Classes="Primary"
-                HorizontalAlignment="Left" />
+                HorizontalAlignment="Left" IsEnabled="{Binding !IsLoading}" />
         </Grid>
 
         <Grid>

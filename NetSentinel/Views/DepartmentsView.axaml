@@ -17,7 +17,7 @@
             <Grid>
                 <Button Content="Add department" Classes="Primary"
                     Command="{Binding ShowNewDepartmentDialogCommand}"
-                    HorizontalAlignment="Left" />
+                    HorizontalAlignment="Left" IsEnabled="{Binding !IsLoading}"/>
             </Grid>
 
             <Grid>
