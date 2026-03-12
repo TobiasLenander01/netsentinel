@@ -90,51 +90,98 @@ public class DatabaseContext : DbContext
         var dev5 = new Device { Name = "Tablet", IPAddress = "192.168.1.40", SerialNumber = "SN-EE-0005", Owner = emp5 };
         Devices.AddRange(dev1, dev2, dev3, dev4, dev5);
 
-        // --- Incidents ---
-        var inc1 = new Incident("Unauthorized login attempt detected")
-        {
-            CreatedAt = DateTime.UtcNow.AddDays(-10),
-            Priority = Priority.High,
-            Status = Status.Rejected,
-            Device = dev1
-        };
-        var inc2 = new Incident("Malware signature found in downloaded file")
-        {
-            CreatedAt = DateTime.UtcNow.AddDays(-7),
-            Priority = Priority.Critical,
-            Status = Status.InProgress,
-            Device = dev2
-        };
-        var inc3 = new Incident("Unusual outbound traffic spike")
-        {
-            CreatedAt = DateTime.UtcNow.AddDays(-3),
-            Priority = Priority.Medium,
-            Status = Status.Completed,
-            Device = dev3
-        };
-        var inc4 = new Incident("Outdated SSL certificate on internal service")
-        {
-            CreatedAt = DateTime.UtcNow.AddDays(-1),
-            Priority = Priority.Low,
-            Status = Status.Approved,
-            Device = dev4
-        };
-        var inc5 = new Incident("Failed login attempts from unknown source")
-        {
-            CreatedAt = DateTime.UtcNow.AddDays(-5),
-            Priority = Priority.High,
-            Status = Status.Rejected,
-            Device = dev5
-        };
-        Incidents.AddRange(inc1, inc2, inc3, inc4, inc5);
+        // --- Incidents & Security Measures (generated) ---
+        var rng = new Random(42);
+        var devices = new[] { dev1, dev2, dev3, dev4, dev5 };
+        var employees = new[] { emp1, emp2, emp3, emp4, emp5, emp6, emp7 };
+        var priorities = (Priority[])Enum.GetValues(typeof(Priority));
+        var statuses = (Status[])Enum.GetValues(typeof(Status));
 
-        // --- Security Measures ---
-        SecurityMeasures.AddRange(
-            new SecurityMeasure("Reset user credentials and enable MFA", "Credentials reset, MFA active") { Incident = inc1, PerformedBy = emp1 },
-            new SecurityMeasure("Quarantined affected file and ran full AV scan", "File removed, no further threats found") { Incident = inc2, PerformedBy = emp2 },
-            new SecurityMeasure("Blocked suspicious IP range at firewall", "Traffic normalized within 30 minutes") { Incident = inc3, PerformedBy = emp3 },
-            new SecurityMeasure("Renewed SSL certificate and updated configuration", "Certificate valid for 12 months") { Incident = inc4, PerformedBy = emp4 }
-        );
+        string[] incidentDescriptions =
+        [
+            "Unauthorized login attempt detected",
+            "Malware signature found in downloaded file",
+            "Unusual outbound traffic spike",
+            "Outdated SSL certificate on internal service",
+            "Failed login attempts from unknown source",
+            "Phishing email reported by employee",
+            "Suspicious process running on endpoint",
+            "Data exfiltration attempt blocked by DLP",
+            "Ransomware activity detected on workstation",
+            "Privilege escalation attempt in admin portal",
+            "Unpatched vulnerability exploited on server",
+            "Brute-force attack on VPN gateway",
+            "Insider threat: bulk file download detected",
+            "DNS poisoning attempt identified",
+            "Man-in-the-middle attack on internal network",
+            "Zero-day exploit attempt on web application",
+            "Unauthorized USB device connected",
+            "Account takeover via stolen session token",
+            "SQL injection attempt on customer portal",
+            "Botnet C2 communication detected",
+        ];
+
+        string[] measureDescriptions =
+        [
+            "Reset user credentials and enforced MFA",
+            "Quarantined affected file and ran full AV scan",
+            "Blocked suspicious IP range at firewall",
+            "Renewed SSL certificate and updated configuration",
+            "Isolated affected endpoint from network",
+            "Applied emergency patch and rebooted service",
+            "Revoked session tokens and alerted user",
+            "Deployed WAF rule to block injection pattern",
+            "Disabled compromised account and notified manager",
+            "Reconfigured DNS resolver and cleared cache",
+        ];
+
+        string[] measureResults =
+        [
+            "Threat neutralized, no further activity observed",
+            "File removed, no additional threats found",
+            "Traffic normalized within 30 minutes",
+            "Certificate valid for 12 months",
+            "Endpoint re-imaged and returned to service",
+            "Patch applied successfully, vulnerability closed",
+            "Session invalidated, user re-authenticated securely",
+            "Attack pattern blocked, no data compromised",
+            "Account secured, audit log reviewed",
+            "DNS resolved correctly after cache flush",
+        ];
+
+        // Spread ~200 incidents evenly across the last 12 months
+        var now = DateTime.UtcNow;
+        var generatedIncidents = new List<Incident>();
+        for (int i = 0; i < 200; i++)
+        {
+            // Pick a random day within the last 365 days
+            int daysAgo = rng.Next(0, 365);
+            var incident = new Incident(incidentDescriptions[rng.Next(incidentDescriptions.Length)])
+            {
+                CreatedAt = now.AddDays(-daysAgo),
+                Priority = priorities[rng.Next(priorities.Length)],
+                Status = statuses[rng.Next(statuses.Length)],
+                Device = devices[rng.Next(devices.Length)],
+            };
+            generatedIncidents.Add(incident);
+        }
+        Incidents.AddRange(generatedIncidents);
+
+        // Add 1-2 security measures per incident
+        foreach (var incident in generatedIncidents)
+        {
+            int measureCount = rng.Next(1, 3);
+            for (int m = 0; m < measureCount; m++)
+            {
+                SecurityMeasures.Add(new SecurityMeasure(
+                    measureDescriptions[rng.Next(measureDescriptions.Length)],
+                    measureResults[rng.Next(measureResults.Length)])
+                {
+                    Incident = incident,
+                    PerformedBy = employees[rng.Next(employees.Length)],
+                });
+            }
+        }
 
         await SaveChangesAsync();
         return true;
