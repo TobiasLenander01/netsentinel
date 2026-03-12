@@ -50,6 +50,7 @@ public partial class App : Application
         builder.Services.AddTransient<DeviceDialogViewModel>();
         builder.Services.AddTransient<DepartmentDialogViewModel>();
         builder.Services.AddTransient<DepartmentsViewModel>();
+        builder.Services.AddTransient<IncidentsViewModel>();
         builder.Services.AddTransient<EmployeesViewModel>();
         builder.Services.AddTransient<SecurityMeasuresViewModel>();
         builder.Services.AddTransient<SecurityMeasureDialogViewModel>();
