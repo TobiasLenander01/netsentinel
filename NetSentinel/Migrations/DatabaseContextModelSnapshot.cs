@@ -154,6 +154,9 @@ namespace NetSentinel.Migrations
                     b.Property<int>("IncidentId")
                         .HasColumnType("int");
 
+                    b.Property<int>("PerformedById")
+                        .HasColumnType("int");
+
                     b.Property<string>("Result")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -162,6 +165,8 @@ namespace NetSentinel.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("IncidentId");
+
+                    b.HasIndex("PerformedById");
 
                     b.ToTable("SecurityMeasures");
                 });
@@ -207,7 +212,15 @@ namespace NetSentinel.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("NetSentinel.Models.Employee", "PerformedBy")
+                        .WithMany()
+                        .HasForeignKey("PerformedById")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Incident");
+
+                    b.Navigation("PerformedBy");
                 });
 
             modelBuilder.Entity("NetSentinel.Models.Department", b =>

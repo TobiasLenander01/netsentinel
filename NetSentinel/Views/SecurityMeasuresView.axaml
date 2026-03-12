@@ -1,0 +1,86 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:NetSentinel.ViewModels"
+    xmlns:models="using:NetSentinel.Models"
+    xmlns:shad="clr-namespace:ShadUI;assembly=ShadUI"
+    x:Class="NetSentinel.Views.SecurityMeasuresView"
+    x:DataType="vm:SecurityMeasuresViewModel"
+    Loaded="OnLoaded">
+
+    <Grid>
+
+        <StackPanel Spacing="20" Margin="40">
+
+            <TextBlock Text="{Binding Title}" Classes="h1" />
+
+            <Grid>
+                <Button Content="Add security measure" Classes="Primary"
+                    Command="{Binding ShowNewSecurityMeasureDialogCommand}"
+                    HorizontalAlignment="Left" />
+            </Grid>
+
+            <Grid>
+
+                <DataGrid x:Name="DataGrid"
+                    ItemsSource="{Binding SecurityMeasures}"
+                    CanUserSortColumns="True"
+                    IsReadOnly="True"
+                    Background="{DynamicResource CardBackgroundColor}"
+                    GridLinesVisibility="Horizontal">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="Description" Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate x:DataType="models:SecurityMeasure">
+                                    <TextBlock Text="{Binding Description}"
+                                        TextWrapping="Wrap"
+                                        MaxLines="3"
+                                        TextTrimming="CharacterEllipsis"
+                                        VerticalAlignment="Center"
+                                        Margin="12,8" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Result" Binding="{Binding Result}" Width="*" />
+                        <DataGridTextColumn Header="Performed By" Binding="{Binding PerformedBy.Name}" Width="*" />
+                        <DataGridTextColumn Header="Incident" Binding="{Binding Incident.Description}" Width="*" />
+
+                        <DataGridTemplateColumn Header="Actions" Width="auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate x:DataType="models:SecurityMeasure">
+                                    <Button Content="..." Classes="Secondary"
+                                        HorizontalAlignment="Center"
+                                        HorizontalContentAlignment="Center">
+                                        <Button.Flyout>
+                                            <MenuFlyout>
+                                                <MenuItem Header="Edit security measure" Cursor="Hand"
+                                                    Command="{Binding $parent[UserControl].((vm:SecurityMeasuresViewModel)DataContext).ShowEditSecurityMeasureDialogCommand}"
+                                                    CommandParameter="{Binding}" />
+                                                <MenuItem Header="Delete security measure" Cursor="Hand"
+                                                    Command="{Binding $parent[UserControl].((vm:SecurityMeasuresViewModel)DataContext).ShowDeleteSecurityMeasureDialogCommand}"
+                                                    CommandParameter="{Binding}" />
+                                            </MenuFlyout>
+                                        </Button.Flyout>
+                                    </Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <TextBlock Text="No security measures found."
+                    IsVisible="{Binding IsEmpty}"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Foreground="Gray"
+                    Margin="0,50,0,0" />
+
+                    
+                </Grid>
+                
+                <shad:BusyArea CornerRadius="{DynamicResource LgCornerRadius}"
+                    IsBusy="{Binding IsLoading}" />
+            </StackPanel>
+    </Grid>
+</UserControl>

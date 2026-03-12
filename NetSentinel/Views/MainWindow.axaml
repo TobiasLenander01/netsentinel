@@ -18,8 +18,6 @@
     </shad:Window.Hosts>
 
     <Panel>
-        <shad:ToastHost Manager="{Binding ToastManager}" Position="TopRight" />
-
         <Grid ColumnDefinitions="Auto, *">
 
             <shad:Sidebar Grid.Column="0"
@@ -51,6 +49,17 @@
                     <shad:SidebarItem Content="Departments" Command="{Binding GoToDepartmentsCommand}">
                         <shad:SidebarItem.Icon>
                             <LucideIcon Kind="Building2" Size="20" StrokeWidth="1.5" />
+                        </shad:SidebarItem.Icon>
+                    </shad:SidebarItem>
+                    <shad:SidebarItem Content="Employees" Command="{Binding GoToEmployeesCommand}">
+                        <shad:SidebarItem.Icon>
+                            <LucideIcon Kind="Users" Size="20" StrokeWidth="1.5" />
+                        </shad:SidebarItem.Icon>
+                    </shad:SidebarItem>
+
+                    <shad:SidebarItem Content="Security Measures" Command="{Binding GoToSecurityMeasuresCommand}">
+                        <shad:SidebarItem.Icon>
+                            <LucideIcon Kind="ShieldCheck" Size="20" StrokeWidth="1.5" />
                         </shad:SidebarItem.Icon>
                     </shad:SidebarItem>
 
@@ -108,10 +117,11 @@
                 </Border>
 
                 <ScrollViewer>
-                    <ContentControl Margin="10" Content="{Binding Navigator.CurrentView}" />
+                    <ContentControl Content="{Binding Navigator.CurrentView}" />
                 </ScrollViewer>
             </DockPanel>
         </Grid>
+        <shad:ToastHost Manager="{Binding ToastManager}" Position="TopRight" />
     </Panel>
 
 </shad:Window>

@@ -103,8 +103,6 @@ public partial class DeviceDialogViewModel : ViewModelBase
 
     private async Task InitializeProperties(Device device)
     {
-        ClearErrors();
-
         // Load employees into drop down menu
         IsLoading = true;
         var list = await _employeeService.ReadAllEmployeesAsync();
@@ -117,5 +115,7 @@ public partial class DeviceDialogViewModel : ViewModelBase
         IpAddress = device.IPAddress;
         SerialNumber = device.SerialNumber;
         SelectedEmployee = device.Owner;
+
+        ClearErrors();
     }
 }

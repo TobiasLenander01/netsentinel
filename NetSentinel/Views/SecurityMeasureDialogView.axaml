@@ -1,0 +1,56 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:NetSentinel.ViewModels"
+    xmlns:shad="clr-namespace:ShadUI;assembly=ShadUI"
+    x:Class="NetSentinel.Views.SecurityMeasureDialogView"
+    x:DataType="vm:SecurityMeasureDialogViewModel">
+
+    <Grid>
+        <StackPanel Spacing="20" Margin="40" Width="400" HorizontalAlignment="Left">
+
+            <TextBlock Text="{Binding Title}" Classes="h2" />
+
+            <StackPanel Spacing="6">
+                <TextBlock Text="Description" />
+                <TextBox Text="{Binding Description}" Watermark="Describe the security measure"
+                    AcceptsReturn="True" TextWrapping="Wrap" shad:ControlAssist.Height="100" />
+            </StackPanel>
+
+            <StackPanel Spacing="6">
+                <TextBlock Text="Result" />
+                <TextBox Text="{Binding Result}" Watermark="Outcome or result" />
+            </StackPanel>
+
+            <StackPanel Spacing="6">
+                <TextBlock Text="Performed By" />
+                <ComboBox ItemsSource="{Binding Employees}"
+                    SelectedItem="{Binding SelectedEmployee}"
+                    HorizontalAlignment="Stretch"
+                    PlaceholderText="Select an employee">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
+
+            <StackPanel Spacing="6">
+                <TextBlock Text="Incident" />
+                <ComboBox ItemsSource="{Binding Incidents}"
+                    SelectedItem="{Binding SelectedIncident}"
+                    HorizontalAlignment="Stretch"
+                    PlaceholderText="Select an incident">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Description}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
+
+            <Button Content="Save" Classes="Primary" Command="{Binding SaveSecurityMeasureCommand}" />
+
+        </StackPanel>
+    </Grid>
+</UserControl>

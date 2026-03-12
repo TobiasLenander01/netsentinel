@@ -47,17 +47,25 @@ public partial class App : Application
         builder.Services.AddTransient<DevicesViewModel>();
         builder.Services.AddTransient<SettingsViewModel>();
         builder.Services.AddTransient<DeviceDialogViewModel>();
+        builder.Services.AddTransient<DepartmentDialogViewModel>();
         builder.Services.AddTransient<DepartmentsViewModel>();
         builder.Services.AddTransient<IncidentsViewModel>();
+        builder.Services.AddTransient<EmployeesViewModel>();
+        builder.Services.AddTransient<SecurityMeasuresViewModel>();
+        builder.Services.AddTransient<SecurityMeasureDialogViewModel>();
         builder.Services.AddScoped<DeviceService>();
         builder.Services.AddScoped<DepartmentService>();
         builder.Services.AddScoped<EmployeeService>();
+        builder.Services.AddScoped<SecurityMeasureService>();
+        builder.Services.AddScoped<IncidentService>();
 
         // 2. Build the Service Provider
         Services = builder.Services.BuildServiceProvider();
 
         // Register dialogs
         Services.GetRequiredService<DialogManager>().Register<DeviceDialogView, DeviceDialogViewModel>();
+        Services.GetRequiredService<DialogManager>().Register<DepartmentDialogView, DepartmentDialogViewModel>();
+        Services.GetRequiredService<DialogManager>().Register<SecurityMeasureDialogView, SecurityMeasureDialogViewModel>();
 
         // 3. Use the service provider to create the main window and set its DataContext
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)

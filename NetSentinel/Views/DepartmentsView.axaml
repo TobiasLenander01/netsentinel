@@ -16,6 +16,7 @@
 
             <Grid>
                 <Button Content="Add department" Classes="Primary"
+                    Command="{Binding ShowNewDepartmentDialogCommand}"
                     HorizontalAlignment="Left" />
             </Grid>
 
@@ -40,7 +41,9 @@
                                         HorizontalContentAlignment="Center">
                                         <Button.Flyout>
                                             <MenuFlyout>
-                                                <MenuItem Header="Edit department" Cursor="Hand" />
+                                                <MenuItem Header="Edit department" Cursor="Hand"
+                                                    Command="{Binding $parent[UserControl].((vm:DepartmentsViewModel)DataContext).ShowEditDepartmentDialogCommand}"
+                                                    CommandParameter="{Binding}" />
                                                 <MenuItem Header="Delete department" Cursor="Hand"
                                                     Command="{Binding $parent[UserControl].((vm:DepartmentsViewModel)DataContext).DeleteDepartmentCommand}"
                                                     CommandParameter="{Binding}" />
@@ -61,11 +64,11 @@
                     Foreground="Gray"
                     Margin="0,50,0,0" />
 
+                    
+                </Grid>
+                
                 <shad:BusyArea CornerRadius="{DynamicResource LgCornerRadius}"
                     IsBusy="{Binding IsLoading}" />
-
-            </Grid>
-
         </StackPanel>
     </Grid>
 </UserControl>
