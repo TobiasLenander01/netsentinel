@@ -10,43 +10,48 @@ namespace NetSentinel.Services;
 
 public class DeviceService : IDeviceService
 {
-    private readonly DatabaseContext _dbContext;
+    private readonly IDbContextFactory<DatabaseContext> _dbContextFactory;
 
-    public DeviceService(DatabaseContext dbContext)
+    public DeviceService(IDbContextFactory<DatabaseContext> dbContextFactory)
     {
-        _dbContext = dbContext;
+        _dbContextFactory = dbContextFactory;
     }
 
     // create 
     public async Task AddDeviceAsync(Device device)
     {
-        _dbContext.Devices.Add(device);
-        await _dbContext.SaveChangesAsync();
+        using var db = _dbContextFactory.CreateDbContext();
+        db.Devices.Add(device);
+        await db.SaveChangesAsync();
     }
 
     // read (all)
     public async Task<List<Device>> ReadAllDevicesAsync()
     {
-        return await _dbContext.Devices.Include(d => d.Owner).Include(d => d.Incidents).ToListAsync();
+        using var db = _dbContextFactory.CreateDbContext();
+        return await db.Devices.Include(d => d.Owner).Include(d => d.Incidents).ToListAsync();
     }
 
     // read (single)
     public async Task<Device?> ReadSingleDeviceAsync(int id)
     {
-        return await _dbContext.Devices.Include(d => d.Owner).FirstOrDefaultAsync(d => d.Id == id);
+        using var db = _dbContextFactory.CreateDbContext();
+        return await db.Devices.Include(d => d.Owner).FirstOrDefaultAsync(d => d.Id == id);
     }
 
     // update
     public async Task<int> UpdateDeviceAsync(Device updatedDevice)
     {
-        _dbContext.Devices.Update(updatedDevice);
-        return await _dbContext.SaveChangesAsync();
+        using var db = _dbContextFactory.CreateDbContext();
+        db.Devices.Update(updatedDevice);
+        return await db.SaveChangesAsync();
     }
 
     // delete (single)
     public async Task<int> DeleteDevice(Device deviceToDelete)
     {
-        _dbContext.Devices.Remove(deviceToDelete);
-        return await _dbContext.SaveChangesAsync();
+        using var db = _dbContextFactory.CreateDbContext();
+        db.Devices.Remove(deviceToDelete);
+        return await db.SaveChangesAsync();
     }
 }

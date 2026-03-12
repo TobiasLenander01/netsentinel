@@ -9,43 +9,48 @@ namespace NetSentinel.Services;
 
 public class DepartmentService : IDepartmentService
 {
-    private readonly DatabaseContext _dbContext;
+    private readonly IDbContextFactory<DatabaseContext> _dbContextFactory;
 
-    public DepartmentService(DatabaseContext dbContext)
+    public DepartmentService(IDbContextFactory<DatabaseContext> dbContextFactory)
     {
-        _dbContext = dbContext;
+        _dbContextFactory = dbContextFactory;
     }
 
     // create
     public async Task AddDepartmentAsync(Department department)
     {
-        _dbContext.Departments.Add(department);
-        await _dbContext.SaveChangesAsync();
+        using var db = _dbContextFactory.CreateDbContext();
+        db.Departments.Add(department);
+        await db.SaveChangesAsync();
     }
 
     // read (all)
     public async Task<List<Department>> ReadAllDepartmentsAsync()
     {
-        return await _dbContext.Departments.Include(d => d.Employees).ToListAsync();
+        using var db = _dbContextFactory.CreateDbContext();
+        return await db.Departments.Include(d => d.Employees).ToListAsync();
     }
 
     // read (single)
     public async Task<Department?> ReadSingleDepartmentAsync(int id)
     {
-        return await _dbContext.Departments.Include(d => d.Employees).FirstOrDefaultAsync(d => d.Id == id);
+        using var db = _dbContextFactory.CreateDbContext();
+        return await db.Departments.Include(d => d.Employees).FirstOrDefaultAsync(d => d.Id == id);
     }
 
     // update
     public async Task<int> UpdateDepartmentAsync(Department updatedDepartment)
     {
-        _dbContext.Departments.Update(updatedDepartment);
-        return await _dbContext.SaveChangesAsync();
+        using var db = _dbContextFactory.CreateDbContext();
+        db.Departments.Update(updatedDepartment);
+        return await db.SaveChangesAsync();
     }
 
     // delete
     public async Task<int> DeleteDepartmentAsync(Department departmentToDelete)
     {
-        _dbContext.Departments.Remove(departmentToDelete);
-        return await _dbContext.SaveChangesAsync();
+        using var db = _dbContextFactory.CreateDbContext();
+        db.Departments.Remove(departmentToDelete);
+        return await db.SaveChangesAsync();
     }
 }

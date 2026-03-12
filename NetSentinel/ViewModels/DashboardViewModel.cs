@@ -3,11 +3,29 @@ using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
 using NetSentinel.Services;
+using NetSentinel.Interfaces;
+using System.Collections.ObjectModel;
+using NetSentinel.Models;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using System.Threading.Tasks;
 
 namespace NetSentinel.ViewModels;
 
 public partial class DashboardViewModel : ViewModelBase
 {
+    private readonly IIncidentService _incidentService;
+
+    [ObservableProperty]
+    private ObservableCollection<Incident> _incidents = new ObservableCollection<Incident>();
+
+    [RelayCommand]
+    private async Task LoadIncidentsAsync()
+    {
+        var incidents = await _incidentService.ReadAllIncidentsAsync();
+        Incidents = new ObservableCollection<Incident>(incidents);
+    }
+
     public ISeries[] Series { get; } =
     [
         new ColumnSeries<double>
@@ -42,8 +60,9 @@ public partial class DashboardViewModel : ViewModelBase
         }
     ];
 
-    public DashboardViewModel(NavigationService navigator) : base(navigator)
+    public DashboardViewModel(INavigationService navigator, IIncidentService incidentService) : base(navigator)
     {
         Title = "Dashboard";
+        _incidentService = incidentService;
     }
 }

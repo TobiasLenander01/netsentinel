@@ -5,7 +5,8 @@
     xmlns:vm="using:NetSentinel.ViewModels"
     xmlns:components="using:NetSentinel.Components"
     x:Class="NetSentinel.Views.DashboardView"
-    x:DataType="vm:DashboardViewModel">
+    x:DataType="vm:DashboardViewModel"
+    Loaded="OnLoaded">
 
     <StackPanel Spacing="20" Margin="40">
 
@@ -14,8 +15,8 @@
         <UniformGrid Columns="4" Margin="-6,0">
             <components:OverviewCard
             Hint="+180.1% from last month"
-            Title="Total Revenue"
-            Value="$45,231.89">
+            Title="Total Incidents"
+            Value="{Binding Incidents.Count}">
                 <components:OverviewCard.Icon>
                     <TextBlock
                     Classes="LucideIcon"
