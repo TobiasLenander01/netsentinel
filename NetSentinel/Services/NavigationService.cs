@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
+using NetSentinel.Interfaces;
 using NetSentinel.ViewModels;
 
 namespace NetSentinel.Services;
@@ -11,7 +12,7 @@ namespace NetSentinel.Services;
 /// Purpose: Used by the viewmodels to switch view.
 /// </summary>
 
-public partial class NavigationService : ObservableObject
+public partial class NavigationService : ObservableObject, INavigationService
 {
     private readonly Stack<ViewModelBase> _navigationHistoryStack = new();
     private readonly IServiceProvider _serviceProvider;
