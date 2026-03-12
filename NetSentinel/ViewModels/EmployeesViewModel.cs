@@ -5,14 +5,13 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using NetSentinel.Interfaces;
 using NetSentinel.Models;
-using NetSentinel.Services;
 using ShadUI;
 
 namespace NetSentinel.ViewModels;
 
 public partial class EmployeesViewModel : ViewModelBase, IRefreshable
 {
-    private readonly EmployeeService _employeeService;
+    private readonly IEmployeeService _employeeService;
     private readonly DialogManager _dialogManager;
     private readonly ToastManager _toastManager;
     private readonly EmployeeDialogViewModel _employeeDialogViewModel;
@@ -26,7 +25,7 @@ public partial class EmployeesViewModel : ViewModelBase, IRefreshable
     [ObservableProperty]
     private bool _isEmpty;
 
-    public EmployeesViewModel(NavigationService navigator, EmployeeService employeeService, DialogManager dialogManager, ToastManager toastManager, EmployeeDialogViewModel employeeDialogViewModel) : base(navigator)
+    public EmployeesViewModel(INavigationService navigator, IEmployeeService employeeService, DialogManager dialogManager, ToastManager toastManager, EmployeeDialogViewModel employeeDialogViewModel) : base(navigator)
     {
         Title = "Employees";
         _employeeService = employeeService;

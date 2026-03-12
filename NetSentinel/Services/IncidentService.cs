@@ -2,11 +2,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NetSentinel.Database;
+using NetSentinel.Interfaces;
 using NetSentinel.Models;
 
 namespace NetSentinel.Services;
 
-public class IncidentService
+public class IncidentService : IIncidentService
 {
     private readonly DatabaseContext _dbContext;
 
@@ -16,7 +17,7 @@ public class IncidentService
     }
 
     // create
-    public async Task AddIncidentService(Incident incident)
+    public async Task AddIncidentAsync(Incident incident)
     {
         _dbContext.Incidents.Add(incident);
         await _dbContext.SaveChangesAsync();

@@ -1,16 +1,17 @@
-using System;
+using System.ComponentModel;
 using NetSentinel.ViewModels;
 
 namespace NetSentinel.Interfaces;
 
-public interface INavigationService
+public interface INavigationService : INotifyPropertyChanged
 {
-    public void GoToDashboard();
-    public void GoToDevices();
-    public void GoToDepartments();
-    public void GoToEmployees();
-    // public void GoToIncidents();
-    public void GoToSecurityMeasures();
-    public void GoToSettings();
-    public void GoBack();
+    ViewModelBase? CurrentView { get; }
+    void GoToDashboard();
+    void GoToDevices();
+    void GoToDepartments();
+    void GoToEmployees();
+    void GoToIncidents();
+    void GoToSecurityMeasures();
+    void GoToSettings();
+    void GoBack();
 }

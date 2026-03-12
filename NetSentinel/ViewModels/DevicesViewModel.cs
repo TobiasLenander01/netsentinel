@@ -7,14 +7,13 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Identity.Client;
 using NetSentinel.Interfaces;
 using NetSentinel.Models;
-using NetSentinel.Services;
 using ShadUI;
 
 namespace NetSentinel.ViewModels;
 
 public partial class DevicesViewModel : ViewModelBase, IRefreshable
 {
-    private readonly DeviceService _deviceService;
+    private readonly IDeviceService _deviceService;
     private readonly DialogManager _dialogManager;
     private readonly ToastManager _toastManager;
     private readonly DeviceDialogViewModel _deviceDialogViewModel;
@@ -28,7 +27,7 @@ public partial class DevicesViewModel : ViewModelBase, IRefreshable
     [ObservableProperty]
     private bool _isEmpty;
 
-    public DevicesViewModel(NavigationService navigator, DeviceService deviceService, DialogManager dialogManager, ToastManager toastManager, DeviceDialogViewModel deviceDialogViewModel) : base(navigator)
+    public DevicesViewModel(INavigationService navigator, IDeviceService deviceService, DialogManager dialogManager, ToastManager toastManager, DeviceDialogViewModel deviceDialogViewModel) : base(navigator)
     {
         Title = "Devices";
         _deviceService = deviceService;

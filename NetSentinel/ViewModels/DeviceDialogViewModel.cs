@@ -4,16 +4,16 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using NetSentinel.Interfaces;
 using NetSentinel.Models;
-using NetSentinel.Services;
 using ShadUI;
 
 namespace NetSentinel.ViewModels;
 
 public partial class DeviceDialogViewModel : ViewModelBase
 {
-    private readonly DeviceService _deviceService;
-    private readonly EmployeeService _employeeService;
+    private readonly IDeviceService _deviceService;
+    private readonly IEmployeeService _employeeService;
     private readonly DialogManager _dialogManager;
 
     private Device _device = new Device();
@@ -45,7 +45,7 @@ public partial class DeviceDialogViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isLoading;
 
-    public DeviceDialogViewModel(NavigationService navigator, DialogManager dialogManager, DeviceService deviceService, EmployeeService employeeService) : base(navigator)
+    public DeviceDialogViewModel(INavigationService navigator, DialogManager dialogManager, IDeviceService deviceService, IEmployeeService employeeService) : base(navigator)
     {
         Title = "Device Dialog";
         _deviceService = deviceService;

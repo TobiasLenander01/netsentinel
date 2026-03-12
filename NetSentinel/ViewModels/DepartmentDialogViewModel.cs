@@ -3,15 +3,15 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using NetSentinel.Interfaces;
 using NetSentinel.Models;
-using NetSentinel.Services;
 using ShadUI;
 
 namespace NetSentinel.ViewModels;
 
 public partial class DepartmentDialogViewModel : ViewModelBase
 {
-    private readonly DepartmentService _departmentService;
+    private readonly IDepartmentService _departmentService;
     private readonly DialogManager _dialogManager;
 
     private Department _department = new Department();
@@ -27,7 +27,7 @@ public partial class DepartmentDialogViewModel : ViewModelBase
     [Required(ErrorMessage = "Location is required")]
     private string _location = String.Empty;
 
-    public DepartmentDialogViewModel(NavigationService navigator, DialogManager dialogManager, DepartmentService departmentService) : base(navigator)
+    public DepartmentDialogViewModel(INavigationService navigator, DialogManager dialogManager, IDepartmentService departmentService) : base(navigator)
     {
         Title = "Department Dialog";
         _departmentService = departmentService;
