@@ -10,43 +10,48 @@ namespace NetSentinel.Services;
 
 public class SecurityMeasureService : ISecurityMeasureService
 {
-    private readonly DatabaseContext _dbContext;
+    private readonly IDbContextFactory<DatabaseContext> _dbContextFactory;
 
-    public SecurityMeasureService(DatabaseContext dbContext)
+    public SecurityMeasureService(IDbContextFactory<DatabaseContext> dbContextFactory)
     {
-        _dbContext = dbContext;
+        _dbContextFactory = dbContextFactory;
     }
 
     // create 
     public async Task AddSecurityMeasureAsync(SecurityMeasure securityMeasure)
     {
-        _dbContext.SecurityMeasures.Add(securityMeasure);
-        await _dbContext.SaveChangesAsync();
+        using var db = _dbContextFactory.CreateDbContext();
+        db.SecurityMeasures.Add(securityMeasure);
+        await db.SaveChangesAsync();
     }
 
     // read (all)
     public async Task<List<SecurityMeasure>> ReadAllSecurityMeasuresAsync()
     {
-        return await _dbContext.SecurityMeasures.Include(sm => sm.Incident).Include(pb => pb.PerformedBy).ToListAsync();
+        using var db = _dbContextFactory.CreateDbContext();
+        return await db.SecurityMeasures.Include(sm => sm.Incident).Include(pb => pb.PerformedBy).ToListAsync();
     }
 
     // read (single)
     public async Task<SecurityMeasure?> ReadSingleSecurityMeasureAsync(int id)
     {
-        return await _dbContext.SecurityMeasures.Include(sm => sm.Incident).Include(pb => pb.PerformedBy).FirstOrDefaultAsync(sm => sm.Id == id);
+        using var db = _dbContextFactory.CreateDbContext();
+        return await db.SecurityMeasures.Include(sm => sm.Incident).Include(pb => pb.PerformedBy).FirstOrDefaultAsync(sm => sm.Id == id);
     }
 
     // update
     public async Task<int> UpdateSecurityMeasureAsync(SecurityMeasure updatedSecurityMeasure)
     {
-        _dbContext.SecurityMeasures.Update(updatedSecurityMeasure);
-        return await _dbContext.SaveChangesAsync();
+        using var db = _dbContextFactory.CreateDbContext();
+        db.SecurityMeasures.Update(updatedSecurityMeasure);
+        return await db.SaveChangesAsync();
     }
 
     // delete (single)
     public async Task<int> DeleteSecurityMeasure(SecurityMeasure securityMeasureToDelete)
     {
-        _dbContext.SecurityMeasures.Remove(securityMeasureToDelete);
-        return await _dbContext.SaveChangesAsync();
+        using var db = _dbContextFactory.CreateDbContext();
+        db.SecurityMeasures.Remove(securityMeasureToDelete);
+        return await db.SaveChangesAsync();
     }
 }

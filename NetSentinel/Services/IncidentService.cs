@@ -9,24 +9,26 @@ namespace NetSentinel.Services;
 
 public class IncidentService : IIncidentService
 {
-    private readonly DatabaseContext _dbContext;
+    private readonly IDbContextFactory<DatabaseContext> _dbContextFactory;
 
-    public IncidentService(DatabaseContext dbContext) 
+    public IncidentService(IDbContextFactory<DatabaseContext> dbContextFactory)
     {
-        _dbContext = dbContext;
+        _dbContextFactory = dbContextFactory;
     }
 
     // create
     public async Task AddIncidentAsync(Incident incident)
     {
-        _dbContext.Incidents.Add(incident);
-        await _dbContext.SaveChangesAsync();
+        using var db = _dbContextFactory.CreateDbContext();
+        db.Incidents.Add(incident);
+        await db.SaveChangesAsync();
     }
 
     // read (all)
     public async Task<List<Incident>> ReadAllIncidentsAsync()
     {
-        return await _dbContext.Incidents
+        using var db = _dbContextFactory.CreateDbContext();
+        return await db.Incidents
             .Include(i=> i.Device)
             .Include(i=> i.SecurityMeasures)
             .ToListAsync();
@@ -35,7 +37,8 @@ public class IncidentService : IIncidentService
     // read (single)
     public async Task<Incident?> ReadSingleIncidentAsync(int id)
     {
-        return await _dbContext.Incidents
+        using var db = _dbContextFactory.CreateDbContext();
+        return await db.Incidents
             .Include(i=> i.Device)
             .Include(i=> i.SecurityMeasures)
             .FirstOrDefaultAsync(i => i.Id == id);
@@ -44,15 +47,17 @@ public class IncidentService : IIncidentService
     // update
     public async Task<int> UpdateIncidentAsync(Incident updatedIncident)
     {
-        _dbContext.Incidents.Update(updatedIncident);
-        return await _dbContext.SaveChangesAsync();
+        using var db = _dbContextFactory.CreateDbContext();
+        db.Incidents.Update(updatedIncident);
+        return await db.SaveChangesAsync();
     }
 
     // delete
     public async Task<int> DeleteIncidentAsync(Incident incidentToDelete)
     {
-        _dbContext.Incidents.Remove(incidentToDelete);
-        return await _dbContext.SaveChangesAsync();
+        using var db = _dbContextFactory.CreateDbContext();
+        db.Incidents.Remove(incidentToDelete);
+        return await db.SaveChangesAsync();
     }
 
 }

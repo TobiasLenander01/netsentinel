@@ -42,7 +42,7 @@ public partial class App : Application
         builder.Services.AddSingleton<INavigationService>(sp => new NavigationService(sp));
         builder.Services.AddSingleton<DialogManager>();
         builder.Services.AddSingleton<ToastManager>();
-        builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(connectionString));
+        builder.Services.AddDbContextFactory<DatabaseContext>(options => options.UseSqlServer(connectionString));
         builder.Services.AddTransient<MainWindowViewModel>();
         builder.Services.AddTransient<DashboardViewModel>();
         builder.Services.AddTransient<DevicesViewModel>();

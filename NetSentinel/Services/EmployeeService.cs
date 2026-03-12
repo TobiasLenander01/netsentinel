@@ -9,24 +9,26 @@ namespace NetSentinel.Services;
 
 public class EmployeeService : IEmployeeService
 {
-    private readonly DatabaseContext _dbContext;
+    private readonly IDbContextFactory<DatabaseContext> _dbContextFactory;
 
-    public EmployeeService(DatabaseContext dbContext)
+    public EmployeeService(IDbContextFactory<DatabaseContext> dbContextFactory)
     {
-        _dbContext = dbContext;
+        _dbContextFactory = dbContextFactory;
     }
 
     // create
     public async Task AddEmployeeAsync(Employee employee)
     {
-        _dbContext.Employees.Add(employee);
-        await _dbContext.SaveChangesAsync();
+        using var db = _dbContextFactory.CreateDbContext();
+        db.Employees.Add(employee);
+        await db.SaveChangesAsync();
     }
 
     // read (all)
     public async Task<List<Employee>> ReadAllEmployeesAsync()
     {
-        return await _dbContext.Employees
+        using var db = _dbContextFactory.CreateDbContext();
+        return await db.Employees
             .Include(e => e.Department)
             .Include(e => e.Devices)
             .ToListAsync();
@@ -35,7 +37,8 @@ public class EmployeeService : IEmployeeService
     // read (single)
     public async Task<Employee?> ReadSingleEmployeeAsync(int id)
     {
-        return await _dbContext.Employees
+        using var db = _dbContextFactory.CreateDbContext();
+        return await db.Employees
             .Include(e => e.Department)
             .Include(e => e.Devices)
             .FirstOrDefaultAsync(e => e.Id == id);
@@ -44,16 +47,17 @@ public class EmployeeService : IEmployeeService
     // update
     public async Task<int> UpdateEmployeeAsync(Employee updatedEmployee)
     {
-        _dbContext.Employees.Update(updatedEmployee);
-        return await _dbContext.SaveChangesAsync();
+        using var db = _dbContextFactory.CreateDbContext();
+        db.Employees.Update(updatedEmployee);
+        return await db.SaveChangesAsync();
     }
 
     // delete
-    // delete
     public async Task<int> DeleteEmployeeAsync(Employee employeeToDelete)
     {
-        _dbContext.Employees.Remove(employeeToDelete);
-        return await _dbContext.SaveChangesAsync();
+        using var db = _dbContextFactory.CreateDbContext();
+        db.Employees.Remove(employeeToDelete);
+        return await db.SaveChangesAsync();
     }
 }
 

@@ -1,18 +1,146 @@
 <UserControl
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:avalonia="clr-namespace:LiveChartsCore.SkiaSharpView.Avalonia;assembly=LiveChartsCore.SkiaSharpView.Avalonia"
     xmlns:vm="using:NetSentinel.ViewModels"
-    xmlns:shad="clr-namespace:ShadUI;assembly=ShadUI"
+    xmlns:components="using:NetSentinel.Components"
     x:Class="NetSentinel.Views.DashboardView"
-    x:DataType="vm:DashboardViewModel">
+    x:DataType="vm:DashboardViewModel"
+    Loaded="OnLoaded">
 
     <StackPanel Spacing="20" Margin="40">
 
         <TextBlock Text="{Binding Title}" Classes="h1" />
 
-        <shad:Card Padding="20">
-            <TextBlock Text="I am a Card!" />
-        </shad:Card>
+        <UniformGrid Columns="4" Margin="-6,0">
+            <components:OverviewCard
+            Hint="+180.1% from last month"
+            Title="Total Incidents"
+            Value="{Binding Incidents.Count, StringFormat={}{0}}">
+                <components:OverviewCard.Icon>
+                    <LucideIcon Kind="BrickWallShield" Size="20" StrokeWidth="1.5" />
+                </components:OverviewCard.Icon>
+            </components:OverviewCard>
+            <components:OverviewCard
+            Hint="-20.1% from last month"
+            Title="Subscriptions"
+            Value="+2350">
+                <components:OverviewCard.Icon>
+                    <TextBlock
+                    Classes="LucideIcon"
+                    Foreground="{DynamicResource MutedColor}"
+                    Margin="0"
+                    Text="&#57764;" />
+                </components:OverviewCard.Icon>
+            </components:OverviewCard>
+            <components:OverviewCard
+            Hint="+19% from last month"
+            Title="Sales"
+            Value="+12,234">
+                <components:OverviewCard.Icon>
+                    <TextBlock
+                    Classes="LucideIcon"
+                    Foreground="{DynamicResource MutedColor}"
+                    Margin="0"
+                    Text="&#57518;" />
+                </components:OverviewCard.Icon>
+            </components:OverviewCard>
+            <components:OverviewCard
+            Hint="+201 since last hour"
+            Title="Active Now"
+            Value="+573">
+                <components:OverviewCard.Icon>
+                    <TextBlock
+                    Classes="LucideIcon"
+                    Foreground="{DynamicResource MutedColor}"
+                    Margin="0"
+                    Text="&#57400;" />
+                </components:OverviewCard.Icon>
+            </components:OverviewCard>
+        </UniformGrid>
+        <Grid ColumnDefinitions="3* 2*" Margin="-8,0">
+            <Border
+                Background="{DynamicResource CardBackgroundColor}"
+                BorderBrush="{DynamicResource BorderColor}"
+                BorderThickness="1"
+                BoxShadow="{DynamicResource Shadow}"
+                CornerRadius="{DynamicResource 2XlCornerRadius}"
+                Margin="8">
+                <DockPanel>
+                    <TextBlock
+                        DockPanel.Dock="Top"
+                        FontSize="16"
+                        FontWeight="DemiBold"
+                        Margin="24,24,24,12"
+                        Text="Overview" />
+                    <avalonia:CartesianChart
+                        Margin="12,0,12,12"
+                        Name="CartesianChart1"
+                        Series="{Binding Series}"
+                        TooltipTextPaint="{Binding TooltipTextPaint}"
+                        TooltipTextSize="14"
+                        XAxes="{Binding XAxes}"
+                        YAxes="{Binding YAxes}" />
+                </DockPanel>
+            </Border>
+            <Border
+                Background="{DynamicResource CardBackgroundColor}"
+                BorderBrush="{DynamicResource BorderColor}"
+                BorderThickness="1"
+                BoxShadow="{DynamicResource Shadow}"
+                CornerRadius="{DynamicResource 2XlCornerRadius}"
+                Grid.Column="1"
+                Margin="8">
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Top" Margin="24" Spacing="8">
+                        <TextBlock FontSize="16" FontWeight="DemiBold" Text="Recent Sales" />
+                        <TextBlock Classes="Caption Muted" Text="You made 265 sales this month." />
+                    </StackPanel>
+                    <StackPanel Margin="24,0,24,24" Spacing="24">
+                        <Grid ColumnDefinitions="Auto * Auto">
+                            <Border Background="{DynamicResource MutedColor}" CornerRadius="18" Height="36" Width="36" VerticalAlignment="Center" />
+                            <StackPanel Grid.Column="1" Margin="8,0">
+                                <TextBlock Classes="Small" Text="Olivia Martin" />
+                                <TextBlock Classes="Caption Muted" Text="olivia.martin@email.com" />
+                            </StackPanel>
+                            <TextBlock FontSize="16" FontWeight="DemiBold" Grid.Column="2" Text="+$1,999.00" VerticalAlignment="Center" />
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto * Auto">
+                            <Border Background="{DynamicResource MutedColor}" CornerRadius="18" Height="36" Width="36" VerticalAlignment="Center" />
+                            <StackPanel Grid.Column="1" Margin="8,0">
+                                <TextBlock Classes="Small" Text="Jackson Lee" />
+                                <TextBlock Classes="Caption Muted" Text="jackson.lee@email.com" />
+                            </StackPanel>
+                            <TextBlock FontSize="16" FontWeight="DemiBold" Grid.Column="2" Text="+$39.00" VerticalAlignment="Center" />
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto * Auto">
+                            <Border Background="{DynamicResource MutedColor}" CornerRadius="18" Height="36" Width="36" VerticalAlignment="Center" />
+                            <StackPanel Grid.Column="1" Margin="8,0">
+                                <TextBlock Classes="Small" Text="Isabella Nguyen" />
+                                <TextBlock Classes="Caption Muted" Text="isabella.nguyen@email.com" />
+                            </StackPanel>
+                            <TextBlock FontSize="16" FontWeight="DemiBold" Grid.Column="2" Text="+$299.00" VerticalAlignment="Center" />
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto * Auto">
+                            <Border Background="{DynamicResource MutedColor}" CornerRadius="18" Height="36" Width="36" VerticalAlignment="Center" />
+                            <StackPanel Grid.Column="1" Margin="8,0">
+                                <TextBlock Classes="Small" Text="William Kim" />
+                                <TextBlock Classes="Caption Muted" Text="will@email.com" />
+                            </StackPanel>
+                            <TextBlock FontSize="16" FontWeight="DemiBold" Grid.Column="2" Text="+$99.00" VerticalAlignment="Center" />
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto * Auto">
+                            <Border Background="{DynamicResource MutedColor}" CornerRadius="18" Height="36" Width="36" VerticalAlignment="Center" />
+                            <StackPanel Grid.Column="1" Margin="8,0">
+                                <TextBlock Classes="Small" Text="Sofia Davis" />
+                                <TextBlock Classes="Caption Muted" Text="sofia.davis@email.com" />
+                            </StackPanel>
+                            <TextBlock FontSize="16" FontWeight="DemiBold" Grid.Column="2" Text="+$39.00" VerticalAlignment="Center" />
+                        </Grid>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+        </Grid>
 
     </StackPanel>
 </UserControl>
