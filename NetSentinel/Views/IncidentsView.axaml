@@ -14,7 +14,7 @@
 
         <Grid>
             <Button Content="Add incident" Classes="Primary"
-                HorizontalAlignment="Left" />
+                HorizontalAlignment="Left" IsEnabled="{Binding !IsLoading}" />
         </Grid>
 
         <Grid>
@@ -22,6 +22,7 @@
                 ItemsSource="{Binding Incidents}"
                 CanUserSortColumns="True"
                 IsReadOnly="True"
+                IsEnabled="{Binding !IsLoading}"
                 Background="{DynamicResource CardBackgroundColor}"
                 GridLinesVisibility="Horizontal">
                 <DataGrid.Columns>
@@ -36,7 +37,7 @@
                     <DataGridTemplateColumn Header="Actions">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:Incident">
-                                <Button Content="..." Classes="Ghost Icon"
+                                <Button Content="..." Classes="Ghost"
                                     HorizontalAlignment="Center"
                                     HorizontalContentAlignment="Center">
                                     <Button.Flyout>

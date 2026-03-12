@@ -40,32 +40,35 @@
                         </shad:SidebarItem.Icon>
                     </shad:SidebarItem>
 
-                    <shad:SidebarItem Content="Devices" Command="{Binding GoToDevicesCommand}">
-                        <shad:SidebarItem.Icon>
-                            <LucideIcon Kind="Laptop" Size="20" StrokeWidth="1.5" />
-                        </shad:SidebarItem.Icon>
-                    </shad:SidebarItem>
-
-                    <shad:SidebarItem Content="Departments" Command="{Binding GoToDepartmentsCommand}">
+                    <shad:SidebarItem Content="Departments"
+                        Command="{Binding GoToDepartmentsCommand}">
                         <shad:SidebarItem.Icon>
                             <LucideIcon Kind="Building2" Size="20" StrokeWidth="1.5" />
                         </shad:SidebarItem.Icon>
                     </shad:SidebarItem>
+
                     <shad:SidebarItem Content="Employees" Command="{Binding GoToEmployeesCommand}">
                         <shad:SidebarItem.Icon>
                             <LucideIcon Kind="Users" Size="20" StrokeWidth="1.5" />
                         </shad:SidebarItem.Icon>
                     </shad:SidebarItem>
 
-                    <shad:SidebarItem Content="Security Measures" Command="{Binding GoToSecurityMeasuresCommand}">
+                    <shad:SidebarItem Content="Devices" Command="{Binding GoToDevicesCommand}">
                         <shad:SidebarItem.Icon>
-                            <LucideIcon Kind="ShieldCheck" Size="20" StrokeWidth="1.5" />
+                            <LucideIcon Kind="Laptop" Size="20" StrokeWidth="1.5" />
                         </shad:SidebarItem.Icon>
                     </shad:SidebarItem>
 
-                      <shad:SidebarItem Content="Incidents" Command="{Binding GoToIncidentsCommand}">
+                    <shad:SidebarItem Content="Incidents" Command="{Binding GoToIncidentsCommand}">
                         <shad:SidebarItem.Icon>
                             <LucideIcon Kind="Bug" Size="20" StrokeWidth="1.5" />
+                        </shad:SidebarItem.Icon>
+                    </shad:SidebarItem>
+
+                    <shad:SidebarItem Content="Security Measures"
+                        Command="{Binding GoToSecurityMeasuresCommand}">
+                        <shad:SidebarItem.Icon>
+                            <LucideIcon Kind="ShieldCheck" Size="20" StrokeWidth="1.5" />
                         </shad:SidebarItem.Icon>
                     </shad:SidebarItem>
 
@@ -101,7 +104,8 @@
                     Padding="20,16">
                     <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
 
-                        <ToggleButton IsChecked="True" Name="Toggler" Classes="Secondary" Padding="4"
+                        <ToggleButton IsChecked="True" Name="Toggler" Classes="Secondary"
+                            Padding="4"
                             Width="32" Height="32">
                             <LucideIcon Kind="PanelLeft" Size="20" />
                         </ToggleButton>

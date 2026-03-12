@@ -54,7 +54,7 @@
   <Color x:Key="ErrorColor5">#0DD32F2F</Color>
 
   <!--  specific control colors  -->
-  <Color x:Key="BusyAreaOverlayColor">#F2F2F2</Color>
+  <Color x:Key="BusyAreaOverlayColor">#00000000</Color>
 
   <Color x:Key="CardBackgroundColor">#FFFFFF</Color>
 
