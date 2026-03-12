@@ -2,15 +2,67 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="using:NetSentinel.ViewModels"
+    xmlns:models="using:NetSentinel.Models"
     xmlns:shad="clr-namespace:ShadUI;assembly=ShadUI"
     x:Class="NetSentinel.Views.IncidentsView"
-    x:DataType="vm:IncidentsViewModel">
+    x:DataType="vm:IncidentsViewModel"
+    Loaded="OnLoaded">
 
     <StackPanel Spacing="20" Margin="40">
 
         <TextBlock Text="{Binding Title}" Classes="h1" />
 
-    
+        <Grid>
+            <Button Content="Add incident" Classes="Primary"
+                HorizontalAlignment="Left" />
+        </Grid>
+
+        <Grid>
+            <DataGrid x:Name="DataGrid"
+                ItemsSource="{Binding Incidents}"
+                CanUserSortColumns="True"
+                IsReadOnly="True"
+                Background="{DynamicResource CardBackgroundColor}"
+                GridLinesVisibility="Horizontal">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Description" Binding="{Binding Description}"
+                        Width="auto" />
+                    <DataGridTextColumn Header="CreatedAt" Binding="{Binding CreatedAt}"
+                        Width="auto" />
+                    <DataGridTextColumn Header="Priority" Binding="{Binding Priority}" Width="auto" />
+                    <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="auto" />
+                    <DataGridTextColumn Header="Device" Binding="{Binding Device.Name}" Width="*" />
+
+                    <DataGridTemplateColumn Header="Actions">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="models:Incident">
+                                <Button Content="..." Classes="Ghost Icon"
+                                    HorizontalAlignment="Center"
+                                    HorizontalContentAlignment="Center">
+                                    <Button.Flyout>
+                                        <MenuFlyout>
+                                            <MenuItem Header="Edit incident" Cursor="Hand" />
+                                            <MenuItem Header="Delete incident" Cursor="Hand" />
+                                        </MenuFlyout>
+                                    </Button.Flyout>
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <TextBlock Text="No departments found."
+                IsVisible="{Binding IsEmpty}"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Foreground="Gray"
+                Margin="0,50,0,0" />
+        </Grid>
+
+        <shad:BusyArea CornerRadius="{DynamicResource LgCornerRadius}"
+            IsBusy="{Binding IsLoading}" />
 
     </StackPanel>
 </UserControl>
