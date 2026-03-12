@@ -5,14 +5,13 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using NetSentinel.Interfaces;
 using NetSentinel.Models;
-using NetSentinel.Services;
 using ShadUI;
 
 namespace NetSentinel.ViewModels;
 
 public partial class SecurityMeasuresViewModel : ViewModelBase, IRefreshable
 {
-    private readonly SecurityMeasureService _securityMeasureService;
+    private readonly ISecurityMeasureService _securityMeasureService;
     private readonly DialogManager _dialogManager;
     private readonly ToastManager _toastManager;
     private readonly SecurityMeasureDialogViewModel _securityMeasureDialogViewModel;
@@ -26,7 +25,7 @@ public partial class SecurityMeasuresViewModel : ViewModelBase, IRefreshable
     [ObservableProperty]
     private bool _isEmpty;
 
-    public SecurityMeasuresViewModel(NavigationService navigator, SecurityMeasureService securityMeasureService, DialogManager dialogManager, ToastManager toastManager, SecurityMeasureDialogViewModel securityMeasureDialogViewModel) : base(navigator)
+    public SecurityMeasuresViewModel(INavigationService navigator, ISecurityMeasureService securityMeasureService, DialogManager dialogManager, ToastManager toastManager, SecurityMeasureDialogViewModel securityMeasureDialogViewModel) : base(navigator)
     {
         Title = "Security Measures";
         _securityMeasureService = securityMeasureService;

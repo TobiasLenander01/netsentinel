@@ -4,17 +4,17 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using NetSentinel.Interfaces;
 using NetSentinel.Models;
-using NetSentinel.Services;
 using ShadUI;
 
 namespace NetSentinel.ViewModels;
 
 public partial class SecurityMeasureDialogViewModel : ViewModelBase
 {
-    private readonly SecurityMeasureService _securityMeasureService;
-    private readonly EmployeeService _employeeService;
-    private readonly IncidentService _incidentService;
+    private readonly ISecurityMeasureService _securityMeasureService;
+    private readonly IEmployeeService _employeeService;
+    private readonly IIncidentService _incidentService;
     private readonly DialogManager _dialogManager;
 
     private SecurityMeasure _securityMeasure = new SecurityMeasure();
@@ -47,7 +47,7 @@ public partial class SecurityMeasureDialogViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isLoading;
 
-    public SecurityMeasureDialogViewModel(NavigationService navigator, DialogManager dialogManager, SecurityMeasureService securityMeasureService, EmployeeService employeeService, IncidentService incidentService) : base(navigator)
+    public SecurityMeasureDialogViewModel(INavigationService navigator, DialogManager dialogManager, ISecurityMeasureService securityMeasureService, IEmployeeService employeeService, IIncidentService incidentService) : base(navigator)
     {
         Title = "Security Measure Dialog";
         _securityMeasureService = securityMeasureService;

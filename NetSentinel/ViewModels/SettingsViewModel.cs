@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using NetSentinel.Database;
-using NetSentinel.Services;
+using NetSentinel.Interfaces;
 using ShadUI;
 
 namespace NetSentinel.ViewModels;
@@ -11,7 +11,7 @@ public partial class SettingsViewModel : ViewModelBase
     private readonly DatabaseContext _db;
     private readonly ToastManager _toastManager;
 
-    public SettingsViewModel(NavigationService navigator, DatabaseContext db, ToastManager toastManager) : base(navigator)
+    public SettingsViewModel(INavigationService navigator, DatabaseContext db, ToastManager toastManager) : base(navigator)
     {
         Title = "Settings";
         _db = db;

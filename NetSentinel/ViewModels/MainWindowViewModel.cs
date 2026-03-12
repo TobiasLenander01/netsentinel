@@ -4,7 +4,6 @@ using Avalonia.Styling;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using NetSentinel.Interfaces;
-using NetSentinel.Services;
 using ShadUI;
 
 namespace NetSentinel.ViewModels;
@@ -30,7 +29,7 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty]
     private ToastManager _toastManager;
 
-    public MainWindowViewModel(NavigationService navigator, DialogManager dialogManager, ToastManager toastManager) : base(navigator)
+    public MainWindowViewModel(INavigationService navigator, DialogManager dialogManager, ToastManager toastManager) : base(navigator)
     {
         _dialogManager = dialogManager;
         _toastManager = toastManager;
@@ -71,6 +70,12 @@ public partial class MainWindowViewModel : ViewModelBase
     public void GoToDepartments()
     {
         Navigator.GoToDepartments();
+    }
+
+    [RelayCommand]
+    public void GoToIncidents()
+    {
+        Navigator.GoToIncidents();
     }
 
     [RelayCommand]

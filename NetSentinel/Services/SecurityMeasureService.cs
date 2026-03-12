@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NetSentinel.Database;
+using NetSentinel.Interfaces;
 using NetSentinel.Models;
 
 namespace NetSentinel.Services;
 
-public class SecurityMeasureService
+public class SecurityMeasureService : ISecurityMeasureService
 {
     private readonly DatabaseContext _dbContext;
 

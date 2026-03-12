@@ -4,16 +4,16 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using NetSentinel.Interfaces;
 using NetSentinel.Models;
-using NetSentinel.Services;
 using ShadUI;
 
 namespace NetSentinel.ViewModels;
 
 public partial class EmployeeDialogViewModel : ViewModelBase
 {
-    private readonly EmployeeService _employeeService;
-    private readonly DepartmentService _departmentService;
+    private readonly IEmployeeService _employeeService;
+    private readonly IDepartmentService _departmentService;
     private readonly DialogManager _dialogManager;
 
     private Employee _employee = new Employee();
@@ -41,7 +41,7 @@ public partial class EmployeeDialogViewModel : ViewModelBase
     [Required(ErrorMessage = "Department is required")]
     private Department? _selectedDepartment;
 
-    public EmployeeDialogViewModel(NavigationService navigator, DialogManager dialogManager, EmployeeService employeeService, DepartmentService departmentService) : base(navigator)
+    public EmployeeDialogViewModel(INavigationService navigator, DialogManager dialogManager, IEmployeeService employeeService, IDepartmentService departmentService) : base(navigator)
     {
         Title = "Employee Dialog";
         _employeeService = employeeService;

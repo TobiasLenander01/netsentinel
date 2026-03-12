@@ -13,6 +13,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using ShadUI;
+using NetSentinel.Interfaces;
 
 namespace NetSentinel;
 
@@ -38,7 +39,7 @@ public partial class App : Application
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
         // Register services, viewmodels etc
-        builder.Services.AddSingleton<NavigationService>(sp => new NavigationService(sp));
+        builder.Services.AddSingleton<INavigationService>(sp => new NavigationService(sp));
         builder.Services.AddSingleton<DialogManager>();
         builder.Services.AddSingleton<ToastManager>();
         builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(connectionString));
@@ -49,15 +50,16 @@ public partial class App : Application
         builder.Services.AddTransient<DeviceDialogViewModel>();
         builder.Services.AddTransient<DepartmentDialogViewModel>();
         builder.Services.AddTransient<DepartmentsViewModel>();
+        builder.Services.AddTransient<IncidentsViewModel>();
         builder.Services.AddTransient<EmployeesViewModel>();
         builder.Services.AddTransient<SecurityMeasuresViewModel>();
         builder.Services.AddTransient<SecurityMeasureDialogViewModel>();
         builder.Services.AddTransient<EmployeeDialogViewModel>();
-        builder.Services.AddScoped<DeviceService>();
-        builder.Services.AddScoped<DepartmentService>();
-        builder.Services.AddScoped<EmployeeService>();
-        builder.Services.AddScoped<SecurityMeasureService>();
-        builder.Services.AddScoped<IncidentService>();
+        builder.Services.AddScoped<IDeviceService, DeviceService>();
+        builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+        builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+        builder.Services.AddScoped<ISecurityMeasureService, SecurityMeasureService>();
+        builder.Services.AddScoped<IIncidentService, IncidentService>();
 
         // 2. Build the Service Provider
         Services = builder.Services.BuildServiceProvider();
@@ -74,7 +76,7 @@ public partial class App : Application
         {
             DisableAvaloniaDataAnnotationValidation();
             desktop.MainWindow = new MainWindow { DataContext = Services.GetRequiredService<MainWindowViewModel>() };
-            Services.GetRequiredService<NavigationService>().GoToDashboard();
+            Services.GetRequiredService<INavigationService>().GoToDashboard();
         }
 
         base.OnFrameworkInitializationCompleted();
