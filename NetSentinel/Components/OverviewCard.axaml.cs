@@ -44,6 +44,5 @@ public partial class OverviewCard : UserControl
     public OverviewCard()
     {
         InitializeComponent();
-        DataContext = this;
     }
 }

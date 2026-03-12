@@ -9,7 +9,6 @@ public partial class DashboardView : UserControl
     public DashboardView()
     {
         InitializeComponent();
-        Loaded += OnLoaded;
     }
     private void OnLoaded(object? sender, RoutedEventArgs e)
     {

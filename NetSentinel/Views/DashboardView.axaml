@@ -16,13 +16,9 @@
             <components:OverviewCard
             Hint="+180.1% from last month"
             Title="Total Incidents"
-            Value="{Binding Incidents.Count}">
+            Value="{Binding Incidents.Count, StringFormat={}{0}}">
                 <components:OverviewCard.Icon>
-                    <TextBlock
-                    Classes="LucideIcon"
-                    Foreground="{DynamicResource MutedColor}"
-                    Margin="0"
-                    Text="&#57525;" />
+                    <LucideIcon Kind="BrickWallShield" Size="20" StrokeWidth="1.5" />
                 </components:OverviewCard.Icon>
             </components:OverviewCard>
             <components:OverviewCard
