@@ -13,6 +13,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using ShadUI;
+using NetSentinel.Interfaces;
 
 namespace NetSentinel;
 
@@ -53,11 +54,10 @@ public partial class App : Application
         builder.Services.AddTransient<SecurityMeasuresViewModel>();
         builder.Services.AddTransient<SecurityMeasureDialogViewModel>();
         builder.Services.AddTransient<EmployeeDialogViewModel>();
-        builder.Services.AddScoped<DeviceService>();
-        builder.Services.AddScoped<DepartmentService>();
-        builder.Services.AddScoped<EmployeeService>();
-        builder.Services.AddScoped<SecurityMeasureService>();
-        builder.Services.AddScoped<IncidentService>();
+        builder.Services.AddScoped<IDeviceService, DeviceService>();
+        builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+        builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+        builder.Services.AddScoped<ISecurityMeasureService, SecurityMeasureService>();
 
         // 2. Build the Service Provider
         Services = builder.Services.BuildServiceProvider();
