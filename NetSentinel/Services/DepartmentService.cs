@@ -2,11 +2,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NetSentinel.Database;
+using NetSentinel.Interfaces;
 using NetSentinel.Models;
 
 namespace NetSentinel.Services;
 
-public class DepartmentService
+public class DepartmentService : IDepartmentService
 {
     private readonly DatabaseContext _dbContext;
 
