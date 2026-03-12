@@ -26,17 +26,18 @@
                     ItemsSource="{Binding Employees}"
                     CanUserSortColumns="True"
                     IsReadOnly="True"
+                    IsEnabled="{Binding !IsLoading}"
                     Background="{DynamicResource CardBackgroundColor}"
                     GridLinesVisibility="Horizontal">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Employee No" Binding="{Binding EmployeeNo}" Width="auto" />
-                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" />
-                        <DataGridTextColumn Header="Department" Binding="{Binding Department.Name}" Width="auto" />
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="auto" />
+                        <DataGridTextColumn Header="Department" Binding="{Binding Department.Name}" Width="*" />
 
                         <DataGridTemplateColumn Header="Actions">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate x:DataType="models:Employee">
-                                    <Button Content="..." Classes="Ghost Icon"
+                                    <Button Content="..." Classes="Ghost"
                                         HorizontalAlignment="Center"
                                         HorizontalContentAlignment="Center">
                                         <Button.Flyout>

@@ -26,6 +26,7 @@
                     ItemsSource="{Binding SecurityMeasures}"
                     CanUserSortColumns="True"
                     IsReadOnly="True"
+                    IsEnabled="{Binding !IsLoading}"
                     Background="{DynamicResource CardBackgroundColor}"
                     GridLinesVisibility="Horizontal">
                     <DataGrid.Columns>
@@ -48,7 +49,7 @@
                         <DataGridTemplateColumn Header="Actions" Width="auto">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate x:DataType="models:SecurityMeasure">
-                                    <Button Content="..." Classes="Secondary"
+                                    <Button Content="..." Classes="Ghost"
                                         HorizontalAlignment="Center"
                                         HorizontalContentAlignment="Center">
                                         <Button.Flyout>

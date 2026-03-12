@@ -26,6 +26,7 @@
                     ItemsSource="{Binding Devices}"
                     CanUserSortColumns="True"
                     IsReadOnly="True"
+                    IsEnabled="{Binding !IsLoading}"
                     Background="{DynamicResource CardBackgroundColor}"
                     GridLinesVisibility="Horizontal">
                     <DataGrid.Columns>
@@ -53,7 +54,7 @@
                         <DataGridTemplateColumn Header="Actions">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate x:DataType="models:Device">
-                                    <Button Content="..." Classes="Ghost Icon"
+                                    <Button Content="..." Classes="Ghost"
                                         HorizontalAlignment="Center"
                                         HorizontalContentAlignment="Center">
                                         <Button.Flyout>
