@@ -3,16 +3,19 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using NetSentinel.Interfaces;
 using NetSentinel.Models;
 using NetSentinel.Services;
 using ShadUI;
 
 namespace NetSentinel.ViewModels;
 
-public partial class EmployeesViewModel : ViewModelBase
+public partial class EmployeesViewModel : ViewModelBase, IRefreshable
 {
     private readonly EmployeeService _employeeService;
+    private readonly DialogManager _dialogManager;
     private readonly ToastManager _toastManager;
+    private readonly EmployeeDialogViewModel _employeeDialogViewModel;
 
     [ObservableProperty]
     private ObservableCollection<Employee> _employees = new();
@@ -23,12 +26,16 @@ public partial class EmployeesViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isEmpty;
 
-    public EmployeesViewModel(NavigationService navigator, EmployeeService employeeService, ToastManager toastManager) : base(navigator)
+    public EmployeesViewModel(NavigationService navigator, EmployeeService employeeService, DialogManager dialogManager, ToastManager toastManager, EmployeeDialogViewModel employeeDialogViewModel) : base(navigator)
     {
         Title = "Employees";
         _employeeService = employeeService;
+        _dialogManager = dialogManager;
         _toastManager = toastManager;
+        _employeeDialogViewModel = employeeDialogViewModel;
     }
+
+    public Task RefreshAsync() => LoadEmployeesAsync();
 
     [RelayCommand]
     private async Task LoadEmployeesAsync()
@@ -55,5 +62,60 @@ public partial class EmployeesViewModel : ViewModelBase
         {
             IsLoading = false;
         }
+    }
+
+    [RelayCommand]
+    public async Task ShowNewEmployeeDialog()
+    {
+        await _employeeDialogViewModel.LoadNewEmployeeCommand.ExecuteAsync(null);
+        _dialogManager.CreateDialog(_employeeDialogViewModel)
+            .Dismissible()
+            .WithSuccessCallback(() =>
+            {
+                _toastManager
+                    .CreateToast("Employee added")
+                    .DismissOnClick()
+                    .ShowSuccess();
+                _ = LoadEmployeesAsync();
+            })
+            .Show();
+    }
+
+    [RelayCommand]
+    public async Task ShowEditEmployeeDialog(Employee employee)
+    {
+        await _employeeDialogViewModel.LoadExistingEmployeeCommand.ExecuteAsync(employee);
+        _dialogManager.CreateDialog(_employeeDialogViewModel)
+            .Dismissible()
+            .WithSuccessCallback(() =>
+            {
+                _toastManager
+                    .CreateToast("Employee edited")
+                    .DismissOnClick()
+                    .ShowSuccess();
+                _ = LoadEmployeesAsync();
+            })
+            .Show();
+    }
+
+    [RelayCommand]
+    public void ShowDeleteEmployeeDialog(Employee employee)
+    {
+        _dialogManager.CreateDialog(
+            "Are you absolutely sure?",
+            "This will permanently delete this employee.")
+            .WithPrimaryButton("Confirm", async () =>
+            {
+                await _employeeService.DeleteEmployeeAsync(employee);
+                _toastManager.CreateToast("Employee deleted")
+                    .WithContent("Employee deleted successfully!")
+                    .DismissOnClick()
+                    .ShowSuccess();
+                await LoadEmployeesAsync();
+            }, DialogButtonStyle.Destructive)
+            .WithCancelButton("Cancel")
+            .WithMaxWidth(512)
+            .Dismissible()
+            .Show();
     }
 }

@@ -8,22 +8,68 @@
     x:DataType="vm:EmployeesViewModel"
     Loaded="OnLoaded">
 
-    <StackPanel Spacing="20" Margin="40">
+    <Grid>
 
-        <TextBlock Text="{Binding Title}" Classes="h1" />
+        <StackPanel Spacing="20" Margin="40">
 
-        <DataGrid
-            ItemsSource="{Binding Employees}"
-            CanUserSortColumns="True"
-            IsReadOnly="True"
-            Background="{DynamicResource CardBackgroundColor}"
-            GridLinesVisibility="Horizontal">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Employee No" Binding="{Binding EmployeeNo}" Width="auto" />
-                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" />
-                <DataGridTextColumn Header="Department" Binding="{Binding Department.Name}" Width="auto" />
-            </DataGrid.Columns>
-        </DataGrid>
+            <TextBlock Text="{Binding Title}" Classes="h1" />
 
-    </StackPanel>
+            <Grid>
+                <Button Content="Add employee" Classes="Primary"
+                    Command="{Binding ShowNewEmployeeDialogCommand}"
+                    HorizontalAlignment="Left" />
+            </Grid>
+
+            <Grid>
+
+                <DataGrid
+                    ItemsSource="{Binding Employees}"
+                    CanUserSortColumns="True"
+                    IsReadOnly="True"
+                    Background="{DynamicResource CardBackgroundColor}"
+                    GridLinesVisibility="Horizontal">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Employee No" Binding="{Binding EmployeeNo}" Width="auto" />
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" />
+                        <DataGridTextColumn Header="Department" Binding="{Binding Department.Name}" Width="auto" />
+
+                        <DataGridTemplateColumn Header="Actions">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate x:DataType="models:Employee">
+                                    <Button Content="..." Classes="Ghost Icon"
+                                        HorizontalAlignment="Center"
+                                        HorizontalContentAlignment="Center">
+                                        <Button.Flyout>
+                                            <MenuFlyout>
+                                                <MenuItem Header="Edit employee" Cursor="Hand"
+                                                    Command="{Binding $parent[UserControl].((vm:EmployeesViewModel)DataContext).ShowEditEmployeeDialogCommand}"
+                                                    CommandParameter="{Binding}" />
+                                                <MenuItem Header="Delete employee" Cursor="Hand"
+                                                    Command="{Binding $parent[UserControl].((vm:EmployeesViewModel)DataContext).ShowDeleteEmployeeDialogCommand}"
+                                                    CommandParameter="{Binding}" />
+                                            </MenuFlyout>
+                                        </Button.Flyout>
+                                    </Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <TextBlock Text="No employees found."
+                    IsVisible="{Binding IsEmpty}"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Foreground="Gray"
+                    Margin="0,50,0,0" />
+
+                <shad:BusyArea CornerRadius="{DynamicResource LgCornerRadius}"
+                    IsBusy="{Binding IsLoading}" />
+
+            </Grid>
+
+        </StackPanel>
+    </Grid>
 </UserControl>
+
