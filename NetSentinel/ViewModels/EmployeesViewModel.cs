@@ -16,6 +16,8 @@ public partial class EmployeesViewModel : ViewModelBase, IRefreshable
     private readonly ToastManager _toastManager;
     private readonly EmployeeDialogViewModel _employeeDialogViewModel;
 
+    private const int PageSize = 10;
+
     [ObservableProperty]
     private ObservableCollection<Employee> _employees = new();
 
@@ -25,6 +27,20 @@ public partial class EmployeesViewModel : ViewModelBase, IRefreshable
     [ObservableProperty]
     private bool _isEmpty;
 
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(PreviousPageCommand))]
+    [NotifyCanExecuteChangedFor(nameof(NextPageCommand))]
+    private int _currentPage = 1;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(NextPageCommand))]
+    private int _totalPages = 1;
+
+    [ObservableProperty]
+    private int _totalCount;
+
+    public string PageInfo => $"Page {CurrentPage} of {TotalPages}";
+
     public EmployeesViewModel(INavigationService navigator, IEmployeeService employeeService, DialogManager dialogManager, ToastManager toastManager, EmployeeDialogViewModel employeeDialogViewModel) : base(navigator)
     {
         Title = "Employees";
@@ -33,6 +49,9 @@ public partial class EmployeesViewModel : ViewModelBase, IRefreshable
         _toastManager = toastManager;
         _employeeDialogViewModel = employeeDialogViewModel;
     }
+
+    partial void OnCurrentPageChanged(int value) => OnPropertyChanged(nameof(PageInfo));
+    partial void OnTotalPagesChanged(int value) => OnPropertyChanged(nameof(PageInfo));
 
     public Task RefreshAsync() => LoadEmployeesAsync();
 
@@ -45,9 +64,11 @@ public partial class EmployeesViewModel : ViewModelBase, IRefreshable
 
         try
         {
-            var employeeList = await _employeeService.ReadAllEmployeesAsync();
-            Employees = new ObservableCollection<Employee>(employeeList);
-            IsEmpty = Employees.Count == 0;
+            var (items, totalCount) = await _employeeService.ReadEmployeesPagedAsync(CurrentPage, PageSize);
+            Employees = new ObservableCollection<Employee>(items);
+            TotalCount = totalCount;
+            TotalPages = Math.Max(1, (int)Math.Ceiling(totalCount / (double)PageSize));
+            IsEmpty = totalCount == 0;
         }
         catch (Exception ex)
         {
@@ -62,6 +83,23 @@ public partial class EmployeesViewModel : ViewModelBase, IRefreshable
             IsLoading = false;
         }
     }
+
+    [RelayCommand(CanExecute = nameof(CanGoPrevious))]
+    private async Task PreviousPageAsync()
+    {
+        CurrentPage--;
+        await LoadEmployeesAsync();
+    }
+
+    [RelayCommand(CanExecute = nameof(CanGoNext))]
+    private async Task NextPageAsync()
+    {
+        CurrentPage++;
+        await LoadEmployeesAsync();
+    }
+
+    private bool CanGoPrevious() => CurrentPage > 1;
+    private bool CanGoNext() => CurrentPage < TotalPages;
 
     [RelayCommand]
     public async Task ShowNewEmployeeDialog()
