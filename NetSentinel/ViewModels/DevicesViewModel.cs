@@ -1,10 +1,8 @@
-
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Identity.Client;
 using NetSentinel.Interfaces;
 using NetSentinel.Models;
 using ShadUI;
@@ -18,6 +16,8 @@ public partial class DevicesViewModel : ViewModelBase, IRefreshable
     private readonly ToastManager _toastManager;
     private readonly DeviceDialogViewModel _deviceDialogViewModel;
 
+    private const int PageSize = 10;
+
     [ObservableProperty]
     private ObservableCollection<Device> _devices = new();
 
@@ -27,6 +27,20 @@ public partial class DevicesViewModel : ViewModelBase, IRefreshable
     [ObservableProperty]
     private bool _isEmpty;
 
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(PreviousPageCommand))]
+    [NotifyCanExecuteChangedFor(nameof(NextPageCommand))]
+    private int _currentPage = 1;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(NextPageCommand))]
+    private int _totalPages = 1;
+
+    [ObservableProperty]
+    private int _totalCount;
+
+    public string PageInfo => $"Page {CurrentPage} of {TotalPages}";
+
     public DevicesViewModel(INavigationService navigator, IDeviceService deviceService, DialogManager dialogManager, ToastManager toastManager, DeviceDialogViewModel deviceDialogViewModel) : base(navigator)
     {
         Title = "Devices";
@@ -35,6 +49,9 @@ public partial class DevicesViewModel : ViewModelBase, IRefreshable
         _toastManager = toastManager;
         _deviceDialogViewModel = deviceDialogViewModel;
     }
+
+    partial void OnCurrentPageChanged(int value) => OnPropertyChanged(nameof(PageInfo));
+    partial void OnTotalPagesChanged(int value) => OnPropertyChanged(nameof(PageInfo));
 
     public Task RefreshAsync() => LoadDevicesAsync();
 
@@ -47,9 +64,11 @@ public partial class DevicesViewModel : ViewModelBase, IRefreshable
 
         try
         {
-            var deviceList = await _deviceService.ReadAllDevicesAsync();
-            Devices = new ObservableCollection<Device>(deviceList);
-            IsEmpty = Devices.Count == 0;
+            var (items, totalCount) = await _deviceService.ReadDevicesPagedAsync(CurrentPage, PageSize);
+            Devices = new ObservableCollection<Device>(items);
+            TotalCount = totalCount;
+            TotalPages = Math.Max(1, (int)Math.Ceiling(totalCount / (double)PageSize));
+            IsEmpty = totalCount == 0;
         }
         catch (Exception ex)
         {
@@ -64,6 +83,23 @@ public partial class DevicesViewModel : ViewModelBase, IRefreshable
             IsLoading = false;
         }
     }
+
+    [RelayCommand(CanExecute = nameof(CanGoPrevious))]
+    private async Task PreviousPageAsync()
+    {
+        CurrentPage--;
+        await LoadDevicesAsync();
+    }
+
+    [RelayCommand(CanExecute = nameof(CanGoNext))]
+    private async Task NextPageAsync()
+    {
+        CurrentPage++;
+        await LoadDevicesAsync();
+    }
+
+    private bool CanGoPrevious() => CurrentPage > 1;
+    private bool CanGoNext() => CurrentPage < TotalPages;
 
     [RelayCommand]
     public async Task ShowNewDeviceDialog()
@@ -125,7 +161,7 @@ public partial class DevicesViewModel : ViewModelBase, IRefreshable
     public void ShowDeleteDeviceDialog(Device device)
     {
         _dialogManager.CreateDialog(
-            "Are you absolutely sure?", 
+            "Are you absolutely sure?",
             "This will permanently delete your device.")
         .WithPrimaryButton("Confirm", async () =>
         {

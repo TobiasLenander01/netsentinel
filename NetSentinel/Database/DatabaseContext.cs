@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NetSentinel.Enums;
@@ -65,35 +66,69 @@ public class DatabaseContext : DbContext
         if (hasData)
             return false;
 
-        // --- Departments ---
-        var deptIT = new Department("IT", "Building A, Gondor");
-        var deptHR = new Department("HR", "Bulding B, Gondor");
-        var deptFinance = new Department("Finance", "Central Building, Rohan");
-        var deptSecurity = new Department("Security", "Secondary Building, Rohan");
-        Departments.AddRange(deptIT, deptHR, deptFinance, deptSecurity);
+        var rng = new Random(42);
 
-        // --- Employees ---
-        var emp1 = new Employee("EMP001", "Aragon")   { Department = deptIT };
-        var emp2 = new Employee("EMP002", "Boromir"){ Department = deptIT };
-        var emp3 = new Employee("EMP003", "Frodo"){ Department = deptHR };
-        var emp4 = new Employee("EMP004", "Bilbo")   { Department = deptFinance };
-        var emp5 = new Employee("EMP005", "Gimli"){ Department = deptSecurity };
-        var emp6 = new Employee("EMP006", "Legolas")   { Department = deptSecurity };
-        var emp7 = new Employee("EMP007", "Gollum")   { Department = deptSecurity };
-        Employees.AddRange(emp1, emp2, emp3, emp4, emp5, emp6, emp7);
+        // --- Departments (20) ---
+        string[] deptNames = [
+            "IT", "HR", "Finance", "Security", "Legal",
+            "Marketing", "Sales", "Operations", "R&D", "Compliance",
+            "Customer Support", "Logistics", "Procurement", "Engineering", "Product",
+            "Data Analytics", "DevOps", "QA", "Infrastructure", "Executive",
+        ];
+        string[] locations = [
+            "Building A, Gondor", "Building B, Gondor", "Central Building, Rohan",
+            "Secondary Building, Rohan", "North Wing, Mordor", "East Tower, Mordor",
+            "West Campus, Shire", "South Block, Shire", "Main Hall, Rivendell",
+            "Annex, Rivendell",
+        ];
+        var generatedDepts = deptNames
+            .Select((name, i) => new Department(name, locations[i % locations.Length]))
+            .ToList();
+        Departments.AddRange(generatedDepts);
 
-        // --- Devices ---
-        var dev1 = new Device { Name = "Macbook",  IPAddress = "192.168.1.10", SerialNumber = "SN-AA-0001", Owner = emp1 };
-        var dev2 = new Device { Name = "Windows PC",   IPAddress = "192.168.1.11", SerialNumber = "SN-BB-0002", Owner = emp2 };
-        var dev3 = new Device { Name = "Chromebook",  IPAddress = "192.168.1.20", SerialNumber = "SN-CC-0003", Owner = emp3 };
-        var dev4 = new Device { Name = "Workstation", IPAddress = "192.168.1.30", SerialNumber = "SN-DD-0004", Owner = emp4 };
-        var dev5 = new Device { Name = "Tablet", IPAddress = "192.168.1.40", SerialNumber = "SN-EE-0005", Owner = emp5 };
-        Devices.AddRange(dev1, dev2, dev3, dev4, dev5);
+        // --- Employees (50) ---
+        string[] firstNames = [
+            "Aragorn", "Boromir", "Frodo", "Bilbo", "Gimli",
+            "Legolas", "Gollum", "Gandalf", "Saruman", "Sauron",
+            "Eowyn", "Arwen", "Galadriel", "Elrond", "Treebeard",
+            "Pippin", "Merry", "Sam", "Faramir", "Denethor",
+            "Theoden", "Eomer", "Grima", "Radagast", "Glorfindel",
+            "Celeborn", "Haldir", "Lurtz", "Gothmog", "Shelob",
+            "Balrog", "Nazgul", "Ents", "Uruk", "Orc",
+            "Rohirrim", "Gondorian", "Hobbit", "Dwarf", "Elf",
+            "Ranger", "Wizard", "Steward", "Captain", "Scout",
+            "Healer", "Blacksmith", "Merchant", "Scholar", "Guard",
+        ];
+        var generatedEmployees = firstNames
+            .Select((name, i) => new Employee($"EMP{i + 1:D3}", name)
+            {
+                Department = generatedDepts[rng.Next(generatedDepts.Count)]
+            })
+            .ToList();
+        Employees.AddRange(generatedEmployees);
+
+        // --- Devices (100) ---
+        string[] deviceTypes = [
+            "MacBook", "Windows PC", "Chromebook", "Workstation", "Tablet",
+            "Laptop", "Server", "Raspberry Pi", "Thin Client", "Desktop",
+        ];
+        var generatedDevices = Enumerable.Range(0, 100).Select(i =>
+        {
+            int subnet = (i / 254) + 1;
+            int host = (i % 254) + 1;
+            return new Device
+            {
+                Name = $"{deviceTypes[i % deviceTypes.Length]} {i + 1}",
+                IPAddress = $"192.168.{subnet}.{host}",
+                SerialNumber = $"SN-{i + 1:D4}",
+                Owner = generatedEmployees[rng.Next(generatedEmployees.Count)],
+            };
+        }).ToList();
+        Devices.AddRange(generatedDevices);
 
         // --- Incidents & Security Measures (generated) ---
-        var rng = new Random(42);
-        var devices = new[] { dev1, dev2, dev3, dev4, dev5 };
-        var employees = new[] { emp1, emp2, emp3, emp4, emp5, emp6, emp7 };
+        var devices = generatedDevices;
+        var employees = generatedEmployees;
         var priorities = (Priority[])Enum.GetValues(typeof(Priority));
         var statuses = (Status[])Enum.GetValues(typeof(Status));
 
@@ -161,7 +196,7 @@ public class DatabaseContext : DbContext
                 CreatedAt = now.AddDays(-daysAgo),
                 Priority = priorities[rng.Next(priorities.Length)],
                 Status = statuses[rng.Next(statuses.Length)],
-                Device = devices[rng.Next(devices.Length)],
+                Device = devices[rng.Next(devices.Count)],
             };
             generatedIncidents.Add(incident);
         }
@@ -178,7 +213,7 @@ public class DatabaseContext : DbContext
                     measureResults[rng.Next(measureResults.Length)])
                 {
                     Incident = incident,
-                    PerformedBy = employees[rng.Next(employees.Length)],
+                    PerformedBy = employees[rng.Next(employees.Count)],
                 });
             }
         }

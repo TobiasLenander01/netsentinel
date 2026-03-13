@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NetSentinel.Database;
@@ -32,6 +32,24 @@ public class DeviceService : IDeviceService
     {
         using var db = _dbContextFactory.CreateDbContext();
         return await db.Devices.Include(d => d.Owner).Include(d => d.Incidents).ToListAsync();
+    }
+
+    // read (paged)
+    public async Task<(List<Device> Items, int TotalCount)> ReadDevicesPagedAsync(int page, int pageSize)
+    {
+        using var db = _dbContextFactory.CreateDbContext();
+        var query = db.Devices
+            .Include(d => d.Owner)
+            .Include(d => d.Incidents)
+            .OrderBy(d => d.Name);
+
+        var totalCount = await query.CountAsync();
+        var items = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return (items, totalCount);
     }
 
     // read (single)

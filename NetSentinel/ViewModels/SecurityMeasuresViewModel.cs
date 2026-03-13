@@ -16,6 +16,8 @@ public partial class SecurityMeasuresViewModel : ViewModelBase, IRefreshable
     private readonly ToastManager _toastManager;
     private readonly SecurityMeasureDialogViewModel _securityMeasureDialogViewModel;
 
+    private const int PageSize = 12;
+
     [ObservableProperty]
     private ObservableCollection<SecurityMeasure> _securityMeasures = new();
 
@@ -25,6 +27,20 @@ public partial class SecurityMeasuresViewModel : ViewModelBase, IRefreshable
     [ObservableProperty]
     private bool _isEmpty;
 
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(PreviousPageCommand))]
+    [NotifyCanExecuteChangedFor(nameof(NextPageCommand))]
+    private int _currentPage = 1;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(NextPageCommand))]
+    private int _totalPages = 1;
+
+    [ObservableProperty]
+    private int _totalCount;
+
+    public string PageInfo => $"Page {CurrentPage} of {TotalPages}";
+
     public SecurityMeasuresViewModel(INavigationService navigator, ISecurityMeasureService securityMeasureService, DialogManager dialogManager, ToastManager toastManager, SecurityMeasureDialogViewModel securityMeasureDialogViewModel) : base(navigator)
     {
         Title = "Security Measures";
@@ -33,6 +49,9 @@ public partial class SecurityMeasuresViewModel : ViewModelBase, IRefreshable
         _toastManager = toastManager;
         _securityMeasureDialogViewModel = securityMeasureDialogViewModel;
     }
+
+    partial void OnCurrentPageChanged(int value) => OnPropertyChanged(nameof(PageInfo));
+    partial void OnTotalPagesChanged(int value) => OnPropertyChanged(nameof(PageInfo));
 
     public Task RefreshAsync() => LoadSecurityMeasuresAsync();
 
@@ -45,9 +64,11 @@ public partial class SecurityMeasuresViewModel : ViewModelBase, IRefreshable
 
         try
         {
-            var securityMeasureList = await _securityMeasureService.ReadAllSecurityMeasuresAsync();
-            SecurityMeasures = new ObservableCollection<SecurityMeasure>(securityMeasureList);
-            IsEmpty = SecurityMeasures.Count == 0;
+            var (items, totalCount) = await _securityMeasureService.ReadSecurityMeasuresPagedAsync(CurrentPage, PageSize);
+            SecurityMeasures = new ObservableCollection<SecurityMeasure>(items);
+            TotalCount = totalCount;
+            TotalPages = Math.Max(1, (int)Math.Ceiling(totalCount / (double)PageSize));
+            IsEmpty = totalCount == 0;
         }
         catch (Exception ex)
         {
@@ -62,6 +83,23 @@ public partial class SecurityMeasuresViewModel : ViewModelBase, IRefreshable
             IsLoading = false;
         }
     }
+
+    [RelayCommand(CanExecute = nameof(CanGoPrevious))]
+    private async Task PreviousPageAsync()
+    {
+        CurrentPage--;
+        await LoadSecurityMeasuresAsync();
+    }
+
+    [RelayCommand(CanExecute = nameof(CanGoNext))]
+    private async Task NextPageAsync()
+    {
+        CurrentPage++;
+        await LoadSecurityMeasuresAsync();
+    }
+
+    private bool CanGoPrevious() => CurrentPage > 1;
+    private bool CanGoNext() => CurrentPage < TotalPages;
 
     [RelayCommand]
     public async Task ShowNewSecurityMeasureDialog()
