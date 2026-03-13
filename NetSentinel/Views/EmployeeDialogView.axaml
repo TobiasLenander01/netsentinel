@@ -16,6 +16,11 @@
             </StackPanel>
 
             <StackPanel Spacing="6">
+                <TextBlock Text="Email" />
+                <TextBox Text="{Binding Email}" Watermark="name@company.com" />
+            </StackPanel>
+
+            <StackPanel Spacing="6">
                 <TextBlock Text="Employee Number" />
                 <TextBox Text="{Binding EmployeeNo}" Watermark="e.g. EMP001" />
             </StackPanel>

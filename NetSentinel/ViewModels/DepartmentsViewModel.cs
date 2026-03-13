@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.EntityFrameworkCore;
 using NetSentinel.Interfaces;
 using NetSentinel.Models;
 using ShadUI;
@@ -101,7 +102,6 @@ public partial class DepartmentsViewModel : ViewModelBase, IRefreshable
     private bool CanGoPrevious() => CurrentPage > 1;
     private bool CanGoNext() => CurrentPage < TotalPages;
 
-    [RelayCommand]
     private async Task DeleteDepartmentAsync(Department department)
     {
         try
@@ -114,6 +114,23 @@ public partial class DepartmentsViewModel : ViewModelBase, IRefreshable
                 .DismissOnClick()
                 .ShowSuccess();
         }
+        catch (DbUpdateException)
+        {
+            _toastManager
+                .CreateToast("Cannot delete department")
+                .WithContent("This department still has employees")
+                .DismissOnClick()
+                .ShowError();
+        }
+        catch (InvalidOperationException ex)
+        {
+            _toastManager
+                .CreateToast("Cannot delete department")
+                .WithContent("This department still has employees")
+                .DismissOnClick()
+                .ShowError();
+            Console.WriteLine(ex);
+        }
         catch (Exception ex)
         {
             _toastManager
@@ -122,6 +139,22 @@ public partial class DepartmentsViewModel : ViewModelBase, IRefreshable
                 .DismissOnClick()
                 .ShowError();
         }
+    }
+
+    [RelayCommand]
+    public void ShowDeleteDepartmentDialog(Department department)
+    {
+        _dialogManager.CreateDialog(
+            "Are you absolutely sure?",
+            "This will permanently delete this department.")
+            .WithPrimaryButton("Confirm", async () =>
+            {
+                await DeleteDepartmentAsync(department);
+            }, DialogButtonStyle.Destructive)
+            .WithCancelButton("Cancel")
+            .WithMaxWidth(512)
+            .Dismissible()
+            .Show();
     }
 
     [RelayCommand]

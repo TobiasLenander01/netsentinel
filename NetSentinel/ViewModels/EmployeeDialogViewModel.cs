@@ -4,6 +4,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using NetSentinel.Interfaces;
 using NetSentinel.Models;
 using ShadUI;
@@ -23,17 +25,20 @@ public partial class EmployeeDialogViewModel : ViewModelBase
     [ObservableProperty]
     [NotifyDataErrorInfo]
     [Required(ErrorMessage = "Name is required")]
+    [MaxLength(50, ErrorMessage = "Name must be 50 characters or less")]
 
     private string _name = String.Empty;
 
     [ObservableProperty]
     [NotifyDataErrorInfo]
     [Required(ErrorMessage = "Employee Number is required")]
+    [MaxLength(15, ErrorMessage = "Employee number must be 15 characters or less")]
     private string _employeeNo = String.Empty;
 
     [ObservableProperty]
     [NotifyDataErrorInfo]
     [Required(ErrorMessage = "Email is required")]
+    [MaxLength(40, ErrorMessage = "Email must be 40 characters or less")]
     private string _email = String.Empty;
 
     [ObservableProperty]
@@ -95,9 +100,10 @@ public partial class EmployeeDialogViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
+            var userMessage = BuildSaveErrorMessage(ex);
             _toastManager
-                .CreateToast("Failed to save employee")
-                .WithContent(ex.Message)
+                .CreateToast("Unable to save employee")
+                .WithContent(userMessage)
                 .DismissOnClick()
                 .ShowError();
             _dialogManager.Close(this, new CloseDialogOptions { Success = false });
@@ -140,5 +146,15 @@ public partial class EmployeeDialogViewModel : ViewModelBase
         Email = employee.Email;
         EmployeeNo = employee.EmployeeNo;
         SelectedDepartment = employee.Department;
+    }
+
+    private static string BuildSaveErrorMessage(Exception ex)
+    {
+        if (ex is DbUpdateException { InnerException: SqlException sqlEx } && sqlEx.Number == 2628)
+        {
+            return "One or more fields are too long. Name max 50, employee number max 15, email max 40.";
+        }
+
+        return "Please check required fields and length limits, then try again.";
     }
 }

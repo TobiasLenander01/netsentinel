@@ -11,10 +11,10 @@ public class Device
     [MaxLength(100)]
     public string Name {get; set;} = string.Empty;
 
-    [MaxLength(15)]
+    [MaxLength(100)]
     public string IPAddress {get; set;} = string.Empty;
 
-    [MaxLength(17)]
+    [MaxLength(100)]
     [Required]
     public string SerialNumber {get; set;} = string.Empty;
 
@@ -22,7 +22,6 @@ public class Device
 
     public bool HasIncidents => Incidents.Count > 0;
 
-    [Required]
     public Employee? Owner {get; set;}
 
     public Device() {}

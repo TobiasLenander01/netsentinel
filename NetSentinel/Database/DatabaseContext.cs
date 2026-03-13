@@ -32,10 +32,26 @@ public class DatabaseContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // Delete behavior summary: Departments/Devices are protected by Restrict, while Employee deletions null out Device.Owner and SecurityMeasure.PerformedBy.
+        modelBuilder.Entity<Employee>()
+            .HasOne(e => e.Department)
+            .WithMany(d => d.Employees)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Device>()
+            .HasOne(d => d.Owner)
+            .WithMany(e => e.Devices)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<Incident>()
+            .HasOne(i => i.Device)
+            .WithMany(d => d.Incidents)
+            .OnDelete(DeleteBehavior.Restrict);
+
         modelBuilder.Entity<SecurityMeasure>()
             .HasOne(sm => sm.PerformedBy)
             .WithMany()
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.SetNull);
     }
 
     /// <summary>
