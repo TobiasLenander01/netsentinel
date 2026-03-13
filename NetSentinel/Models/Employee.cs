@@ -17,15 +17,20 @@ public class Employee
 
     public List<Device> Devices {get; set;} = new();
 
+    [Required] [MaxLength(25)]
+    public string Email {get; set;} = String.Empty;
+
     [Required]
     public Department? Department {get; set;}
 
     public Employee(){}
 
-    public Employee(string employeeNo, string name)
+    public Employee(string employeeNo, string name, string email, Department? department)
     {
         EmployeeNo = employeeNo;
         Name = name;
+        Email = email;
+        Department = department;
     }
 
 

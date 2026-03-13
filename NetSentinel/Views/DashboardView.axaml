@@ -107,7 +107,7 @@ Loaded="OnLoaded">
 
                                         <StackPanel Grid.Column="1" Margin="8,0" VerticalAlignment="Center">
                                             <TextBlock Classes="Small" Text="{Binding Name}" />
-                                            <TextBlock Classes="Caption Muted" Text="{Binding EmployeeNo}" />
+                                            <TextBlock Classes="Caption Muted" Text="{Binding Email}" />
                                         </StackPanel>
                                         <TextBlock
                                         FontSize="16"
