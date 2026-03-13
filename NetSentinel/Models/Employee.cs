@@ -17,7 +17,7 @@ public class Employee
 
     public List<Device> Devices {get; set;} = new();
 
-    [Required] [MaxLength(25)]
+    [Required] [MaxLength(40)]
     public string Email {get; set;} = String.Empty;
 
     [Required]

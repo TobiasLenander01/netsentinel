@@ -125,10 +125,10 @@ public partial class DashboardViewModel : ViewModelBase
         var entries = SecurityMeasures
             .Where(sm => sm.PerformedBy != null)
             .GroupBy(sm => sm.PerformedBy!)
-            .Select(g => new { g.Key.Name, g.Key.EmployeeNo, Count = g.Count() })
+            .Select(g => new { g.Key.Name, g.Key.Email, Count = g.Count() })
             .OrderByDescending(e => e.Count)
             .Take(5)
-            .Select((e, i) => new SecurityMeasureLeaderboardEntry(i + 1, e.Name, e.EmployeeNo, e.Count));
+            .Select((e, i) => new SecurityMeasureLeaderboardEntry(i + 1, e.Name, e.Email, e.Count));
 
         Leaderboard = new ObservableCollection<SecurityMeasureLeaderboardEntry>(entries);
         HasLeaderboard = Leaderboard.Count > 0;
