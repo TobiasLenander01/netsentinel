@@ -15,7 +15,7 @@ public partial class IncidentsViewModel : ViewModelBase
     private readonly DialogManager _dialogManager;
     private readonly ToastManager _toastManager;
 
-    private const int PageSize = 10;
+    private const int PageSize = 12;
 
     [ObservableProperty]
     private ObservableCollection<Incident> _incidents = new();

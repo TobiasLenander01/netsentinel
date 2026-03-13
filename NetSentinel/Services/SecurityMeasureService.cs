@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NetSentinel.Database;
@@ -30,6 +30,24 @@ public class SecurityMeasureService : ISecurityMeasureService
     {
         using var db = _dbContextFactory.CreateDbContext();
         return await db.SecurityMeasures.Include(sm => sm.Incident).Include(pb => pb.PerformedBy).ToListAsync();
+    }
+
+    // read (paged)
+    public async Task<(List<SecurityMeasure> Items, int TotalCount)> ReadSecurityMeasuresPagedAsync(int page, int pageSize)
+    {
+        using var db = _dbContextFactory.CreateDbContext();
+        var query = db.SecurityMeasures
+            .Include(sm => sm.Incident)
+            .Include(sm => sm.PerformedBy)
+            .OrderBy(sm => sm.Id);
+
+        var totalCount = await query.CountAsync();
+        var items = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return (items, totalCount);
     }
 
     // read (single)

@@ -27,7 +27,8 @@
                 IsReadOnly="True"
                 IsEnabled="{Binding !IsLoading}"
                 Background="{DynamicResource CardBackgroundColor}"
-                GridLinesVisibility="Horizontal">
+                GridLinesVisibility="Horizontal"
+                VerticalAlignment="Top">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Description" Binding="{Binding Description}"
                         Width="*" />
