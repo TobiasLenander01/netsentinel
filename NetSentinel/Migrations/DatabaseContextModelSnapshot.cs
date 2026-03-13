@@ -89,6 +89,11 @@ namespace NetSentinel.Migrations
                     b.Property<int>("DepartmentId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
                     b.Property<string>("EmployeeNo")
                         .IsRequired()
                         .HasMaxLength(15)
@@ -153,6 +158,9 @@ namespace NetSentinel.Migrations
 
                     b.Property<int>("IncidentId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("PerformedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("PerformedById")
                         .HasColumnType("int");

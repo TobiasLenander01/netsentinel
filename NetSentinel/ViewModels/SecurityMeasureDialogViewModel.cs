@@ -38,6 +38,11 @@ public partial class SecurityMeasureDialogViewModel : ViewModelBase
     private Employee? _selectedEmployee;
 
     [ObservableProperty]
+    [NotifyDataErrorInfo]
+    [Required(ErrorMessage = "Performed at is required")]
+    private DateTime _performedAt = DateTime.Now;
+
+    [ObservableProperty]
     private ObservableCollection<Incident> _incidents = new();
 
     [ObservableProperty]
@@ -140,6 +145,7 @@ public partial class SecurityMeasureDialogViewModel : ViewModelBase
         Result = securityMeasure.Result;
         SelectedEmployee = securityMeasure.PerformedBy;
         SelectedIncident = securityMeasure.Incident;
+        PerformedAt = securityMeasure.PerformedAt;
 
         ClearErrors();
     }

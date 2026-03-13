@@ -1,12 +1,12 @@
 <UserControl
-    xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:vm="using:NetSentinel.ViewModels"
-    xmlns:models="using:NetSentinel.Models"
-    xmlns:shad="clr-namespace:ShadUI;assembly=ShadUI"
-    x:Class="NetSentinel.Views.EmployeesView"
-    x:DataType="vm:EmployeesViewModel"
-    Loaded="OnLoaded">
+xmlns="https://github.com/avaloniaui"
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+xmlns:vm="using:NetSentinel.ViewModels"
+xmlns:models="using:NetSentinel.Models"
+xmlns:shad="clr-namespace:ShadUI;assembly=ShadUI"
+x:Class="NetSentinel.Views.EmployeesView"
+x:DataType="vm:EmployeesViewModel"
+Loaded="OnLoaded">
 
     <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="40">
 
@@ -16,39 +16,40 @@
         <!-- Row 1: Add button -->
         <Grid Grid.Row="1" Margin="0,0,0,20">
             <Button Content="Add employee" Classes="Primary"
-                Command="{Binding ShowNewEmployeeDialogCommand}"
-                HorizontalAlignment="Left" IsEnabled="{Binding !IsLoading}" />
+                    Command="{Binding ShowNewEmployeeDialogCommand}"
+                    HorizontalAlignment="Left" IsEnabled="{Binding !IsLoading}" />
         </Grid>
 
         <!-- Row 2: DataGrid -->
         <Grid Grid.Row="2">
             <DataGrid
-                ItemsSource="{Binding Employees}"
-                CanUserSortColumns="True"
-                IsReadOnly="True"
-                IsEnabled="{Binding !IsLoading}"
-                Background="{DynamicResource CardBackgroundColor}"
-                GridLinesVisibility="Horizontal"
-                VerticalAlignment="Top">
+            ItemsSource="{Binding Employees}"
+            CanUserSortColumns="True"
+            IsReadOnly="True"
+            IsEnabled="{Binding !IsLoading}"
+            Background="{DynamicResource CardBackgroundColor}"
+            GridLinesVisibility="Horizontal"
+            VerticalAlignment="Top">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Employee No" Binding="{Binding EmployeeNo}" Width="auto" />
                     <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="auto" />
+                    <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="auto" />
                     <DataGridTextColumn Header="Department" Binding="{Binding Department.Name}" Width="*" />
 
                     <DataGridTemplateColumn Header="Actions">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:Employee">
                                 <Button Content="..." Classes="Ghost"
-                                    HorizontalAlignment="Center"
-                                    HorizontalContentAlignment="Center">
+                                        HorizontalAlignment="Center"
+                                        HorizontalContentAlignment="Center">
                                     <Button.Flyout>
                                         <MenuFlyout>
                                             <MenuItem Header="Edit employee" Cursor="Hand"
-                                                Command="{Binding $parent[UserControl].((vm:EmployeesViewModel)DataContext).ShowEditEmployeeDialogCommand}"
-                                                CommandParameter="{Binding}" />
+                                                      Command="{Binding $parent[UserControl].((vm:EmployeesViewModel)DataContext).ShowEditEmployeeDialogCommand}"
+                                                      CommandParameter="{Binding}" />
                                             <MenuItem Header="Delete employee" Cursor="Hand"
-                                                Command="{Binding $parent[UserControl].((vm:EmployeesViewModel)DataContext).ShowDeleteEmployeeDialogCommand}"
-                                                CommandParameter="{Binding}" />
+                                                      Command="{Binding $parent[UserControl].((vm:EmployeesViewModel)DataContext).ShowDeleteEmployeeDialogCommand}"
+                                                      CommandParameter="{Binding}" />
                                         </MenuFlyout>
                                     </Button.Flyout>
                                 </Button>
@@ -60,25 +61,25 @@
             </DataGrid>
 
             <TextBlock Text="No employees found."
-                IsVisible="{Binding IsEmpty}"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Foreground="Gray"
-                Margin="0,50,0,0" />
+                       IsVisible="{Binding IsEmpty}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Foreground="Gray"
+                       Margin="0,50,0,0" />
 
             <shad:BusyArea CornerRadius="{DynamicResource LgCornerRadius}"
-                IsBusy="{Binding IsLoading}" />
+                           IsBusy="{Binding IsLoading}" />
         </Grid>
 
         <!-- Row 3: Pagination -->
         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center"
-            Spacing="12" Margin="0,12,0,0" IsVisible="{Binding !IsEmpty}">
+                    Spacing="12" Margin="0,12,0,0" IsVisible="{Binding !IsEmpty}">
             <Button Content="&lt;" Classes="Outline"
-                Command="{Binding PreviousPageCommand}" />
+                    Command="{Binding PreviousPageCommand}" />
             <TextBlock Text="{Binding PageInfo}"
-                VerticalAlignment="Center" />
+                       VerticalAlignment="Center" />
             <Button Content="&gt;" Classes="Outline"
-                Command="{Binding NextPageCommand}" />
+                    Command="{Binding NextPageCommand}" />
         </StackPanel>
 
     </Grid>

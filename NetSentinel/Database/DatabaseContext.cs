@@ -100,9 +100,11 @@ public class DatabaseContext : DbContext
             "Healer", "Blacksmith", "Merchant", "Scholar", "Guard",
         ];
         var generatedEmployees = firstNames
-            .Select((name, i) => new Employee($"EMP{i + 1:D3}", name)
+            .Select((name, i) =>
             {
-                Department = generatedDepts[rng.Next(generatedDepts.Count)]
+                var department = generatedDepts[rng.Next(generatedDepts.Count)];
+                var email = $"{name.ToLowerInvariant()}.{i + 1}@netsentinel.se";
+                return new Employee($"EMP{i + 1:D3}", name, email, department);
             })
             .ToList();
         Employees.AddRange(generatedEmployees);
@@ -116,13 +118,11 @@ public class DatabaseContext : DbContext
         {
             int subnet = (i / 254) + 1;
             int host = (i % 254) + 1;
-            return new Device
-            {
-                Name = $"{deviceTypes[i % deviceTypes.Length]} {i + 1}",
-                IPAddress = $"192.168.{subnet}.{host}",
-                SerialNumber = $"SN-{i + 1:D4}",
-                Owner = generatedEmployees[rng.Next(generatedEmployees.Count)],
-            };
+            return new Device(
+                $"{deviceTypes[i % deviceTypes.Length]} {i + 1}",
+                $"192.168.{subnet}.{host}",
+                $"SN-{i + 1:D4}",
+                generatedEmployees[rng.Next(generatedEmployees.Count)]);
         }).ToList();
         Devices.AddRange(generatedDevices);
 
@@ -191,13 +191,12 @@ public class DatabaseContext : DbContext
         {
             // Pick a random day within the last 365 days
             int daysAgo = rng.Next(0, 365);
-            var incident = new Incident(incidentDescriptions[rng.Next(incidentDescriptions.Length)])
-            {
-                CreatedAt = now.AddDays(-daysAgo),
-                Priority = priorities[rng.Next(priorities.Length)],
-                Status = statuses[rng.Next(statuses.Length)],
-                Device = devices[rng.Next(devices.Count)],
-            };
+            var incident = new Incident(
+                incidentDescriptions[rng.Next(incidentDescriptions.Length)],
+                now.AddDays(-daysAgo),
+                priorities[rng.Next(priorities.Length)],
+                statuses[rng.Next(statuses.Length)],
+                devices[rng.Next(devices.Count)]);
             generatedIncidents.Add(incident);
         }
         Incidents.AddRange(generatedIncidents);
@@ -208,13 +207,13 @@ public class DatabaseContext : DbContext
             int measureCount = rng.Next(1, 3);
             for (int m = 0; m < measureCount; m++)
             {
+                var performedAt = incident.CreatedAt.AddHours(rng.Next(1, 72));
                 SecurityMeasures.Add(new SecurityMeasure(
                     measureDescriptions[rng.Next(measureDescriptions.Length)],
-                    measureResults[rng.Next(measureResults.Length)])
-                {
-                    Incident = incident,
-                    PerformedBy = employees[rng.Next(employees.Count)],
-                });
+                    measureResults[rng.Next(measureResults.Length)],
+                    incident,
+                    employees[rng.Next(employees.Count)],
+                    performedAt));
             }
         }
 

@@ -24,4 +24,14 @@ public class Device
 
     [Required]
     public Employee? Owner {get; set;}
+
+    public Device() {}
+
+    public Device(string name, string ipAddress, string serialNumber, Employee owner)
+    {
+        Name = name;
+        IPAddress = ipAddress;
+        SerialNumber = serialNumber;
+        Owner = owner;
+    }
 }

@@ -32,6 +32,11 @@ public partial class EmployeeDialogViewModel : ViewModelBase
     private string _employeeNo = String.Empty;
 
     [ObservableProperty]
+    [NotifyDataErrorInfo]
+    [Required(ErrorMessage = "Email is required")]
+    private string _email = String.Empty;
+
+    [ObservableProperty]
     private bool _isLoading;
 
     [ObservableProperty]
@@ -75,6 +80,7 @@ public partial class EmployeeDialogViewModel : ViewModelBase
             return;
         
         _employee.Name = Name;
+        _employee.Email = Email;
         _employee.EmployeeNo = EmployeeNo;
         _employee.Department = SelectedDepartment;
 
@@ -131,6 +137,7 @@ public partial class EmployeeDialogViewModel : ViewModelBase
         // Observe Employee properties
         _employee = employee;
         Name = employee.Name;
+        Email = employee.Email;
         EmployeeNo = employee.EmployeeNo;
         SelectedDepartment = employee.Department;
     }
