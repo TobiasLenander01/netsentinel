@@ -20,15 +20,20 @@ public class SecurityMeasure
     [Required]
     public Employee? PerformedBy { get; set; }
 
+    [Required]
+    public DateTime PerformedAt { get; set; }
+
     public SecurityMeasure()
     {
         
     }
 
-    public SecurityMeasure(string description, string result)
+    public SecurityMeasure(string description, string result, Incident incident, Employee performedBy, DateTime performedAt)
     {
         Description = description;
         Result = result;
-
+        Incident = incident;
+        PerformedBy = performedBy;
+        PerformedAt = performedAt;
     }
 }

@@ -15,7 +15,7 @@ using ShadUI;
 
 namespace NetSentinel.ViewModels;
 
-public record SecurityMeasureLeaderboardEntry(int Rank, string Name, string EmployeeNo, int Count);
+public record SecurityMeasureLeaderboardEntry(int Rank, string Name, string Email, int Count);
 
 public partial class DashboardViewModel : ViewModelBase
 {
