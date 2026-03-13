@@ -9,15 +9,15 @@ public class Employee
 {
     public int Id { get; set;}
     
-    [Required] [MaxLength(15)]
+    [Required] [MaxLength(100)]
     public string EmployeeNo {get; set;} = String.Empty;
     
-    [Required] [MaxLength(15)]
+    [Required] [MaxLength(100)]
     public string Name {get; set;} = String.Empty;
 
     public List<Device> Devices {get; set;} = new();
 
-    [Required] [MaxLength(40)]
+    [Required] [MaxLength(100)]
     public string Email {get; set;} = String.Empty;
 
     [Required]
