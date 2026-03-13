@@ -84,51 +84,40 @@ Loaded="OnLoaded">
             Margin="8">
                 <DockPanel>
                     <StackPanel DockPanel.Dock="Top" Margin="24" Spacing="8">
-                        <TextBlock FontSize="16" FontWeight="DemiBold" Text="Recent Sales" />
-                        <TextBlock Classes="Caption Muted" Text="You made 265 sales this month." />
+                        <TextBlock FontSize="16" FontWeight="DemiBold" Text="Security Measures Leaderboard" />
                     </StackPanel>
-                    <StackPanel Margin="24,0,24,24" Spacing="24">
-                        <Grid ColumnDefinitions="Auto * Auto">
-                            <Border Background="{DynamicResource MutedColor}" CornerRadius="18" Height="36" Width="36" VerticalAlignment="Center" />
-                            <StackPanel Grid.Column="1" Margin="8,0">
-                                <TextBlock Classes="Small" Text="Olivia Martin" />
-                                <TextBlock Classes="Caption Muted" Text="olivia.martin@email.com" />
-                            </StackPanel>
-                            <TextBlock FontSize="16" FontWeight="DemiBold" Grid.Column="2" Text="+$1,999.00" VerticalAlignment="Center" />
-                        </Grid>
-                        <Grid ColumnDefinitions="Auto * Auto">
-                            <Border Background="{DynamicResource MutedColor}" CornerRadius="18" Height="36" Width="36" VerticalAlignment="Center" />
-                            <StackPanel Grid.Column="1" Margin="8,0">
-                                <TextBlock Classes="Small" Text="Jackson Lee" />
-                                <TextBlock Classes="Caption Muted" Text="jackson.lee@email.com" />
-                            </StackPanel>
-                            <TextBlock FontSize="16" FontWeight="DemiBold" Grid.Column="2" Text="+$39.00" VerticalAlignment="Center" />
-                        </Grid>
-                        <Grid ColumnDefinitions="Auto * Auto">
-                            <Border Background="{DynamicResource MutedColor}" CornerRadius="18" Height="36" Width="36" VerticalAlignment="Center" />
-                            <StackPanel Grid.Column="1" Margin="8,0">
-                                <TextBlock Classes="Small" Text="Isabella Nguyen" />
-                                <TextBlock Classes="Caption Muted" Text="isabella.nguyen@email.com" />
-                            </StackPanel>
-                            <TextBlock FontSize="16" FontWeight="DemiBold" Grid.Column="2" Text="+$299.00" VerticalAlignment="Center" />
-                        </Grid>
-                        <Grid ColumnDefinitions="Auto * Auto">
-                            <Border Background="{DynamicResource MutedColor}" CornerRadius="18" Height="36" Width="36" VerticalAlignment="Center" />
-                            <StackPanel Grid.Column="1" Margin="8,0">
-                                <TextBlock Classes="Small" Text="William Kim" />
-                                <TextBlock Classes="Caption Muted" Text="will@email.com" />
-                            </StackPanel>
-                            <TextBlock FontSize="16" FontWeight="DemiBold" Grid.Column="2" Text="+$99.00" VerticalAlignment="Center" />
-                        </Grid>
-                        <Grid ColumnDefinitions="Auto * Auto">
-                            <Border Background="{DynamicResource MutedColor}" CornerRadius="18" Height="36" Width="36" VerticalAlignment="Center" />
-                            <StackPanel Grid.Column="1" Margin="8,0">
-                                <TextBlock Classes="Small" Text="Sofia Davis" />
-                                <TextBlock Classes="Caption Muted" Text="sofia.davis@email.com" />
-                            </StackPanel>
-                            <TextBlock FontSize="16" FontWeight="DemiBold" Grid.Column="2" Text="+$39.00" VerticalAlignment="Center" />
-                        </Grid>
-                    </StackPanel>
+                    <Panel Margin="24,0,24,24">
+                        <TextBlock
+                            Classes="Caption Muted"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Text="No security measures recorded yet."
+                            IsVisible="{Binding !HasLeaderboard}" />
+                        <ItemsControl ItemsSource="{Binding Leaderboard}" IsVisible="{Binding HasLeaderboard}">
+                            <ItemsControl.DataTemplates>
+                                <DataTemplate x:DataType="vm:SecurityMeasureLeaderboardEntry">
+                                    <Grid ColumnDefinitions="Auto * Auto" Margin="0,0,0,24">
+                                        <Border
+                                            Background="{DynamicResource MutedColor}"
+                                            CornerRadius="18"
+                                            Height="36"
+                                            Width="36"
+                                            VerticalAlignment="Center" />
+                                        <StackPanel Grid.Column="1" Margin="8,0" VerticalAlignment="Center">
+                                            <TextBlock Classes="Small" Text="{Binding Name}" />
+                                            <TextBlock Classes="Caption Muted" Text="{Binding EmployeeNo}" />
+                                        </StackPanel>
+                                        <TextBlock
+                                            FontSize="16"
+                                            FontWeight="DemiBold"
+                                            Grid.Column="2"
+                                            Text="{Binding Count}"
+                                            VerticalAlignment="Center" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.DataTemplates>
+                        </ItemsControl>
+                    </Panel>
                 </DockPanel>
             </Border>
         </Grid>

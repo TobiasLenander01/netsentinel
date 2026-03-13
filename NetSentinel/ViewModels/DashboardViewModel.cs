@@ -9,8 +9,11 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NetSentinel.ViewModels;
+
+public record SecurityMeasureLeaderboardEntry(string Name, string EmployeeNo, int Count);
 
 public partial class DashboardViewModel : ViewModelBase
 {
@@ -38,6 +41,12 @@ public partial class DashboardViewModel : ViewModelBase
 
     [ObservableProperty]
     private ISeries[] _series = [];
+
+    [ObservableProperty]
+    private ObservableCollection<SecurityMeasureLeaderboardEntry> _leaderboard = new();
+
+    [ObservableProperty]
+    private bool _hasLeaderboard = false;
 
      public DashboardViewModel(INavigationService navigator, IIncidentService incidentService, IDepartmentService departmentService, IDeviceService deviceService, IEmployeeService employeeService, ISecurityMeasureService securityMeasureService) : base(navigator)
     {
@@ -89,6 +98,24 @@ public partial class DashboardViewModel : ViewModelBase
     partial void OnIncidentsChanged(ObservableCollection<Incident> value)
     {
         UpdateSeries();
+    }
+
+    partial void OnSecurityMeasuresChanged(ObservableCollection<SecurityMeasure> value)
+    {
+        UpdateLeaderboard();
+    }
+
+    private void UpdateLeaderboard()
+    {
+        var entries = SecurityMeasures
+            .Where(sm => sm.PerformedBy != null)
+            .GroupBy(sm => sm.PerformedBy!)
+            .Select(g => new SecurityMeasureLeaderboardEntry(g.Key.Name, g.Key.EmployeeNo, g.Count()))
+            .OrderByDescending(e => e.Count)
+            .Take(5);
+
+        Leaderboard = new ObservableCollection<SecurityMeasureLeaderboardEntry>(entries);
+        HasLeaderboard = Leaderboard.Count > 0;
     }
 
     private List<int> IncidentsPerMonth(ObservableCollection<Incident> incidents)
