@@ -15,12 +15,13 @@ public class Incident
     [Required]
     public DateTime CreatedAt {get; set;}
 
+    [Required]
     public Priority Priority {get; set;}
 
+    [Required]
     public Status Status {get; set;}
 
     [Required]
-    public int DeviceId {get; set;}
     public Device? Device {get; set;}
 
     public List<SecurityMeasure> SecurityMeasures { get; set; } = new();
