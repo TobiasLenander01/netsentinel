@@ -68,35 +68,57 @@ public partial class DevicesViewModel : ViewModelBase, IRefreshable
     [RelayCommand]
     public async Task ShowNewDeviceDialog()
     {
-        await _deviceDialogViewModel.LoadNewDeviceCommand.ExecuteAsync(null);
-        _dialogManager.CreateDialog(_deviceDialogViewModel)
-        .Dismissible()
-        .WithSuccessCallback(() =>
-            {
-                _toastManager
-                    .CreateToast("Device added")
-                    .DismissOnClick()
-                    .ShowSuccess();
-                _ = LoadDevicesAsync();
-            })
-        .Show();
+        try
+        {
+            await _deviceDialogViewModel.LoadNewDeviceCommand.ExecuteAsync(null);
+            _dialogManager.CreateDialog(_deviceDialogViewModel)
+            .Dismissible()
+            .WithSuccessCallback(() =>
+                {
+                    _toastManager
+                        .CreateToast("Device added")
+                        .DismissOnClick()
+                        .ShowSuccess();
+                    _ = LoadDevicesAsync();
+                })
+            .Show();
+        }
+        catch (Exception ex)
+        {
+            _toastManager
+                .CreateToast("Failed to open new device")
+                .WithContent(ex.Message)
+                .DismissOnClick()
+                .ShowError();
+        }
     }
 
     [RelayCommand]
     public async Task ShowEditDeviceDialog(Device device)
     {
-        await _deviceDialogViewModel.LoadExistingDeviceCommand.ExecuteAsync(device);
-        _dialogManager.CreateDialog(_deviceDialogViewModel)
-        .Dismissible()
-        .WithSuccessCallback(() =>
-            {
-                _toastManager
-                    .CreateToast("Device edited")
-                    .DismissOnClick()
-                    .ShowSuccess();
-                _ = LoadDevicesAsync();
-            })
-        .Show();
+        try
+        {
+            await _deviceDialogViewModel.LoadExistingDeviceCommand.ExecuteAsync(device);
+            _dialogManager.CreateDialog(_deviceDialogViewModel)
+            .Dismissible()
+            .WithSuccessCallback(() =>
+                {
+                    _toastManager
+                        .CreateToast("Device edited")
+                        .DismissOnClick()
+                        .ShowSuccess();
+                    _ = LoadDevicesAsync();
+                })
+            .Show();
+        }
+        catch (Exception ex)
+        {
+            _toastManager
+                .CreateToast("Failed to open device")
+                .WithContent(ex.Message)
+                .DismissOnClick()
+                .ShowError();
+        }
     }
 
     [RelayCommand]
@@ -107,12 +129,23 @@ public partial class DevicesViewModel : ViewModelBase, IRefreshable
             "This will permanently delete your device.")
         .WithPrimaryButton("Confirm", async () =>
         {
-            await _deviceService.DeleteDevice(device);
-            _toastManager.CreateToast("Device deleted")
-                .WithContent("Device deleted successfully!")
-                .DismissOnClick()
-                .ShowSuccess();
-            await LoadDevicesAsync();
+            try
+            {
+                await _deviceService.DeleteDevice(device);
+                _toastManager.CreateToast("Device deleted")
+                    .WithContent("Device deleted successfully!")
+                    .DismissOnClick()
+                    .ShowSuccess();
+                await LoadDevicesAsync();
+            }
+            catch (Exception ex)
+            {
+                _toastManager
+                    .CreateToast("Failed to delete device")
+                    .WithContent(ex.Message)
+                    .DismissOnClick()
+                    .ShowError();
+            }
         }, DialogButtonStyle.Destructive)
         .WithCancelButton("Cancel")
         .WithMaxWidth(512)
