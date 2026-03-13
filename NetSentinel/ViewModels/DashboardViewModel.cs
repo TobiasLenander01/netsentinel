@@ -7,9 +7,11 @@ using System.Collections.ObjectModel;
 using NetSentinel.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using ShadUI;
 
 namespace NetSentinel.ViewModels;
 
@@ -22,7 +24,7 @@ public partial class DashboardViewModel : ViewModelBase
     private readonly IDeviceService _deviceService;
     private readonly IEmployeeService _employeeService;
     private readonly ISecurityMeasureService _securityMeasureService;
-
+    private readonly ToastManager _toastManager;
 
     [ObservableProperty]
     private ObservableCollection<Incident> _incidents = new ObservableCollection<Incident>();
@@ -48,7 +50,7 @@ public partial class DashboardViewModel : ViewModelBase
     [ObservableProperty]
     private bool _hasLeaderboard = false;
 
-     public DashboardViewModel(INavigationService navigator, IIncidentService incidentService, IDepartmentService departmentService, IDeviceService deviceService, IEmployeeService employeeService, ISecurityMeasureService securityMeasureService) : base(navigator)
+     public DashboardViewModel(INavigationService navigator, IIncidentService incidentService, IDepartmentService departmentService, IDeviceService deviceService, IEmployeeService employeeService, ISecurityMeasureService securityMeasureService, ToastManager toastManager) : base(navigator)
     {
         Title = "Dashboard";
         _incidentService = incidentService;
@@ -56,6 +58,8 @@ public partial class DashboardViewModel : ViewModelBase
         _deviceService = deviceService;
         _employeeService = employeeService;
         _securityMeasureService = securityMeasureService;
+        _toastManager = toastManager;
+        
         UpdateSeries();
     }
 
@@ -91,8 +95,19 @@ public partial class DashboardViewModel : ViewModelBase
     [RelayCommand]
     private async Task LoadIncidentsAsync()
     {
-        var incidents = await _incidentService.ReadAllIncidentsAsync();
-        Incidents = new ObservableCollection<Incident>(incidents);
+        try
+        {
+            var incidents = await _incidentService.ReadAllIncidentsAsync();
+            Incidents = new ObservableCollection<Incident>(incidents);
+        }
+        catch (Exception ex)
+        {
+            _toastManager
+                .CreateToast("Failed to load incidents")
+                .WithContent(ex.Message)
+                .DismissOnClick()
+                .ShowError();
+        }
     }
 
     partial void OnIncidentsChanged(ObservableCollection<Incident> value)
@@ -170,6 +185,4 @@ public partial class DashboardViewModel : ViewModelBase
             ShowSeparatorLines = false
         }
     ];
-
-   
 }

@@ -16,6 +16,7 @@ public partial class SecurityMeasureDialogViewModel : ViewModelBase
     private readonly IEmployeeService _employeeService;
     private readonly IIncidentService _incidentService;
     private readonly DialogManager _dialogManager;
+    private readonly ToastManager _toastManager;
 
     private SecurityMeasure _securityMeasure = new SecurityMeasure();
     private bool _isEditingExistingSecurityMeasure = false;
@@ -47,13 +48,14 @@ public partial class SecurityMeasureDialogViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isLoading;
 
-    public SecurityMeasureDialogViewModel(INavigationService navigator, DialogManager dialogManager, ISecurityMeasureService securityMeasureService, IEmployeeService employeeService, IIncidentService incidentService) : base(navigator)
+    public SecurityMeasureDialogViewModel(INavigationService navigator, DialogManager dialogManager, ToastManager toastManager, ISecurityMeasureService securityMeasureService, IEmployeeService employeeService, IIncidentService incidentService) : base(navigator)
     {
         Title = "Security Measure Dialog";
         _securityMeasureService = securityMeasureService;
         _employeeService = employeeService;
         _incidentService = incidentService;
         _dialogManager = dialogManager;
+        _toastManager = toastManager;
     }
 
     [RelayCommand]
@@ -93,8 +95,13 @@ public partial class SecurityMeasureDialogViewModel : ViewModelBase
 
             _dialogManager.Close(this, new CloseDialogOptions { Success = true });
         }
-        catch
+        catch (Exception ex)
         {
+            _toastManager
+                .CreateToast("Failed to save security measure")
+                .WithContent(ex.Message)
+                .DismissOnClick()
+                .ShowError();
             _dialogManager.Close(this, new CloseDialogOptions { Success = false });
         }
         finally
@@ -106,11 +113,27 @@ public partial class SecurityMeasureDialogViewModel : ViewModelBase
     private async Task InitializeProperties(SecurityMeasure securityMeasure)
     {
         IsLoading = true;
-        var employeeList = await _employeeService.ReadAllEmployeesAsync();
-        Employees = new ObservableCollection<Employee>(employeeList);
-        var incidentList = await _incidentService.ReadAllIncidentsAsync();
-        Incidents = new ObservableCollection<Incident>(incidentList);
-        IsLoading = false;
+        try
+        {
+            var employeeList = await _employeeService.ReadAllEmployeesAsync();
+            Employees = new ObservableCollection<Employee>(employeeList);
+            var incidentList = await _incidentService.ReadAllIncidentsAsync();
+            Incidents = new ObservableCollection<Incident>(incidentList);
+        }
+        catch (Exception ex)
+        {
+            Employees = new ObservableCollection<Employee>();
+            Incidents = new ObservableCollection<Incident>();
+            _toastManager
+                .CreateToast("Failed to load employees or incidents")
+                .WithContent(ex.Message)
+                .DismissOnClick()
+                .ShowError();
+        }
+        finally
+        {
+            IsLoading = false;
+        }
 
         _securityMeasure = securityMeasure;
         Description = securityMeasure.Description;

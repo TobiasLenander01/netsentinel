@@ -15,6 +15,7 @@ public partial class EmployeeDialogViewModel : ViewModelBase
     private readonly IEmployeeService _employeeService;
     private readonly IDepartmentService _departmentService;
     private readonly DialogManager _dialogManager;
+    private readonly ToastManager _toastManager;
 
     private Employee _employee = new Employee();
     private bool _isEditingExistingEmployee = false;
@@ -41,12 +42,13 @@ public partial class EmployeeDialogViewModel : ViewModelBase
     [Required(ErrorMessage = "Department is required")]
     private Department? _selectedDepartment;
 
-    public EmployeeDialogViewModel(INavigationService navigator, DialogManager dialogManager, IEmployeeService employeeService, IDepartmentService departmentService) : base(navigator)
+    public EmployeeDialogViewModel(INavigationService navigator, DialogManager dialogManager, ToastManager toastManager, IEmployeeService employeeService, IDepartmentService departmentService) : base(navigator)
     {
         Title = "Employee Dialog";
         _employeeService = employeeService;
         _departmentService = departmentService;
         _dialogManager = dialogManager;
+        _toastManager = toastManager;
     }
 
      [RelayCommand]
@@ -85,8 +87,13 @@ public partial class EmployeeDialogViewModel : ViewModelBase
 
             _dialogManager.Close(this, new CloseDialogOptions { Success = true });
         }
-        catch
+        catch (Exception ex)
         {
+            _toastManager
+                .CreateToast("Failed to save employee")
+                .WithContent(ex.Message)
+                .DismissOnClick()
+                .ShowError();
             _dialogManager.Close(this, new CloseDialogOptions { Success = false });
         }
         finally
@@ -102,9 +109,24 @@ public partial class EmployeeDialogViewModel : ViewModelBase
 
         // Load departments into drop down menu
         IsLoading = true;
-        var list = await _departmentService.ReadAllDepartmentsAsync();
-        Departments = new ObservableCollection<Department>(list);
-        IsLoading = false;
+        try
+        {
+            var list = await _departmentService.ReadAllDepartmentsAsync();
+            Departments = new ObservableCollection<Department>(list);
+        }
+        catch (Exception ex)
+        {
+            Departments = new ObservableCollection<Department>();
+            _toastManager
+                .CreateToast("Failed to load departments")
+                .WithContent(ex.Message)
+                .DismissOnClick()
+                .ShowError();
+        }
+        finally
+        {
+            IsLoading = false;
+        }
 
         // Observe Employee properties
         _employee = employee;

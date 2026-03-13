@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NetSentinel.Database;
@@ -21,6 +21,10 @@ public class SecurityMeasureService : ISecurityMeasureService
     public async Task AddSecurityMeasureAsync(SecurityMeasure securityMeasure)
     {
         using var db = _dbContextFactory.CreateDbContext();
+        if (securityMeasure.Incident != null)
+            db.Entry(securityMeasure.Incident).State = EntityState.Unchanged;
+        if (securityMeasure.PerformedBy != null)
+            db.Entry(securityMeasure.PerformedBy).State = EntityState.Unchanged;
         db.SecurityMeasures.Add(securityMeasure);
         await db.SaveChangesAsync();
     }
@@ -30,6 +34,24 @@ public class SecurityMeasureService : ISecurityMeasureService
     {
         using var db = _dbContextFactory.CreateDbContext();
         return await db.SecurityMeasures.Include(sm => sm.Incident).Include(pb => pb.PerformedBy).ToListAsync();
+    }
+
+    // read (paged)
+    public async Task<(List<SecurityMeasure> Items, int TotalCount)> ReadSecurityMeasuresPagedAsync(int page, int pageSize)
+    {
+        using var db = _dbContextFactory.CreateDbContext();
+        var query = db.SecurityMeasures
+            .Include(sm => sm.Incident)
+            .Include(sm => sm.PerformedBy)
+            .OrderBy(sm => sm.Id);
+
+        var totalCount = await query.CountAsync();
+        var items = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return (items, totalCount);
     }
 
     // read (single)
@@ -43,6 +65,10 @@ public class SecurityMeasureService : ISecurityMeasureService
     public async Task<int> UpdateSecurityMeasureAsync(SecurityMeasure updatedSecurityMeasure)
     {
         using var db = _dbContextFactory.CreateDbContext();
+        if (updatedSecurityMeasure.Incident != null)
+            db.Entry(updatedSecurityMeasure.Incident).State = EntityState.Unchanged;
+        if (updatedSecurityMeasure.PerformedBy != null)
+            db.Entry(updatedSecurityMeasure.PerformedBy).State = EntityState.Unchanged;
         db.SecurityMeasures.Update(updatedSecurityMeasure);
         return await db.SaveChangesAsync();
     }
