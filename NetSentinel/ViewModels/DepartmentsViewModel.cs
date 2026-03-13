@@ -118,9 +118,18 @@ public partial class DepartmentsViewModel : ViewModelBase, IRefreshable
         {
             _toastManager
                 .CreateToast("Cannot delete department")
-                .WithContent("This department still has employees. Move or delete them first.")
+                .WithContent("This department still has employees")
                 .DismissOnClick()
                 .ShowError();
+        }
+        catch (InvalidOperationException ex)
+        {
+            _toastManager
+                .CreateToast("Cannot delete department")
+                .WithContent("This department still has employees")
+                .DismissOnClick()
+                .ShowError();
+            Console.WriteLine(ex);
         }
         catch (Exception ex)
         {

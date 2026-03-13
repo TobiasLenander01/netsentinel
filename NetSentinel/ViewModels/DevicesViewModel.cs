@@ -183,6 +183,15 @@ public partial class DevicesViewModel : ViewModelBase, IRefreshable
                     .DismissOnClick()
                     .ShowError();
             }
+            catch (InvalidOperationException ex)
+            {
+                _toastManager
+                    .CreateToast("Cannot delete device")
+                    .WithContent("This device has incidents. Delete those incidents first.")
+                    .DismissOnClick()
+                    .ShowError();
+                Console.WriteLine(ex);
+            }
             catch (Exception ex)
             {
                 _toastManager
