@@ -15,6 +15,10 @@ public partial class DashboardView : UserControl
         if (DataContext is DashboardViewModel viewModel)
         {
             viewModel.LoadIncidentsCommand.Execute(null);
+            viewModel.LoadDepartmentsCommand.Execute(null);
+            viewModel.LoadDevicesCommand.Execute(null);
+            viewModel.LoadEmployeesCommand.Execute(null);
+            viewModel.LoadSecurityMeasuresCommand.Execute(null);
         }
     }
 }

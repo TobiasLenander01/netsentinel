@@ -1,20 +1,40 @@
 <UserControl
-    xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:avalonia="clr-namespace:LiveChartsCore.SkiaSharpView.Avalonia;assembly=LiveChartsCore.SkiaSharpView.Avalonia"
-    xmlns:vm="using:NetSentinel.ViewModels"
-    xmlns:components="using:NetSentinel.Components"
-    x:Class="NetSentinel.Views.DashboardView"
-    x:DataType="vm:DashboardViewModel"
-    Loaded="OnLoaded">
+xmlns="https://github.com/avaloniaui"
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+xmlns:avalonia="clr-namespace:LiveChartsCore.SkiaSharpView.Avalonia;assembly=LiveChartsCore.SkiaSharpView.Avalonia"
+xmlns:vm="using:NetSentinel.ViewModels"
+xmlns:components="using:NetSentinel.Components"
+x:Class="NetSentinel.Views.DashboardView"
+x:DataType="vm:DashboardViewModel"
+Loaded="OnLoaded">
 
     <StackPanel Spacing="20" Margin="40">
 
         <TextBlock Text="{Binding Title}" Classes="h1" />
 
-        <UniformGrid Columns="4" Margin="-6,0">
+        <UniformGrid Columns="5" Margin="-6,0">
             <components:OverviewCard
-            Hint="+180.1% from last month"
+            Title="Total Departments"
+            Value="{Binding Departments.Count, StringFormat={}{0}}">
+                <components:OverviewCard.Icon>
+                    <LucideIcon Kind="BrickWallShield" Size="20" StrokeWidth="1.5" />
+                </components:OverviewCard.Icon>
+            </components:OverviewCard>
+            <components:OverviewCard
+            Title="Total Employees"
+            Value="{Binding Employees.Count, StringFormat={}{0}}">
+                <components:OverviewCard.Icon>
+                    <LucideIcon Kind="BrickWallShield" Size="20" StrokeWidth="1.5" />
+                </components:OverviewCard.Icon>
+            </components:OverviewCard>
+            <components:OverviewCard
+            Title="Total Devices"
+            Value="{Binding Devices.Count, StringFormat={}{0}}">
+                    <components:OverviewCard.Icon>
+                    <LucideIcon Kind="BrickWallShield" Size="20" StrokeWidth="1.5" />
+                </components:OverviewCard.Icon>
+            </components:OverviewCard>
+            <components:OverviewCard
             Title="Total Incidents"
             Value="{Binding Incidents.Count, StringFormat={}{0}}">
                 <components:OverviewCard.Icon>
@@ -22,75 +42,46 @@
                 </components:OverviewCard.Icon>
             </components:OverviewCard>
             <components:OverviewCard
-            Hint="-20.1% from last month"
-            Title="Subscriptions"
-            Value="+2350">
+            Title="Total Security Measures"
+            Value="{Binding SecurityMeasures.Count, StringFormat={}{0}}">
                 <components:OverviewCard.Icon>
-                    <TextBlock
-                    Classes="LucideIcon"
-                    Foreground="{DynamicResource MutedColor}"
-                    Margin="0"
-                    Text="&#57764;" />
-                </components:OverviewCard.Icon>
-            </components:OverviewCard>
-            <components:OverviewCard
-            Hint="+19% from last month"
-            Title="Sales"
-            Value="+12,234">
-                <components:OverviewCard.Icon>
-                    <TextBlock
-                    Classes="LucideIcon"
-                    Foreground="{DynamicResource MutedColor}"
-                    Margin="0"
-                    Text="&#57518;" />
-                </components:OverviewCard.Icon>
-            </components:OverviewCard>
-            <components:OverviewCard
-            Hint="+201 since last hour"
-            Title="Active Now"
-            Value="+573">
-                <components:OverviewCard.Icon>
-                    <TextBlock
-                    Classes="LucideIcon"
-                    Foreground="{DynamicResource MutedColor}"
-                    Margin="0"
-                    Text="&#57400;" />
+                    <LucideIcon Kind="BrickWallShield" Size="20" StrokeWidth="1.5" />
                 </components:OverviewCard.Icon>
             </components:OverviewCard>
         </UniformGrid>
         <Grid ColumnDefinitions="3* 2*" Margin="-8,0">
             <Border
-                Background="{DynamicResource CardBackgroundColor}"
-                BorderBrush="{DynamicResource BorderColor}"
-                BorderThickness="1"
-                BoxShadow="{DynamicResource Shadow}"
-                CornerRadius="{DynamicResource 2XlCornerRadius}"
-                Margin="8">
+            Background="{DynamicResource CardBackgroundColor}"
+            BorderBrush="{DynamicResource BorderColor}"
+            BorderThickness="1"
+            BoxShadow="{DynamicResource Shadow}"
+            CornerRadius="{DynamicResource 2XlCornerRadius}"
+            Margin="8">
                 <DockPanel>
                     <TextBlock
-                        DockPanel.Dock="Top"
-                        FontSize="16"
-                        FontWeight="DemiBold"
-                        Margin="24,24,24,12"
-                        Text="Overview" />
+                    DockPanel.Dock="Top"
+                    FontSize="16"
+                    FontWeight="DemiBold"
+                    Margin="24,24,24,12"
+                    Text="Incidents per month" />
                     <avalonia:CartesianChart
-                        Margin="12,0,12,12"
-                        Name="CartesianChart1"
-                        Series="{Binding Series}"
-                        TooltipTextPaint="{Binding TooltipTextPaint}"
-                        TooltipTextSize="14"
-                        XAxes="{Binding XAxes}"
-                        YAxes="{Binding YAxes}" />
+                    Margin="12,0,12,12"
+                    Name="CartesianChart1"
+                    Series="{Binding Series}"
+                    TooltipTextPaint="{Binding TooltipTextPaint}"
+                    TooltipTextSize="14"
+                    XAxes="{Binding XAxes}"
+                    YAxes="{Binding YAxes}" />
                 </DockPanel>
             </Border>
             <Border
-                Background="{DynamicResource CardBackgroundColor}"
-                BorderBrush="{DynamicResource BorderColor}"
-                BorderThickness="1"
-                BoxShadow="{DynamicResource Shadow}"
-                CornerRadius="{DynamicResource 2XlCornerRadius}"
-                Grid.Column="1"
-                Margin="8">
+            Background="{DynamicResource CardBackgroundColor}"
+            BorderBrush="{DynamicResource BorderColor}"
+            BorderThickness="1"
+            BoxShadow="{DynamicResource Shadow}"
+            CornerRadius="{DynamicResource 2XlCornerRadius}"
+            Grid.Column="1"
+            Margin="8">
                 <DockPanel>
                     <StackPanel DockPanel.Dock="Top" Margin="24" Spacing="8">
                         <TextBlock FontSize="16" FontWeight="DemiBold" Text="Recent Sales" />

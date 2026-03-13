@@ -11,8 +11,6 @@ public partial class OverviewCard : UserControl
     public static readonly StyledProperty<string> ValueProperty =
         AvaloniaProperty.Register<OverviewCard, string>(nameof(Value));
 
-    public static readonly StyledProperty<string> HintProperty =
-        AvaloniaProperty.Register<OverviewCard, string>(nameof(Hint));
 
     public static readonly StyledProperty<object?> IconProperty =
         AvaloniaProperty.Register<OverviewCard, object?>(nameof(Icon));
@@ -29,11 +27,7 @@ public partial class OverviewCard : UserControl
         set => SetValue(ValueProperty, value);
     }
 
-    public string Hint
-    {
-        get => GetValue(HintProperty);
-        set => SetValue(HintProperty, value);
-    }
+
 
     public object? Icon
     {
