@@ -104,35 +104,57 @@ public partial class SecurityMeasuresViewModel : ViewModelBase, IRefreshable
     [RelayCommand]
     public async Task ShowNewSecurityMeasureDialog()
     {
-        await _securityMeasureDialogViewModel.LoadNewSecurityMeasureCommand.ExecuteAsync(null);
-        _dialogManager.CreateDialog(_securityMeasureDialogViewModel)
-        .Dismissible()
-        .WithSuccessCallback(() =>
-            {
-                _toastManager
-                    .CreateToast("Security measure added")
-                    .DismissOnClick()
-                    .ShowSuccess();
-                _ = LoadSecurityMeasuresAsync();
-            })
-        .Show();
+        try
+        {
+            await _securityMeasureDialogViewModel.LoadNewSecurityMeasureCommand.ExecuteAsync(null);
+            _dialogManager.CreateDialog(_securityMeasureDialogViewModel)
+            .Dismissible()
+            .WithSuccessCallback(() =>
+                {
+                    _toastManager
+                        .CreateToast("Security measure added")
+                        .DismissOnClick()
+                        .ShowSuccess();
+                    _ = LoadSecurityMeasuresAsync();
+                })
+            .Show();
+        }
+        catch (Exception ex)
+        {
+            _toastManager
+                .CreateToast("Failed to open new security measure")
+                .WithContent(ex.Message)
+                .DismissOnClick()
+                .ShowError();
+        }
     }
 
     [RelayCommand]
     public async Task ShowEditSecurityMeasureDialog(SecurityMeasure securityMeasure)
     {
-        await _securityMeasureDialogViewModel.LoadExistingSecurityMeasureCommand.ExecuteAsync(securityMeasure);
-        _dialogManager.CreateDialog(_securityMeasureDialogViewModel)
-        .Dismissible()
-        .WithSuccessCallback(() =>
-            {
-                _toastManager
-                    .CreateToast("Security measure updated")
-                    .DismissOnClick()
-                    .ShowSuccess();
-                _ = LoadSecurityMeasuresAsync();
-            })
-        .Show();
+        try
+        {
+            await _securityMeasureDialogViewModel.LoadExistingSecurityMeasureCommand.ExecuteAsync(securityMeasure);
+            _dialogManager.CreateDialog(_securityMeasureDialogViewModel)
+            .Dismissible()
+            .WithSuccessCallback(() =>
+                {
+                    _toastManager
+                        .CreateToast("Security measure updated")
+                        .DismissOnClick()
+                        .ShowSuccess();
+                    _ = LoadSecurityMeasuresAsync();
+                })
+            .Show();
+        }
+        catch (Exception ex)
+        {
+            _toastManager
+                .CreateToast("Failed to open security measure")
+                .WithContent(ex.Message)
+                .DismissOnClick()
+                .ShowError();
+        }
     }
 
     [RelayCommand]
@@ -143,12 +165,23 @@ public partial class SecurityMeasuresViewModel : ViewModelBase, IRefreshable
             "This will permanently delete this security measure.")
         .WithPrimaryButton("Confirm", async () =>
         {
-            await _securityMeasureService.DeleteSecurityMeasure(securityMeasure);
-            _toastManager.CreateToast("Security measure deleted")
-                .WithContent("Security measure deleted successfully!")
-                .DismissOnClick()
-                .ShowSuccess();
-            await LoadSecurityMeasuresAsync();
+            try
+            {
+                await _securityMeasureService.DeleteSecurityMeasure(securityMeasure);
+                _toastManager.CreateToast("Security measure deleted")
+                    .WithContent("Security measure deleted successfully!")
+                    .DismissOnClick()
+                    .ShowSuccess();
+                await LoadSecurityMeasuresAsync();
+            }
+            catch (Exception ex)
+            {
+                _toastManager
+                    .CreateToast("Failed to delete security measure")
+                    .WithContent(ex.Message)
+                    .DismissOnClick()
+                    .ShowError();
+            }
         }, DialogButtonStyle.Destructive)
         .WithCancelButton("Cancel")
         .WithMaxWidth(512)

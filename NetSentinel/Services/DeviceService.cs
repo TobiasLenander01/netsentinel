@@ -21,6 +21,8 @@ public class DeviceService : IDeviceService
     public async Task AddDeviceAsync(Device device)
     {
         using var db = _dbContextFactory.CreateDbContext();
+        if (device.Owner != null)
+            db.Entry(device.Owner).State = EntityState.Unchanged;
         db.Devices.Add(device);
         await db.SaveChangesAsync();
     }
@@ -61,6 +63,8 @@ public class DeviceService : IDeviceService
     public async Task<int> UpdateDeviceAsync(Device updatedDevice)
     {
         using var db = _dbContextFactory.CreateDbContext();
+        if (updatedDevice.Owner != null)
+            db.Entry(updatedDevice.Owner).State = EntityState.Unchanged;
         db.Devices.Update(updatedDevice);
         return await db.SaveChangesAsync();
     }

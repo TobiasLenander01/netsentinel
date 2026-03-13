@@ -104,35 +104,57 @@ public partial class EmployeesViewModel : ViewModelBase, IRefreshable
     [RelayCommand]
     public async Task ShowNewEmployeeDialog()
     {
-        await _employeeDialogViewModel.LoadNewEmployeeCommand.ExecuteAsync(null);
-        _dialogManager.CreateDialog(_employeeDialogViewModel)
-            .Dismissible()
-            .WithSuccessCallback(() =>
-            {
-                _toastManager
-                    .CreateToast("Employee added")
-                    .DismissOnClick()
-                    .ShowSuccess();
-                _ = LoadEmployeesAsync();
-            })
-            .Show();
+        try
+        {
+            await _employeeDialogViewModel.LoadNewEmployeeCommand.ExecuteAsync(null);
+            _dialogManager.CreateDialog(_employeeDialogViewModel)
+                .Dismissible()
+                .WithSuccessCallback(() =>
+                {
+                    _toastManager
+                        .CreateToast("Employee added")
+                        .DismissOnClick()
+                        .ShowSuccess();
+                    _ = LoadEmployeesAsync();
+                })
+                .Show();
+        }
+        catch (Exception ex)
+        {
+            _toastManager
+                .CreateToast("Failed to open new employee")
+                .WithContent(ex.Message)
+                .DismissOnClick()
+                .ShowError();
+        }
     }
 
     [RelayCommand]
     public async Task ShowEditEmployeeDialog(Employee employee)
     {
-        await _employeeDialogViewModel.LoadExistingEmployeeCommand.ExecuteAsync(employee);
-        _dialogManager.CreateDialog(_employeeDialogViewModel)
-            .Dismissible()
-            .WithSuccessCallback(() =>
-            {
-                _toastManager
-                    .CreateToast("Employee edited")
-                    .DismissOnClick()
-                    .ShowSuccess();
-                _ = LoadEmployeesAsync();
-            })
-            .Show();
+        try
+        {
+            await _employeeDialogViewModel.LoadExistingEmployeeCommand.ExecuteAsync(employee);
+            _dialogManager.CreateDialog(_employeeDialogViewModel)
+                .Dismissible()
+                .WithSuccessCallback(() =>
+                {
+                    _toastManager
+                        .CreateToast("Employee edited")
+                        .DismissOnClick()
+                        .ShowSuccess();
+                    _ = LoadEmployeesAsync();
+                })
+                .Show();
+        }
+        catch (Exception ex)
+        {
+            _toastManager
+                .CreateToast("Failed to open employee")
+                .WithContent(ex.Message)
+                .DismissOnClick()
+                .ShowError();
+        }
     }
 
     [RelayCommand]
@@ -143,12 +165,23 @@ public partial class EmployeesViewModel : ViewModelBase, IRefreshable
             "This will permanently delete this employee.")
             .WithPrimaryButton("Confirm", async () =>
             {
-                await _employeeService.DeleteEmployeeAsync(employee);
-                _toastManager.CreateToast("Employee deleted")
-                    .WithContent("Employee deleted successfully!")
-                    .DismissOnClick()
-                    .ShowSuccess();
-                await LoadEmployeesAsync();
+                try
+                {
+                    await _employeeService.DeleteEmployeeAsync(employee);
+                    _toastManager.CreateToast("Employee deleted")
+                        .WithContent("Employee deleted successfully!")
+                        .DismissOnClick()
+                        .ShowSuccess();
+                    await LoadEmployeesAsync();
+                }
+                catch (Exception ex)
+                {
+                    _toastManager
+                        .CreateToast("Failed to delete employee")
+                        .WithContent(ex.Message)
+                        .DismissOnClick()
+                        .ShowError();
+                }
             }, DialogButtonStyle.Destructive)
             .WithCancelButton("Cancel")
             .WithMaxWidth(512)

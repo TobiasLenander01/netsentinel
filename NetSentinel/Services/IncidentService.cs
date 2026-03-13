@@ -21,6 +21,8 @@ public class IncidentService : IIncidentService
     public async Task AddIncidentAsync(Incident incident)
     {
         using var db = _dbContextFactory.CreateDbContext();
+        if (incident.Device != null)
+            db.Entry(incident.Device).State = EntityState.Unchanged;
         db.Incidents.Add(incident);
         await db.SaveChangesAsync();
     }
@@ -67,6 +69,8 @@ public class IncidentService : IIncidentService
     public async Task<int> UpdateIncidentAsync(Incident updatedIncident)
     {
         using var db = _dbContextFactory.CreateDbContext();
+        if (updatedIncident.Device != null)
+            db.Entry(updatedIncident.Device).State = EntityState.Unchanged;
         db.Incidents.Update(updatedIncident);
         return await db.SaveChangesAsync();
     }

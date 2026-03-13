@@ -21,6 +21,10 @@ public class SecurityMeasureService : ISecurityMeasureService
     public async Task AddSecurityMeasureAsync(SecurityMeasure securityMeasure)
     {
         using var db = _dbContextFactory.CreateDbContext();
+        if (securityMeasure.Incident != null)
+            db.Entry(securityMeasure.Incident).State = EntityState.Unchanged;
+        if (securityMeasure.PerformedBy != null)
+            db.Entry(securityMeasure.PerformedBy).State = EntityState.Unchanged;
         db.SecurityMeasures.Add(securityMeasure);
         await db.SaveChangesAsync();
     }
@@ -61,6 +65,10 @@ public class SecurityMeasureService : ISecurityMeasureService
     public async Task<int> UpdateSecurityMeasureAsync(SecurityMeasure updatedSecurityMeasure)
     {
         using var db = _dbContextFactory.CreateDbContext();
+        if (updatedSecurityMeasure.Incident != null)
+            db.Entry(updatedSecurityMeasure.Incident).State = EntityState.Unchanged;
+        if (updatedSecurityMeasure.PerformedBy != null)
+            db.Entry(updatedSecurityMeasure.PerformedBy).State = EntityState.Unchanged;
         db.SecurityMeasures.Update(updatedSecurityMeasure);
         return await db.SaveChangesAsync();
     }

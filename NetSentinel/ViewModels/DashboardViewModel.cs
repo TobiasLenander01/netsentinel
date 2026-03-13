@@ -8,13 +8,16 @@ using System.Collections.ObjectModel;
 using NetSentinel.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System;
 using System.Threading.Tasks;
+using ShadUI;
 
 namespace NetSentinel.ViewModels;
 
 public partial class DashboardViewModel : ViewModelBase
 {
     private readonly IIncidentService _incidentService;
+    private readonly ToastManager _toastManager;
 
     [ObservableProperty]
     private ObservableCollection<Incident> _incidents = new ObservableCollection<Incident>();
@@ -22,8 +25,19 @@ public partial class DashboardViewModel : ViewModelBase
     [RelayCommand]
     private async Task LoadIncidentsAsync()
     {
-        var incidents = await _incidentService.ReadAllIncidentsAsync();
-        Incidents = new ObservableCollection<Incident>(incidents);
+        try
+        {
+            var incidents = await _incidentService.ReadAllIncidentsAsync();
+            Incidents = new ObservableCollection<Incident>(incidents);
+        }
+        catch (Exception ex)
+        {
+            _toastManager
+                .CreateToast("Failed to load incidents")
+                .WithContent(ex.Message)
+                .DismissOnClick()
+                .ShowError();
+        }
     }
 
     public ISeries[] Series { get; } =
@@ -60,9 +74,10 @@ public partial class DashboardViewModel : ViewModelBase
         }
     ];
 
-    public DashboardViewModel(INavigationService navigator, IIncidentService incidentService) : base(navigator)
+    public DashboardViewModel(INavigationService navigator, IIncidentService incidentService, ToastManager toastManager) : base(navigator)
     {
         Title = "Dashboard";
         _incidentService = incidentService;
+        _toastManager = toastManager;
     }
 }

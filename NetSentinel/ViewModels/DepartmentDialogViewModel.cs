@@ -13,6 +13,7 @@ public partial class DepartmentDialogViewModel : ViewModelBase
 {
     private readonly IDepartmentService _departmentService;
     private readonly DialogManager _dialogManager;
+    private readonly ToastManager _toastManager;
 
     private Department _department = new Department();
     private bool _isEditingExistingDepartment = false;
@@ -27,11 +28,12 @@ public partial class DepartmentDialogViewModel : ViewModelBase
     [Required(ErrorMessage = "Location is required")]
     private string _location = String.Empty;
 
-    public DepartmentDialogViewModel(INavigationService navigator, DialogManager dialogManager, IDepartmentService departmentService) : base(navigator)
+    public DepartmentDialogViewModel(INavigationService navigator, DialogManager dialogManager, ToastManager toastManager, IDepartmentService departmentService) : base(navigator)
     {
         Title = "Department Dialog";
         _departmentService = departmentService;
         _dialogManager = dialogManager;
+        _toastManager = toastManager;
     }
 
     [RelayCommand]
@@ -71,8 +73,13 @@ public partial class DepartmentDialogViewModel : ViewModelBase
 
             _dialogManager.Close(this, new CloseDialogOptions { Success = true });
         }
-        catch
+        catch (Exception ex)
         {
+            _toastManager
+                .CreateToast("Failed to save department")
+                .WithContent(ex.Message)
+                .DismissOnClick()
+                .ShowError();
             _dialogManager.Close(this, new CloseDialogOptions { Success = false });
         }
         finally

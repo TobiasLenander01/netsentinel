@@ -68,8 +68,16 @@ public partial class IncidentsViewModel : ViewModelBase
             TotalPages = Math.Max(1, (int)Math.Ceiling(totalCount / (double)PageSize));
             IsEmpty = totalCount == 0;
         }
-        finally
+        catch (Exception ex)
         {
+            _toastManager
+                .CreateToast("Failed to load incidents")
+                .WithContent(ex.Message)
+                .DismissOnClick()
+                .ShowError();
+        }
+
+        finally {
             IsLoading = false;
         }
     }
@@ -94,7 +102,23 @@ public partial class IncidentsViewModel : ViewModelBase
     [RelayCommand]
     private async Task DeleteIncidentAsync(Incident incident)
     {
-        await _incidentService.DeleteIncidentAsync(incident);
-        await LoadIncidentsAsync();
+        try
+        {
+            await _incidentService.DeleteIncidentAsync(incident);
+            Incidents.Remove(incident);
+            IsEmpty = Incidents.Count == 0;
+            _toastManager
+                .CreateToast("Incident deleted")
+                .DismissOnClick()
+                .ShowSuccess();
+        }
+        catch (Exception ex)
+        {
+            _toastManager
+                .CreateToast("Failed to delete incident")
+                .WithContent(ex.Message)
+                .DismissOnClick()
+                .ShowError();
+        }
     }
 }

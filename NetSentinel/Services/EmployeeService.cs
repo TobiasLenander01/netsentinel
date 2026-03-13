@@ -21,6 +21,8 @@ public class EmployeeService : IEmployeeService
     public async Task AddEmployeeAsync(Employee employee)
     {
         using var db = _dbContextFactory.CreateDbContext();
+        if (employee.Department != null)
+            db.Entry(employee.Department).State = EntityState.Unchanged;
         db.Employees.Add(employee);
         await db.SaveChangesAsync();
     }
@@ -67,6 +69,8 @@ public class EmployeeService : IEmployeeService
     public async Task<int> UpdateEmployeeAsync(Employee updatedEmployee)
     {
         using var db = _dbContextFactory.CreateDbContext();
+        if (updatedEmployee.Department != null)
+            db.Entry(updatedEmployee.Department).State = EntityState.Unchanged;
         db.Employees.Update(updatedEmployee);
         return await db.SaveChangesAsync();
     }

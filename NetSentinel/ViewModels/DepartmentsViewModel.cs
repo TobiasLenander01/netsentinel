@@ -70,6 +70,14 @@ public partial class DepartmentsViewModel : ViewModelBase, IRefreshable
             TotalPages = Math.Max(1, (int)Math.Ceiling(totalCount / (double)PageSize));
             IsEmpty = totalCount == 0;
         }
+        catch (Exception ex)
+        {
+            _toastManager
+                .CreateToast("Failed to load departments")
+                .WithContent(ex.Message)
+                .DismissOnClick()
+                .ShowError();
+        }
         finally
         {
             IsLoading = false;
@@ -96,41 +104,79 @@ public partial class DepartmentsViewModel : ViewModelBase, IRefreshable
     [RelayCommand]
     private async Task DeleteDepartmentAsync(Department department)
     {
-        await _departmentService.DeleteDepartmentAsync(department);
-        await LoadDepartmentsAsync();
+        try
+        {
+            await _departmentService.DeleteDepartmentAsync(department);
+            Departments.Remove(department);
+            IsEmpty = Departments.Count == 0;
+            _toastManager
+                .CreateToast("Department deleted")
+                .DismissOnClick()
+                .ShowSuccess();
+        }
+        catch (Exception ex)
+        {
+            _toastManager
+                .CreateToast("Failed to delete department")
+                .WithContent(ex.Message)
+                .DismissOnClick()
+                .ShowError();
+        }
     }
 
     [RelayCommand]
     public async Task ShowNewDepartmentDialog()
     {
-        await _departmentDialogViewModel.LoadNewDepartmentCommand.ExecuteAsync(null);
-        _dialogManager.CreateDialog(_departmentDialogViewModel)
-        .Dismissible()
-        .WithSuccessCallback(() =>
-            {
-                _toastManager
-                    .CreateToast("Department added")
-                    .DismissOnClick()
-                    .ShowSuccess();
-                _ = LoadDepartmentsAsync();
-            })
-        .Show();
+        try
+        {
+            await _departmentDialogViewModel.LoadNewDepartmentCommand.ExecuteAsync(null);
+            _dialogManager.CreateDialog(_departmentDialogViewModel)
+            .Dismissible()
+            .WithSuccessCallback(() =>
+                {
+                    _toastManager
+                        .CreateToast("Department added")
+                        .DismissOnClick()
+                        .ShowSuccess();
+                    _ = LoadDepartmentsAsync();
+                })
+            .Show();
+        }
+        catch (Exception ex)
+        {
+            _toastManager
+                .CreateToast("Failed to open new department")
+                .WithContent(ex.Message)
+                .DismissOnClick()
+                .ShowError();
+        }
     }
 
     [RelayCommand]
     public async Task ShowEditDepartmentDialog(Department department)
     {
-        await _departmentDialogViewModel.LoadExistingDepartmentCommand.ExecuteAsync(department);
-        _dialogManager.CreateDialog(_departmentDialogViewModel)
-        .Dismissible()
-        .WithSuccessCallback(() =>
-            {
-                _toastManager
-                    .CreateToast("Department edited")
-                    .DismissOnClick()
-                    .ShowSuccess();
-                _ = LoadDepartmentsAsync();
-            })
-        .Show();
+        try
+        {
+            await _departmentDialogViewModel.LoadExistingDepartmentCommand.ExecuteAsync(department);
+            _dialogManager.CreateDialog(_departmentDialogViewModel)
+            .Dismissible()
+            .WithSuccessCallback(() =>
+                {
+                    _toastManager
+                        .CreateToast("Department edited")
+                        .DismissOnClick()
+                        .ShowSuccess();
+                    _ = LoadDepartmentsAsync();
+                })
+            .Show();
+        }
+        catch (Exception ex)
+        {
+            _toastManager
+                .CreateToast("Failed to open department")
+                .WithContent(ex.Message)
+                .DismissOnClick()
+                .ShowError();
+        }
     }
 }
