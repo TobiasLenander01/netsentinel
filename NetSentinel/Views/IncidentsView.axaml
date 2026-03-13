@@ -8,16 +8,19 @@
     x:DataType="vm:IncidentsViewModel"
     Loaded="OnLoaded">
 
-    <StackPanel Spacing="20" Margin="40">
+    <Grid RowDefinitions="Auto,Auto,*,Auto,Auto" Margin="40">
 
-        <TextBlock Text="{Binding Title}" Classes="h1" />
+        <!-- Row 0: Title -->
+        <TextBlock Grid.Row="0" Text="{Binding Title}" Classes="h1" Margin="0,0,0,20" />
 
-        <Grid>
+        <!-- Row 1: Add button -->
+        <Grid Grid.Row="1" Margin="0,0,0,20">
             <Button Content="Add incident" Classes="Primary"
                 HorizontalAlignment="Left" IsEnabled="{Binding !IsLoading}" />
         </Grid>
 
-        <Grid>
+        <!-- Row 2: DataGrid -->
+        <Grid Grid.Row="2">
             <DataGrid x:Name="DataGrid"
                 ItemsSource="{Binding Incidents}"
                 CanUserSortColumns="True"
@@ -27,12 +30,12 @@
                 GridLinesVisibility="Horizontal">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Description" Binding="{Binding Description}"
-                        Width="auto" />
+                        Width="*" />
                     <DataGridTextColumn Header="CreatedAt" Binding="{Binding CreatedAt}"
                         Width="auto" />
                     <DataGridTextColumn Header="Priority" Binding="{Binding Priority}" Width="auto" />
                     <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="auto" />
-                    <DataGridTextColumn Header="Device" Binding="{Binding Device.Name}" Width="*" />
+                    <DataGridTextColumn Header="Device" Binding="{Binding Device.Name}" Width="auto" />
 
                     <DataGridTemplateColumn Header="Actions">
                         <DataGridTemplateColumn.CellTemplate>
@@ -54,16 +57,27 @@
                 </DataGrid.Columns>
             </DataGrid>
 
-            <TextBlock Text="No departments found."
+            <TextBlock Text="No incidents found."
                 IsVisible="{Binding IsEmpty}"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Foreground="Gray"
                 Margin="0,50,0,0" />
+
+            <shad:BusyArea CornerRadius="{DynamicResource LgCornerRadius}"
+                IsBusy="{Binding IsLoading}" />
         </Grid>
 
-        <shad:BusyArea CornerRadius="{DynamicResource LgCornerRadius}"
-            IsBusy="{Binding IsLoading}" />
+        <!-- Row 3: Pagination -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center"
+            Spacing="12" Margin="0,12,0,0" IsVisible="{Binding !IsEmpty}">
+            <Button Content="&lt;" Classes="Outline"
+                Command="{Binding PreviousPageCommand}" />
+            <TextBlock Text="{Binding PageInfo}"
+                VerticalAlignment="Center" />
+            <Button Content="&gt;" Classes="Outline"
+                Command="{Binding NextPageCommand}" />
+        </StackPanel>
 
-    </StackPanel>
+    </Grid>
 </UserControl>
