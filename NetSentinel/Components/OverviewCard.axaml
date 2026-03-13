@@ -23,10 +23,6 @@
                 Margin="0,12,0,2"
                 Text="{Binding #Root.Value}"
                 TextWrapping="Wrap" />
-            <TextBlock
-                Classes="Caption Muted"
-                Text="{Binding #Root.Hint}"
-                TextWrapping="Wrap" />
         </StackPanel>
     </Border>
 
