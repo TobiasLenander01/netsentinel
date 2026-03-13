@@ -17,7 +17,6 @@ public class SecurityMeasure
     [Required]
     public Incident? Incident { get; set; }
 
-    [Required]
     public Employee? PerformedBy { get; set; }
 
     [Required]

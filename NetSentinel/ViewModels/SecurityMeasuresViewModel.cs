@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.EntityFrameworkCore;
 using NetSentinel.Interfaces;
 using NetSentinel.Models;
 using ShadUI;
@@ -173,6 +174,14 @@ public partial class SecurityMeasuresViewModel : ViewModelBase, IRefreshable
                     .DismissOnClick()
                     .ShowSuccess();
                 await LoadSecurityMeasuresAsync();
+            }
+            catch (DbUpdateException)
+            {
+                _toastManager
+                    .CreateToast("Cannot delete security measure")
+                    .WithContent("This security measure is still referenced by related data. Update or delete those records first.")
+                    .DismissOnClick()
+                    .ShowError();
             }
             catch (Exception ex)
             {

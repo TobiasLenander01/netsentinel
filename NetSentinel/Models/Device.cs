@@ -22,7 +22,6 @@ public class Device
 
     public bool HasIncidents => Incidents.Count > 0;
 
-    [Required]
     public Employee? Owner {get; set;}
 
     public Device() {}

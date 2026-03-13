@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.EntityFrameworkCore;
 using NetSentinel.Interfaces;
 using NetSentinel.Models;
 using ShadUI;
@@ -173,6 +174,14 @@ public partial class DevicesViewModel : ViewModelBase, IRefreshable
                     .DismissOnClick()
                     .ShowSuccess();
                 await LoadDevicesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                _toastManager
+                    .CreateToast("Cannot delete device")
+                    .WithContent("This device has incidents. Delete those incidents first.")
+                    .DismissOnClick()
+                    .ShowError();
             }
             catch (Exception ex)
             {

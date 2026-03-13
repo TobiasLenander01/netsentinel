@@ -47,7 +47,9 @@
                                     <Button.Flyout>
                                         <MenuFlyout>
                                             <MenuItem Header="Edit incident" Cursor="Hand" />
-                                            <MenuItem Header="Delete incident" Cursor="Hand" />
+                                            <MenuItem Header="Delete incident" Cursor="Hand"
+                                                Command="{Binding $parent[UserControl].((vm:IncidentsViewModel)DataContext).ShowDeleteIncidentDialogCommand}"
+                                                CommandParameter="{Binding}" />
                                         </MenuFlyout>
                                     </Button.Flyout>
                                 </Button>

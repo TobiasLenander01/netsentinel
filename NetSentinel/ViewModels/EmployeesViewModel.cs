@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.EntityFrameworkCore;
 using NetSentinel.Interfaces;
 using NetSentinel.Models;
 using ShadUI;
@@ -162,7 +163,7 @@ public partial class EmployeesViewModel : ViewModelBase, IRefreshable
     {
         _dialogManager.CreateDialog(
             "Are you absolutely sure?",
-            "This will permanently delete this employee.")
+            "This will permanently delete this employee. Owned devices will be left without an owner and security measures will remain.")
             .WithPrimaryButton("Confirm", async () =>
             {
                 try
@@ -173,6 +174,14 @@ public partial class EmployeesViewModel : ViewModelBase, IRefreshable
                         .DismissOnClick()
                         .ShowSuccess();
                     await LoadEmployeesAsync();
+                }
+                catch (DbUpdateException)
+                {
+                    _toastManager
+                        .CreateToast("Cannot delete employee")
+                        .WithContent("This employee is still referenced by related data. Update or delete those records first.")
+                        .DismissOnClick()
+                        .ShowError();
                 }
                 catch (Exception ex)
                 {

@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.EntityFrameworkCore;
 using NetSentinel.Interfaces;
 using NetSentinel.Models;
 using ShadUI;
@@ -99,7 +100,6 @@ public partial class IncidentsViewModel : ViewModelBase
     private bool CanGoPrevious() => CurrentPage > 1;
     private bool CanGoNext() => CurrentPage < TotalPages;
 
-    [RelayCommand]
     private async Task DeleteIncidentAsync(Incident incident)
     {
         try
@@ -112,6 +112,14 @@ public partial class IncidentsViewModel : ViewModelBase
                 .DismissOnClick()
                 .ShowSuccess();
         }
+        catch (DbUpdateException)
+        {
+            _toastManager
+                .CreateToast("Cannot delete incident")
+                .WithContent("This incident is still referenced by related data. Update or delete those records first.")
+                .DismissOnClick()
+                .ShowError();
+        }
         catch (Exception ex)
         {
             _toastManager
@@ -120,5 +128,21 @@ public partial class IncidentsViewModel : ViewModelBase
                 .DismissOnClick()
                 .ShowError();
         }
+    }
+
+    [RelayCommand]
+    public void ShowDeleteIncidentDialog(Incident incident)
+    {
+        _dialogManager.CreateDialog(
+            "Are you absolutely sure?",
+            "This will permanently delete this incident. Associated security measures will also be deleted.")
+            .WithPrimaryButton("Confirm", async () =>
+            {
+                await DeleteIncidentAsync(incident);
+            }, DialogButtonStyle.Destructive)
+            .WithCancelButton("Cancel")
+            .WithMaxWidth(512)
+            .Dismissible()
+            .Show();
     }
 }
