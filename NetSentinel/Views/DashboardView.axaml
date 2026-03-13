@@ -17,35 +17,35 @@ Loaded="OnLoaded">
             Title="Total Departments"
             Value="{Binding Departments.Count, StringFormat={}{0}}">
                 <components:OverviewCard.Icon>
-                    <LucideIcon Kind="BrickWallShield" Size="20" StrokeWidth="1.5" />
+                    <LucideIcon Kind="Building2" Size="20" StrokeWidth="1.5" />
                 </components:OverviewCard.Icon>
             </components:OverviewCard>
             <components:OverviewCard
             Title="Total Employees"
             Value="{Binding Employees.Count, StringFormat={}{0}}">
                 <components:OverviewCard.Icon>
-                    <LucideIcon Kind="BrickWallShield" Size="20" StrokeWidth="1.5" />
+                    <LucideIcon Kind="Users" Size="20" StrokeWidth="1.5" />
                 </components:OverviewCard.Icon>
             </components:OverviewCard>
             <components:OverviewCard
             Title="Total Devices"
             Value="{Binding Devices.Count, StringFormat={}{0}}">
-                    <components:OverviewCard.Icon>
-                    <LucideIcon Kind="BrickWallShield" Size="20" StrokeWidth="1.5" />
+                <components:OverviewCard.Icon>
+                    <LucideIcon Kind="Laptop" Size="20" StrokeWidth="1.5" />
                 </components:OverviewCard.Icon>
             </components:OverviewCard>
             <components:OverviewCard
             Title="Total Incidents"
             Value="{Binding Incidents.Count, StringFormat={}{0}}">
                 <components:OverviewCard.Icon>
-                    <LucideIcon Kind="BrickWallShield" Size="20" StrokeWidth="1.5" />
+                    <LucideIcon Kind="Bug" Size="20" StrokeWidth="1.5" />
                 </components:OverviewCard.Icon>
             </components:OverviewCard>
             <components:OverviewCard
             Title="Total Security Measures"
             Value="{Binding SecurityMeasures.Count, StringFormat={}{0}}">
                 <components:OverviewCard.Icon>
-                    <LucideIcon Kind="BrickWallShield" Size="20" StrokeWidth="1.5" />
+                    <LucideIcon Kind="ShieldCheck" Size="20" StrokeWidth="1.5" />
                 </components:OverviewCard.Icon>
             </components:OverviewCard>
         </UniformGrid>
@@ -88,31 +88,33 @@ Loaded="OnLoaded">
                     </StackPanel>
                     <Panel Margin="24,0,24,24">
                         <TextBlock
-                            Classes="Caption Muted"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Text="No security measures recorded yet."
-                            IsVisible="{Binding !HasLeaderboard}" />
+                        Classes="Caption Muted"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Text="No security measures recorded yet."
+                        IsVisible="{Binding !HasLeaderboard}" />
                         <ItemsControl ItemsSource="{Binding Leaderboard}" IsVisible="{Binding HasLeaderboard}">
                             <ItemsControl.DataTemplates>
                                 <DataTemplate x:DataType="vm:SecurityMeasureLeaderboardEntry">
                                     <Grid ColumnDefinitions="Auto * Auto" Margin="0,0,0,24">
-                                        <Border
-                                            Background="{DynamicResource MutedColor}"
-                                            CornerRadius="18"
-                                            Height="36"
-                                            Width="36"
-                                            VerticalAlignment="Center" />
+                                        <TextBlock
+                                        Text="{Binding Rank}"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        FontWeight="DemiBold" 
+                                        FontSize="20"
+                                        Margin="0,0,8,0"/>
+
                                         <StackPanel Grid.Column="1" Margin="8,0" VerticalAlignment="Center">
                                             <TextBlock Classes="Small" Text="{Binding Name}" />
                                             <TextBlock Classes="Caption Muted" Text="{Binding EmployeeNo}" />
                                         </StackPanel>
                                         <TextBlock
-                                            FontSize="16"
-                                            FontWeight="DemiBold"
-                                            Grid.Column="2"
-                                            Text="{Binding Count}"
-                                            VerticalAlignment="Center" />
+                                        FontSize="16"
+                                        FontWeight="DemiBold"
+                                        Grid.Column="2"
+                                        Text="{Binding Count}"
+                                        VerticalAlignment="Center" />
                                     </Grid>
                                 </DataTemplate>
                             </ItemsControl.DataTemplates>
