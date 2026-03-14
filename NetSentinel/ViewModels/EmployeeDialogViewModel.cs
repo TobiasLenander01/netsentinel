@@ -52,7 +52,7 @@ public partial class EmployeeDialogViewModel : ViewModelBase
     [Required(ErrorMessage = "Department is required")]
     private Department? _selectedDepartment;
 
-    public EmployeeDialogViewModel(INavigationService navigator, DialogManager dialogManager, ToastManager toastManager, IEmployeeService employeeService, IDepartmentService departmentService) : base(navigator)
+    public EmployeeDialogViewModel(DialogManager dialogManager, ToastManager toastManager, IEmployeeService employeeService, IDepartmentService departmentService) : base()
     {
         Title = "Employee Dialog";
         _employeeService = employeeService;

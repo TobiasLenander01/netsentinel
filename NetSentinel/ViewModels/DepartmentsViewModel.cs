@@ -42,7 +42,7 @@ public partial class DepartmentsViewModel : ViewModelBase, IRefreshable
 
     public string PageInfo => $"Page {CurrentPage} of {TotalPages}";
 
-    public DepartmentsViewModel(INavigationService navigator, IDepartmentService departmentService, DialogManager dialogManager, ToastManager toastManager, DepartmentDialogViewModel departmentDialogViewModel) : base(navigator)
+    public DepartmentsViewModel(IDepartmentService departmentService, DialogManager dialogManager, ToastManager toastManager, DepartmentDialogViewModel departmentDialogViewModel) : base()
     {
         Title = "Departments";
         _departmentService = departmentService;

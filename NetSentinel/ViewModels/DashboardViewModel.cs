@@ -50,7 +50,7 @@ public partial class DashboardViewModel : ViewModelBase
     [ObservableProperty]
     private bool _hasLeaderboard = false;
 
-     public DashboardViewModel(INavigationService navigator, IIncidentService incidentService, IDepartmentService departmentService, IDeviceService deviceService, IEmployeeService employeeService, ISecurityMeasureService securityMeasureService, ToastManager toastManager) : base(navigator)
+     public DashboardViewModel(IIncidentService incidentService, IDepartmentService departmentService, IDeviceService deviceService, IEmployeeService employeeService, ISecurityMeasureService securityMeasureService, ToastManager toastManager) : base()
     {
         Title = "Dashboard";
         _incidentService = incidentService;

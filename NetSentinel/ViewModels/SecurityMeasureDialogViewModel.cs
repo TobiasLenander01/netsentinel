@@ -53,7 +53,7 @@ public partial class SecurityMeasureDialogViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isLoading;
 
-    public SecurityMeasureDialogViewModel(INavigationService navigator, DialogManager dialogManager, ToastManager toastManager, ISecurityMeasureService securityMeasureService, IEmployeeService employeeService, IIncidentService incidentService) : base(navigator)
+    public SecurityMeasureDialogViewModel(DialogManager dialogManager, ToastManager toastManager, ISecurityMeasureService securityMeasureService, IEmployeeService employeeService, IIncidentService incidentService) : base()
     {
         Title = "Security Measure Dialog";
         _securityMeasureService = securityMeasureService;

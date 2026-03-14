@@ -41,7 +41,7 @@ public partial class IncidentsViewModel : ViewModelBase
 
     public string PageInfo => $"Page {CurrentPage} of {TotalPages}";
 
-    public IncidentsViewModel(INavigationService navigator, IIncidentService incidentService, DialogManager dialogManager, ToastManager toastManager) : base(navigator)
+    public IncidentsViewModel(IIncidentService incidentService, DialogManager dialogManager, ToastManager toastManager) : base()
     {
         Title = "Incidents";
         _incidentService = incidentService;

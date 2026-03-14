@@ -46,7 +46,7 @@ public partial class DeviceDialogViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isLoading;
 
-    public DeviceDialogViewModel(INavigationService navigator, DialogManager dialogManager, ToastManager toastManager, IDeviceService deviceService, IEmployeeService employeeService) : base(navigator)
+    public DeviceDialogViewModel(DialogManager dialogManager, ToastManager toastManager, IDeviceService deviceService, IEmployeeService employeeService) : base()
     {
         Title = "Device Dialog";
         _deviceService = deviceService;

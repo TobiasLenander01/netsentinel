@@ -28,7 +28,7 @@ public partial class DepartmentDialogViewModel : ViewModelBase
     [Required(ErrorMessage = "Location is required")]
     private string _location = String.Empty;
 
-    public DepartmentDialogViewModel(INavigationService navigator, DialogManager dialogManager, ToastManager toastManager, IDepartmentService departmentService) : base(navigator)
+    public DepartmentDialogViewModel(DialogManager dialogManager, ToastManager toastManager, IDepartmentService departmentService) : base()
     {
         Title = "Department Dialog";
         _departmentService = departmentService;
