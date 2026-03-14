@@ -42,7 +42,7 @@ public partial class DevicesViewModel : ViewModelBase, IRefreshable
 
     public string PageInfo => $"Page {CurrentPage} of {TotalPages}";
 
-    public DevicesViewModel(INavigationService navigator, IDeviceService deviceService, DialogManager dialogManager, ToastManager toastManager, DeviceDialogViewModel deviceDialogViewModel) : base(navigator)
+    public DevicesViewModel(IDeviceService deviceService, DialogManager dialogManager, ToastManager toastManager, DeviceDialogViewModel deviceDialogViewModel) : base()
     {
         Title = "Devices";
         _deviceService = deviceService;

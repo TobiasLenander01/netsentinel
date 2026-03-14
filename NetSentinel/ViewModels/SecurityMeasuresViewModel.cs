@@ -42,7 +42,7 @@ public partial class SecurityMeasuresViewModel : ViewModelBase, IRefreshable
 
     public string PageInfo => $"Page {CurrentPage} of {TotalPages}";
 
-    public SecurityMeasuresViewModel(INavigationService navigator, ISecurityMeasureService securityMeasureService, DialogManager dialogManager, ToastManager toastManager, SecurityMeasureDialogViewModel securityMeasureDialogViewModel) : base(navigator)
+    public SecurityMeasuresViewModel(ISecurityMeasureService securityMeasureService, DialogManager dialogManager, ToastManager toastManager, SecurityMeasureDialogViewModel securityMeasureDialogViewModel) : base()
     {
         Title = "Security Measures";
         _securityMeasureService = securityMeasureService;

@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using NetSentinel.Interfaces;
 
 namespace NetSentinel.ViewModels;
 
@@ -11,13 +10,6 @@ namespace NetSentinel.ViewModels;
 
 public partial class ViewModelBase : ObservableValidator
 {
-    public INavigationService Navigator { get; }
-
     [ObservableProperty]
     private string _title = "Placeholder Title";
-
-    public ViewModelBase(INavigationService navigator)
-    {
-        Navigator = navigator;
-    }
 }
