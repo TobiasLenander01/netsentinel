@@ -168,4 +168,22 @@ public partial class SecurityMeasureDialogViewModel : ViewModelBase
 
         ClearErrors();
     }
+
+    private void UpdatePerformedAtFromPickers()
+    {
+        if (PerformedDate.HasValue && PerformedTime.HasValue)
+        {
+            PerformedAt = PerformedDate.Value.Date + PerformedTime.Value;
+        }
+    }
+
+    partial void OnPerformedDateChanged(DateTime? value)
+    {
+        UpdatePerformedAtFromPickers();
+    }
+
+    partial void OnPerformedTimeChanged(TimeSpan? value)
+    {
+        UpdatePerformedAtFromPickers();
+    }
 }
