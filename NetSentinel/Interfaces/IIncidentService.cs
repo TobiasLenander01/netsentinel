@@ -8,6 +8,8 @@ public interface IIncidentService
 {
     public Task AddIncidentAsync(Incident incident);
     public Task<List<Incident>> ReadAllIncidentsAsync();
+    public Task<int> ReadIncidentsCountAsync();
+    public Task<List<int>> ReadIncidentCountsByMonthAsync();
     public Task<(List<Incident> Items, int TotalCount)> ReadIncidentsPagedAsync(int page, int pageSize);
     public Task<Incident?> ReadSingleIncidentAsync(int id);
     public Task<int> UpdateIncidentAsync(Incident updatedIncident);

@@ -34,6 +34,13 @@ public class DeviceService : IDeviceService
         return await db.Devices.Include(d => d.Owner).Include(d => d.Incidents).ToListAsync();
     }
 
+    // read (count)
+    public async Task<int> ReadDevicesCountAsync()
+    {
+        using var db = _dbContextFactory.CreateDbContext();
+        return await db.Devices.AsNoTracking().CountAsync();
+    }
+
     // read (paged)
     public async Task<(List<Device> Items, int TotalCount)> ReadDevicesPagedAsync(int page, int pageSize)
     {

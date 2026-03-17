@@ -9,6 +9,16 @@ namespace NetSentinel.ViewModels;
 
 public partial class AIReportViewModel : ViewModelBase
 {
+    private const string PROMPT = """
+    You are an AI cybersecurity expert LLM. Below is a list of current security incidents in our monitoring system. 
+    Create a brief recommendation report for the IT team on how to address these incidents, prioritize them, and prevent similar issues in the future. The answer will be displayed in a dashboard for IT staff.
+
+    Always start with a brief summary. one paragraph with no bullet points or numbers starting with the following sentence:
+    Based on the current security incidents registered in the system...
+    
+    After the summary paragraph provide a numbered list of recommendations based on the incident data.
+    """;
+
     private readonly IChatGptService _chatGptService;
     private readonly IIncidentService _incidentService;
 
@@ -33,7 +43,7 @@ public partial class AIReportViewModel : ViewModelBase
         var incidents = await _incidentService.ReadAllIncidentsAsync();
 
         var sb = new StringBuilder();
-        sb.AppendLine("You are a cybersecurity expert. Below is a list of current security incidents in our network monitoring system. Please provide step-by-step recommendations for actions to address each incident:");
+        sb.AppendLine(PROMPT);
         sb.AppendLine();
 
         int i = 1;

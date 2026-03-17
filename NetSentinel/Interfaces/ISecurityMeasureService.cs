@@ -8,6 +8,8 @@ public interface ISecurityMeasureService
 {
     Task AddSecurityMeasureAsync(SecurityMeasure securityMeasure);
     Task<List<SecurityMeasure>> ReadAllSecurityMeasuresAsync();
+    Task<int> ReadSecurityMeasuresCountAsync();
+    Task<List<(string Name, string Email, int Count)>> ReadTopSecurityMeasurePerformersAsync(int take);
     Task<(List<SecurityMeasure> Items, int TotalCount)> ReadSecurityMeasuresPagedAsync(int page, int pageSize);
     Task<SecurityMeasure?> ReadSingleSecurityMeasureAsync(int id);
     Task<int> UpdateSecurityMeasureAsync(SecurityMeasure updatedSecurityMeasure);

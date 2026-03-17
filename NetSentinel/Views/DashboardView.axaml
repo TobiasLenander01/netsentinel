@@ -1,128 +1,202 @@
 <UserControl
-xmlns="https://github.com/avaloniaui"
-xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-xmlns:avalonia="clr-namespace:LiveChartsCore.SkiaSharpView.Avalonia;assembly=LiveChartsCore.SkiaSharpView.Avalonia"
-xmlns:vm="using:NetSentinel.ViewModels"
-xmlns:components="using:NetSentinel.Components"
-x:Class="NetSentinel.Views.DashboardView"
-x:DataType="vm:DashboardViewModel"
-Loaded="OnLoaded">
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:avalonia="clr-namespace:LiveChartsCore.SkiaSharpView.Avalonia;assembly=LiveChartsCore.SkiaSharpView.Avalonia"
+    xmlns:vm="using:NetSentinel.ViewModels"
+    xmlns:shad="clr-namespace:ShadUI;assembly=ShadUI"
+    x:Class="NetSentinel.Views.DashboardView"
+    x:DataType="vm:DashboardViewModel"
+    Loaded="OnLoaded">
 
-    <StackPanel Spacing="20" Margin="40">
+    <Grid>
+        <StackPanel Spacing="20" Margin="40">
 
-        <TextBlock Text="{Binding Title}" Classes="h1" />
+            <TextBlock Text="{Binding Title}" Classes="h1" />
 
-        <UniformGrid Columns="5" Margin="-6,0">
-            <components:OverviewCard
-            Title="Total Departments"
-            Value="{Binding Departments.Count, StringFormat={}{0}}">
-                <components:OverviewCard.Icon>
-                    <LucideIcon Kind="Building2" Size="20" StrokeWidth="1.5" />
-                </components:OverviewCard.Icon>
-            </components:OverviewCard>
-            <components:OverviewCard
-            Title="Total Employees"
-            Value="{Binding Employees.Count, StringFormat={}{0}}">
-                <components:OverviewCard.Icon>
-                    <LucideIcon Kind="Users" Size="20" StrokeWidth="1.5" />
-                </components:OverviewCard.Icon>
-            </components:OverviewCard>
-            <components:OverviewCard
-            Title="Total Devices"
-            Value="{Binding Devices.Count, StringFormat={}{0}}">
-                <components:OverviewCard.Icon>
-                    <LucideIcon Kind="Laptop" Size="20" StrokeWidth="1.5" />
-                </components:OverviewCard.Icon>
-            </components:OverviewCard>
-            <components:OverviewCard
-            Title="Total Incidents"
-            Value="{Binding Incidents.Count, StringFormat={}{0}}">
-                <components:OverviewCard.Icon>
-                    <LucideIcon Kind="Bug" Size="20" StrokeWidth="1.5" />
-                </components:OverviewCard.Icon>
-            </components:OverviewCard>
-            <components:OverviewCard
-            Title="Total Security Measures"
-            Value="{Binding SecurityMeasures.Count, StringFormat={}{0}}">
-                <components:OverviewCard.Icon>
-                    <LucideIcon Kind="ShieldCheck" Size="20" StrokeWidth="1.5" />
-                </components:OverviewCard.Icon>
-            </components:OverviewCard>
-        </UniformGrid>
-        <Grid ColumnDefinitions="3* 2*" Margin="-8,0">
-            <Border
-            Background="{DynamicResource CardBackgroundColor}"
-            BorderBrush="{DynamicResource BorderColor}"
-            BorderThickness="1"
-            BoxShadow="{DynamicResource Shadow}"
-            CornerRadius="{DynamicResource 2XlCornerRadius}"
-            Margin="8">
-                <DockPanel>
-                    <TextBlock
-                    DockPanel.Dock="Top"
-                    FontSize="16"
-                    FontWeight="DemiBold"
-                    Margin="24,24,24,12"
-                    Text="Incidents per month" />
-                    <avalonia:CartesianChart
-                    Margin="12,0,12,12"
-                    Name="CartesianChart1"
-                    Series="{Binding Series}"
-                    TooltipTextPaint="{Binding TooltipTextPaint}"
-                    TooltipTextSize="14"
-                    XAxes="{Binding XAxes}"
-                    YAxes="{Binding YAxes}" />
-                </DockPanel>
-            </Border>
-            <Border
-            Background="{DynamicResource CardBackgroundColor}"
-            BorderBrush="{DynamicResource BorderColor}"
-            BorderThickness="1"
-            BoxShadow="{DynamicResource Shadow}"
-            CornerRadius="{DynamicResource 2XlCornerRadius}"
-            Grid.Column="1"
-            Margin="8">
-                <DockPanel>
-                    <StackPanel DockPanel.Dock="Top" Margin="24" Spacing="8">
-                        <TextBlock FontSize="16" FontWeight="DemiBold" Text="Security Measures Leaderboard" />
-                    </StackPanel>
-                    <Panel Margin="24,0,24,24">
+            <UniformGrid Columns="5" Margin="-6,0">
+                <Border
+                    Background="{DynamicResource CardBackgroundColor}"
+                    BorderBrush="{DynamicResource BorderColor}"
+                    BorderThickness="1"
+                    BoxShadow="{DynamicResource Shadow}"
+                    CornerRadius="{DynamicResource 2XlCornerRadius}"
+                    Margin="8"
+                    MinWidth="150">
+                    <StackPanel Margin="24">
+                        <Grid ColumnDefinitions="* Auto">
+                            <TextBlock Classes="Small" Text="Total Departments" />
+                            <LucideIcon Grid.Column="1" Kind="Building2" Size="20" StrokeWidth="1.5" />
+                        </Grid>
                         <TextBlock
-                        Classes="Caption Muted"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Text="No security measures recorded yet."
-                        IsVisible="{Binding !HasLeaderboard}" />
-                        <ItemsControl ItemsSource="{Binding Leaderboard}" IsVisible="{Binding HasLeaderboard}">
-                            <ItemsControl.DataTemplates>
-                                <DataTemplate x:DataType="vm:SecurityMeasureLeaderboardEntry">
-                                    <Grid ColumnDefinitions="Auto * Auto" Margin="0,0,0,24">
-                                        <TextBlock
-                                        Text="{Binding Rank}"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        FontWeight="DemiBold" 
-                                        FontSize="20"
-                                        Margin="0,0,8,0"/>
+                            Classes="h3"
+                            Margin="0,12,0,2"
+                            Text="{Binding DepartmentCount, StringFormat={}{0}}"
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+                <Border
+                    Background="{DynamicResource CardBackgroundColor}"
+                    BorderBrush="{DynamicResource BorderColor}"
+                    BorderThickness="1"
+                    BoxShadow="{DynamicResource Shadow}"
+                    CornerRadius="{DynamicResource 2XlCornerRadius}"
+                    Margin="8"
+                    MinWidth="150">
+                    <StackPanel Margin="24">
+                        <Grid ColumnDefinitions="* Auto">
+                            <TextBlock Classes="Small" Text="Total Employees" />
+                            <LucideIcon Grid.Column="1" Kind="Users" Size="20" StrokeWidth="1.5" />
+                        </Grid>
+                        <TextBlock
+                            Classes="h3"
+                            Margin="0,12,0,2"
+                            Text="{Binding EmployeeCount, StringFormat={}{0}}"
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+                <Border
+                    Background="{DynamicResource CardBackgroundColor}"
+                    BorderBrush="{DynamicResource BorderColor}"
+                    BorderThickness="1"
+                    BoxShadow="{DynamicResource Shadow}"
+                    CornerRadius="{DynamicResource 2XlCornerRadius}"
+                    Margin="8"
+                    MinWidth="150">
+                    <StackPanel Margin="24">
+                        <Grid ColumnDefinitions="* Auto">
+                            <TextBlock Classes="Small" Text="Total Devices" />
+                            <LucideIcon Grid.Column="1" Kind="Laptop" Size="20" StrokeWidth="1.5" />
+                        </Grid>
+                        <TextBlock
+                            Classes="h3"
+                            Margin="0,12,0,2"
+                            Text="{Binding DeviceCount, StringFormat={}{0}}"
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+                <Border
+                    Background="{DynamicResource CardBackgroundColor}"
+                    BorderBrush="{DynamicResource BorderColor}"
+                    BorderThickness="1"
+                    BoxShadow="{DynamicResource Shadow}"
+                    CornerRadius="{DynamicResource 2XlCornerRadius}"
+                    Margin="8"
+                    MinWidth="150">
+                    <StackPanel Margin="24">
+                        <Grid ColumnDefinitions="* Auto">
+                            <TextBlock Classes="Small" Text="Total Incidents" />
+                            <LucideIcon Grid.Column="1" Kind="Bug" Size="20" StrokeWidth="1.5" />
+                        </Grid>
+                        <TextBlock
+                            Classes="h3"
+                            Margin="0,12,0,2"
+                            Text="{Binding IncidentCount, StringFormat={}{0}}"
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+                <Border
+                    Background="{DynamicResource CardBackgroundColor}"
+                    BorderBrush="{DynamicResource BorderColor}"
+                    BorderThickness="1"
+                    BoxShadow="{DynamicResource Shadow}"
+                    CornerRadius="{DynamicResource 2XlCornerRadius}"
+                    Margin="8"
+                    MinWidth="150">
+                    <StackPanel Margin="24">
+                        <Grid ColumnDefinitions="* Auto">
+                            <TextBlock Classes="Small" Text="Total Security Measures" />
+                            <LucideIcon Grid.Column="1" Kind="ShieldCheck" Size="20" StrokeWidth="1.5" />
+                        </Grid>
+                        <TextBlock
+                            Classes="h3"
+                            Margin="0,12,0,2"
+                            Text="{Binding SecurityMeasureCount, StringFormat={}{0}}"
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+            </UniformGrid>
+            <Grid ColumnDefinitions="3* 2*" Margin="-8,0">
+                <Border
+                    Background="{DynamicResource CardBackgroundColor}"
+                    BorderBrush="{DynamicResource BorderColor}"
+                    BorderThickness="1"
+                    BoxShadow="{DynamicResource Shadow}"
+                    CornerRadius="{DynamicResource 2XlCornerRadius}"
+                    Margin="8">
+                    <DockPanel>
+                        <TextBlock
+                            DockPanel.Dock="Top"
+                            FontSize="16"
+                            FontWeight="DemiBold"
+                            Margin="24,24,24,12"
+                            Text="Incidents per month" />
+                        <avalonia:CartesianChart
+                            Margin="12,0,12,12"
+                            Name="CartesianChart1"
+                            Series="{Binding Series}"
+                            TooltipTextPaint="{Binding TooltipTextPaint}"
+                            TooltipTextSize="14"
+                            XAxes="{Binding XAxes}"
+                            YAxes="{Binding YAxes}" />
+                    </DockPanel>
+                </Border>
+                <Border
+                    Background="{DynamicResource CardBackgroundColor}"
+                    BorderBrush="{DynamicResource BorderColor}"
+                    BorderThickness="1"
+                    BoxShadow="{DynamicResource Shadow}"
+                    CornerRadius="{DynamicResource 2XlCornerRadius}"
+                    Grid.Column="1"
+                    Margin="8">
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Top" Margin="24" Spacing="8">
+                            <TextBlock FontSize="16" FontWeight="DemiBold"
+                                Text="Security Measures Leaderboard" />
+                        </StackPanel>
+                        <Panel Margin="24,0,24,24">
+                            <TextBlock
+                                Classes="Caption Muted"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Text="No security measures recorded yet."
+                                IsVisible="{Binding !HasLeaderboard}" />
+                            <ItemsControl ItemsSource="{Binding Leaderboard}"
+                                IsVisible="{Binding HasLeaderboard}">
+                                <ItemsControl.DataTemplates>
+                                    <DataTemplate x:DataType="vm:SecurityMeasureLeaderboardEntry">
+                                        <Grid ColumnDefinitions="Auto * Auto" Margin="0,0,0,24">
+                                            <TextBlock
+                                                Text="{Binding Rank}"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                FontWeight="DemiBold"
+                                                FontSize="20"
+                                                Margin="0,0,8,0" />
 
-                                        <StackPanel Grid.Column="1" Margin="8,0" VerticalAlignment="Center">
-                                            <TextBlock Classes="Small" Text="{Binding Name}" />
-                                            <TextBlock Classes="Caption Muted" Text="{Binding Email}" />
-                                        </StackPanel>
-                                        <TextBlock
-                                        FontSize="16"
-                                        FontWeight="DemiBold"
-                                        Grid.Column="2"
-                                        Text="{Binding Count}"
-                                        VerticalAlignment="Center" />
-                                    </Grid>
-                                </DataTemplate>
-                            </ItemsControl.DataTemplates>
-                        </ItemsControl>
-                    </Panel>
-                </DockPanel>
-            </Border>
-        </Grid>
+                                            <StackPanel Grid.Column="1" Margin="8,0"
+                                                VerticalAlignment="Center">
+                                                <TextBlock Classes="Small" Text="{Binding Name}" />
+                                                <TextBlock Classes="Caption Muted"
+                                                    Text="{Binding Email}" />
+                                            </StackPanel>
+                                            <TextBlock
+                                                FontSize="16"
+                                                FontWeight="DemiBold"
+                                                Grid.Column="2"
+                                                Text="{Binding Count}"
+                                                VerticalAlignment="Center" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.DataTemplates>
+                            </ItemsControl>
+                        </Panel>
+                    </DockPanel>
+                </Border>
+            </Grid>
 
-    </StackPanel>
+        </StackPanel>
+
+        <shad:BusyArea CornerRadius="{DynamicResource 2XlCornerRadius}"
+            IsBusy="{Binding IsLoading}" />
+    </Grid>
 </UserControl>

@@ -23,16 +23,19 @@ public partial class DeviceDialogViewModel : ViewModelBase
     [ObservableProperty]
     [NotifyDataErrorInfo]
     [Required(ErrorMessage = "Name is required")]
+    [MaxLength(50, ErrorMessage = "Name must be 50 characters or less")]
     private string _name = String.Empty;
 
     [ObservableProperty]
     [NotifyDataErrorInfo]
     [Required(ErrorMessage = "IP Address is required")]
+    [MaxLength(50, ErrorMessage = "IP Address must be 50 characters or less")]
     private string _ipAddress = String.Empty;
 
     [ObservableProperty]
     [NotifyDataErrorInfo]
     [Required(ErrorMessage = "Serial Number is required")]
+    [MaxLength(50, ErrorMessage = "Serial Number must be 50 characters or less")]
     private string _serialNumber = String.Empty;
 
     [ObservableProperty]

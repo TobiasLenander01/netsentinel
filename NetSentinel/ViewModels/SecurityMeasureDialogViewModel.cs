@@ -24,9 +24,13 @@ public partial class SecurityMeasureDialogViewModel : ViewModelBase
     [ObservableProperty]
     [NotifyDataErrorInfo]
     [Required(ErrorMessage = "Description is required")]
+    [MaxLength(400, ErrorMessage = "Description cannot exceed 400 characters")]
     private string _description = String.Empty;
 
     [ObservableProperty]
+    [NotifyDataErrorInfo]
+    [Required(ErrorMessage = "Result is required")]
+    [MaxLength(200, ErrorMessage = "Result cannot exceed 200 characters")]
     private string _result = String.Empty;
 
     [ObservableProperty]
@@ -41,6 +45,16 @@ public partial class SecurityMeasureDialogViewModel : ViewModelBase
     [NotifyDataErrorInfo]
     [Required(ErrorMessage = "Performed at is required")]
     private DateTime _performedAt = DateTime.Now;
+
+    [ObservableProperty]
+    [NotifyDataErrorInfo]
+    [Required(ErrorMessage = "Performed date is required")]
+    private DateTime? _performedDate;
+
+    [ObservableProperty]
+    [NotifyDataErrorInfo]
+    [Required(ErrorMessage = "Performed time is required")]
+    private TimeSpan? _performedTime;
 
     [ObservableProperty]
     private ObservableCollection<Incident> _incidents = new();
@@ -90,6 +104,7 @@ public partial class SecurityMeasureDialogViewModel : ViewModelBase
         _securityMeasure.Result = Result;
         _securityMeasure.PerformedBy = SelectedEmployee;
         _securityMeasure.Incident = SelectedIncident;
+        _securityMeasure.PerformedAt = PerformedAt;
 
         try
         {
@@ -145,8 +160,30 @@ public partial class SecurityMeasureDialogViewModel : ViewModelBase
         Result = securityMeasure.Result;
         SelectedEmployee = securityMeasure.PerformedBy;
         SelectedIncident = securityMeasure.Incident;
-        PerformedAt = securityMeasure.PerformedAt;
+        PerformedAt = securityMeasure.PerformedAt == default
+            ? DateTime.Now
+            : securityMeasure.PerformedAt;
+        PerformedDate = PerformedAt.Date;
+        PerformedTime = PerformedAt.TimeOfDay;
 
         ClearErrors();
+    }
+
+    private void UpdatePerformedAtFromPickers()
+    {
+        if (PerformedDate.HasValue && PerformedTime.HasValue)
+        {
+            PerformedAt = PerformedDate.Value.Date + PerformedTime.Value;
+        }
+    }
+
+    partial void OnPerformedDateChanged(DateTime? value)
+    {
+        UpdatePerformedAtFromPickers();
+    }
+
+    partial void OnPerformedTimeChanged(TimeSpan? value)
+    {
+        UpdatePerformedAtFromPickers();
     }
 }

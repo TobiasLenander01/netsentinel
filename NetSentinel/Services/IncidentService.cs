@@ -37,6 +37,43 @@ public class IncidentService : IIncidentService
             .ToListAsync();
     }
 
+    // read (count)
+    public async Task<int> ReadIncidentsCountAsync()
+    {
+        using var db = _dbContextFactory.CreateDbContext();
+        return await db.Incidents.AsNoTracking().CountAsync();
+    }
+
+    // read (counts by month)
+    public async Task<List<int>> ReadIncidentCountsByMonthAsync()
+    {
+        using var db = _dbContextFactory.CreateDbContext();
+
+        var now = System.DateTime.UtcNow;
+        var start = new System.DateTime(now.Year, now.Month, 1, 0, 0, 0, System.DateTimeKind.Utc).AddMonths(-11);
+        var end = start.AddMonths(12);
+
+        var monthly = await db.Incidents
+            .AsNoTracking()
+            .Where(i => i.CreatedAt >= start && i.CreatedAt < end)
+            .GroupBy(i => new { i.CreatedAt.Year, i.CreatedAt.Month })
+            .Select(g => new { g.Key.Year, g.Key.Month, Count = g.Count() })
+            .ToListAsync();
+
+        var monthlyLookup = monthly.ToDictionary(
+            entry => (entry.Year, entry.Month),
+            entry => entry.Count);
+
+        var counts = new List<int>(12);
+        for (var i = 0; i < 12; i++)
+        {
+            var month = start.AddMonths(i);
+            counts.Add(monthlyLookup.TryGetValue((month.Year, month.Month), out var count) ? count : 0);
+        }
+
+        return counts;
+    }
+
     // read (paged)
     public async Task<(List<Incident> Items, int TotalCount)> ReadIncidentsPagedAsync(int page, int pageSize)
     {

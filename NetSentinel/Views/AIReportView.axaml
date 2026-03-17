@@ -6,32 +6,25 @@
     x:Class="NetSentinel.Views.AIReportView"
     x:DataType="vm:AIReportViewModel">
 
-    <Grid RowDefinitions="Auto,Auto,*" Margin="40">
+    <StackPanel Margin="40" Spacing="20">
 
-        <!-- Row 0: Title -->
-        <TextBlock Grid.Row="0" Text="AI Report" Classes="h1" Margin="0,0,0,20" />
+        <TextBlock Text="AI Report" Classes="h1" />
 
-        <!-- Row 1: Button -->
-        <Grid Grid.Row="1" Margin="0,0,0,20">
-            <Button Content="Get AI Recommendations"
-                Classes="Primary"
-                HorizontalAlignment="Left"
-                Command="{Binding GetRecommendationsCommand}"
-                IsEnabled="{Binding !IsLoading}" />
-            <shad:BusyArea CornerRadius="{DynamicResource LgCornerRadius}"
-                IsBusy="{Binding IsLoading}" />
-        </Grid>
+        <Button Content="Get AI Recommendations"
+            Classes="Primary"
+            HorizontalAlignment="Left"
+            Command="{Binding GetRecommendationsCommand}"
+            IsEnabled="{Binding !IsLoading}" />
 
-        <!-- Row 2: Response -->
-        <Border Grid.Row="2"
+        <shad:BusyArea Margin="0,20,0,0" CornerRadius="{DynamicResource LgCornerRadius}"
+            IsBusy="{Binding IsLoading}"
+            IsVisible="{Binding IsLoading}" />
+
+        <Border Padding="20" CornerRadius="{DynamicResource LgCornerRadius}"
             Background="{DynamicResource CardBackgroundColor}"
-            CornerRadius="{DynamicResource LgCornerRadius}"
-            Padding="20"
             IsVisible="{Binding Response, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
-            <ScrollViewer>
-                <TextBlock Text="{Binding Response}" TextWrapping="Wrap" />
-            </ScrollViewer>
+            <TextBlock Text="{Binding Response}" TextWrapping="Wrap" FontSize="16" />
         </Border>
 
-    </Grid>
+    </StackPanel>
 </UserControl>

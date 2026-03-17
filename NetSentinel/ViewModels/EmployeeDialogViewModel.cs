@@ -26,19 +26,18 @@ public partial class EmployeeDialogViewModel : ViewModelBase
     [NotifyDataErrorInfo]
     [Required(ErrorMessage = "Name is required")]
     [MaxLength(50, ErrorMessage = "Name must be 50 characters or less")]
-
     private string _name = String.Empty;
 
     [ObservableProperty]
     [NotifyDataErrorInfo]
     [Required(ErrorMessage = "Employee Number is required")]
-    [MaxLength(15, ErrorMessage = "Employee number must be 15 characters or less")]
+    [MaxLength(50, ErrorMessage = "Employee number must be 50 characters or less")]
     private string _employeeNo = String.Empty;
 
     [ObservableProperty]
     [NotifyDataErrorInfo]
     [Required(ErrorMessage = "Email is required")]
-    [MaxLength(40, ErrorMessage = "Email must be 40 characters or less")]
+    [MaxLength(50, ErrorMessage = "Email must be 50 characters or less")]
     private string _email = String.Empty;
 
     [ObservableProperty]

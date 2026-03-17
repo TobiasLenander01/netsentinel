@@ -30,10 +30,13 @@ public partial class IncidentsViewModel : ViewModelBase
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(PreviousPageCommand))]
     [NotifyCanExecuteChangedFor(nameof(NextPageCommand))]
+    [NotifyCanExecuteChangedFor(nameof(FirstPageCommand))]
+    [NotifyCanExecuteChangedFor(nameof(LastPageCommand))]
     private int _currentPage = 1;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(NextPageCommand))]
+    [NotifyCanExecuteChangedFor(nameof(LastPageCommand))]
     private int _totalPages = 1;
 
     [ObservableProperty]
@@ -97,8 +100,24 @@ public partial class IncidentsViewModel : ViewModelBase
         await LoadIncidentsAsync();
     }
 
+    [RelayCommand(CanExecute = nameof(CanGoFirst))]
+    private async Task FirstPageAsync()
+    {
+        CurrentPage = 1;
+        await LoadIncidentsAsync();
+    }
+
+    [RelayCommand(CanExecute = nameof(CanGoLast))]
+    private async Task LastPageAsync()
+    {
+        CurrentPage = TotalPages;
+        await LoadIncidentsAsync();
+    }
+
     private bool CanGoPrevious() => CurrentPage > 1;
     private bool CanGoNext() => CurrentPage < TotalPages;
+    private bool CanGoFirst() => CurrentPage > 1;
+    private bool CanGoLast() => CurrentPage < TotalPages;
 
     private async Task DeleteIncidentAsync(Incident incident)
     {

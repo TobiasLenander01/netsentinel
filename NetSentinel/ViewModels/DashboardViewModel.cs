@@ -4,12 +4,12 @@ using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
 using NetSentinel.Interfaces;
 using System.Collections.ObjectModel;
-using NetSentinel.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using ShadUI;
 
@@ -17,7 +17,7 @@ namespace NetSentinel.ViewModels;
 
 public record SecurityMeasureLeaderboardEntry(int Rank, string Name, string Email, int Count);
 
-public partial class DashboardViewModel : ViewModelBase
+public partial class DashboardViewModel : ViewModelBase, IRefreshable
 {
     private readonly IIncidentService _incidentService;
     private readonly IDepartmentService _departmentService;
@@ -27,22 +27,28 @@ public partial class DashboardViewModel : ViewModelBase
     private readonly ToastManager _toastManager;
 
     [ObservableProperty]
-    private ObservableCollection<Incident> _incidents = new ObservableCollection<Incident>();
+    private int _departmentCount;
 
     [ObservableProperty]
-    private ObservableCollection<Device> _devices = new ObservableCollection<Device>();
+    private int _employeeCount;
 
     [ObservableProperty]
-    private ObservableCollection<Employee> _employees = new ObservableCollection<Employee>();
+    private int _deviceCount;
 
     [ObservableProperty]
-    private ObservableCollection<SecurityMeasure> _securityMeasures = new ObservableCollection<SecurityMeasure>();
+    private int _incidentCount;
 
     [ObservableProperty]
-    private ObservableCollection<Department> _departments = new ObservableCollection<Department>();
+    private int _securityMeasureCount;
 
     [ObservableProperty]
     private ISeries[] _series = [];
+
+    [ObservableProperty]
+    private Axis[] _yAxes = BuildYAxes(1);
+
+    [ObservableProperty]
+    private Axis[] _xAxes = BuildXAxes();
 
     [ObservableProperty]
     private ObservableCollection<SecurityMeasureLeaderboardEntry> _leaderboard = new();
@@ -50,7 +56,10 @@ public partial class DashboardViewModel : ViewModelBase
     [ObservableProperty]
     private bool _hasLeaderboard = false;
 
-     public DashboardViewModel(IIncidentService incidentService, IDepartmentService departmentService, IDeviceService deviceService, IEmployeeService employeeService, ISecurityMeasureService securityMeasureService, ToastManager toastManager) : base()
+    [ObservableProperty]
+    private bool _isLoading = false;
+
+    public DashboardViewModel(IIncidentService incidentService, IDepartmentService departmentService, IDeviceService deviceService, IEmployeeService employeeService, ISecurityMeasureService securityMeasureService, ToastManager toastManager) : base()
     {
         Title = "Dashboard";
         _incidentService = incidentService;
@@ -59,103 +68,62 @@ public partial class DashboardViewModel : ViewModelBase
         _employeeService = employeeService;
         _securityMeasureService = securityMeasureService;
         _toastManager = toastManager;
-        
-        UpdateSeries();
-    }
 
-
-    [RelayCommand]
-    private async Task LoadDepartmentsAsync()
-    {
-        var departments = await _departmentService.ReadAllDepartmentsAsync();
-        Departments = new ObservableCollection<Department>(departments);
-    }
-
-    [RelayCommand]  
-    private async Task LoadDevicesAsync()
-    {
-        var devices = await _deviceService.ReadAllDevicesAsync();
-        Devices = new ObservableCollection<Device>(devices);
+        Series = BuildSeries(new List<int> { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
+        YAxes = BuildYAxes(1);
     }
 
     [RelayCommand]
-    private async Task LoadEmployeesAsync()
-    {
-        var employees = await _employeeService.ReadAllEmployeesAsync();
-        Employees = new ObservableCollection<Employee>(employees);
-    }
-
-    [RelayCommand]
-    private async Task LoadSecurityMeasuresAsync()
-    {
-        var securityMeasures = await _securityMeasureService.ReadAllSecurityMeasuresAsync();
-        SecurityMeasures = new ObservableCollection<SecurityMeasure>(securityMeasures);
-    }
-
-    [RelayCommand]
-    private async Task LoadIncidentsAsync()
+    private async Task LoadDashboardAsync()
     {
         try
         {
-            var incidents = await _incidentService.ReadAllIncidentsAsync();
-            Incidents = new ObservableCollection<Incident>(incidents);
+            IsLoading = true;
+
+            var departmentCount = await _departmentService.ReadDepartmentsCountAsync();
+            var employeeCount = await _employeeService.ReadEmployeesCountAsync();
+            var deviceCount = await _deviceService.ReadDevicesCountAsync();
+            var incidentCount = await _incidentService.ReadIncidentsCountAsync();
+            var securityMeasureCount = await _securityMeasureService.ReadSecurityMeasuresCountAsync();
+            var incidentsByMonth = await _incidentService.ReadIncidentCountsByMonthAsync();
+            var leaderboard = await _securityMeasureService.ReadTopSecurityMeasurePerformersAsync(5);
+
+            DepartmentCount = departmentCount;
+            EmployeeCount = employeeCount;
+            DeviceCount = deviceCount;
+            IncidentCount = incidentCount;
+            SecurityMeasureCount = securityMeasureCount;
+
+            Series = BuildSeries(incidentsByMonth);
+            YAxes = BuildYAxes(CalculateYAxisStep(incidentsByMonth));
+
+            var entries = leaderboard
+                .Select((employee, index) => new SecurityMeasureLeaderboardEntry(index + 1, employee.Name, employee.Email, employee.Count));
+
+            Leaderboard = new ObservableCollection<SecurityMeasureLeaderboardEntry>(entries);
+            HasLeaderboard = Leaderboard.Count > 0;
         }
-        catch (Exception ex)
+        catch
         {
             _toastManager
-                .CreateToast("Failed to load incidents")
-                .WithContent(ex.Message)
+                .CreateToast("Failed to load dashboard")
+                .WithContent("Verify your network connection and try again.")
                 .DismissOnClick()
                 .ShowError();
         }
-    }
-
-    partial void OnIncidentsChanged(ObservableCollection<Incident> value)
-    {
-        UpdateSeries();
-    }
-
-    partial void OnSecurityMeasuresChanged(ObservableCollection<SecurityMeasure> value)
-    {
-        UpdateLeaderboard();
-    }
-
-    private void UpdateLeaderboard()
-    {
-        var entries = SecurityMeasures
-            .Where(sm => sm.PerformedBy != null)
-            .GroupBy(sm => sm.PerformedBy!)
-            .Select(g => new { g.Key.Name, g.Key.Email, Count = g.Count() })
-            .OrderByDescending(e => e.Count)
-            .Take(5)
-            .Select((e, i) => new SecurityMeasureLeaderboardEntry(i + 1, e.Name, e.Email, e.Count));
-
-        Leaderboard = new ObservableCollection<SecurityMeasureLeaderboardEntry>(entries);
-        HasLeaderboard = Leaderboard.Count > 0;
-    }
-
-    private List<int> IncidentsPerMonth(ObservableCollection<Incident> incidents)
-    {
-        var counts = new List<int> { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // One count for each month
-
-        foreach (var incident in incidents)
+        finally
         {
-            // Logic to count incidents per month and update the counts list
-                int month = incident.CreatedAt.Month; // Get the month from the CreatedAt property
-                counts[month - 1]++; // Increment the count for the corresponding month (month - 1 because of zero-based index)
-
+            IsLoading = false;
         }
-
-        return counts;
     }
 
-    private void UpdateSeries()
+    private static ISeries[] BuildSeries(IReadOnlyCollection<int> countsByMonth)
     {
-        Series =
+        return
         [
             new ColumnSeries<int>
             {
-                Values = IncidentsPerMonth(Incidents),
+                Values = countsByMonth,
                 Fill = new SolidColorPaint(SKColors.DodgerBlue)
             }
         ];
@@ -163,26 +131,51 @@ public partial class DashboardViewModel : ViewModelBase
 
     public SolidColorPaint TooltipTextPaint { get; } = new SolidColorPaint { Color = SKColors.Gray };
 
-    public Axis[] XAxes { get; } =
-    [
-        new Axis
+    private static int CalculateYAxisStep(IReadOnlyCollection<int> countsByMonth)
+    {
+        if (countsByMonth.Count == 0)
         {
-            Labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-            LabelsPaint = new SolidColorPaint { Color = SKColors.Gray },
-            TextSize = 12,
-            MinStep = 1
+            return 1;
         }
-    ];
 
-    public Axis[] YAxes { get; } =
-    [
-        new Axis
-        {
-            Labeler = Labelers.Default,
-            LabelsPaint = new SolidColorPaint { Color = SKColors.Gray },
-            TextSize = 12,
-            MinStep = 10,
-            ShowSeparatorLines = false
-        }
-    ];
+        var max = countsByMonth.Max();
+        return Math.Max(1, (int)Math.Ceiling(max / 5.0));
+    }
+
+    private static Axis[] BuildXAxes()
+    {
+        var now = DateTime.UtcNow;
+        var start = new DateTime(now.Year, now.Month, 1).AddMonths(-11);
+        var labels = Enumerable.Range(0, 12)
+            .Select(offset => start.AddMonths(offset).ToString("MMM", CultureInfo.InvariantCulture))
+            .ToArray();
+
+        return
+        [
+            new Axis
+            {
+                Labels = labels,
+                LabelsPaint = new SolidColorPaint { Color = SKColors.Gray },
+                TextSize = 12,
+                MinStep = 1
+            }
+        ];
+    }
+
+    private static Axis[] BuildYAxes(int minStep)
+    {
+        return
+        [
+            new Axis
+            {
+                Labeler = Labelers.Default,
+                LabelsPaint = new SolidColorPaint { Color = SKColors.Gray },
+                TextSize = 12,
+                MinStep = minStep,
+                ShowSeparatorLines = false
+            }
+        ];
+    }
+
+    public Task RefreshAsync() => LoadDashboardAsync();
 }
