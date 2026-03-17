@@ -45,9 +45,6 @@
     <PackageReference Include="ShadUI" Version="0.1.6" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="Components/OverviewCard.axaml.cs">
-      <DependentUpon>OverviewCard.axaml</DependentUpon>
-    </Compile>
     <Compile Update="Views\DeviceDialogView.axaml.cs">
       <DependentUpon>DeviceDialogView.axaml</DependentUpon>
     </Compile>
