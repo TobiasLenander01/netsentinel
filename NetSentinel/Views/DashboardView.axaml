@@ -4,46 +4,48 @@ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 xmlns:avalonia="clr-namespace:LiveChartsCore.SkiaSharpView.Avalonia;assembly=LiveChartsCore.SkiaSharpView.Avalonia"
 xmlns:vm="using:NetSentinel.ViewModels"
 xmlns:components="using:NetSentinel.Components"
+xmlns:shad="clr-namespace:ShadUI;assembly=ShadUI"
 x:Class="NetSentinel.Views.DashboardView"
 x:DataType="vm:DashboardViewModel"
 Loaded="OnLoaded">
 
-    <StackPanel Spacing="20" Margin="40">
+    <Grid>
+        <StackPanel Spacing="20" Margin="40">
 
         <TextBlock Text="{Binding Title}" Classes="h1" />
 
         <UniformGrid Columns="5" Margin="-6,0">
             <components:OverviewCard
             Title="Total Departments"
-            Value="{Binding Departments.Count, StringFormat={}{0}}">
+            Value="{Binding DepartmentCount, StringFormat={}{0}}">
                 <components:OverviewCard.Icon>
                     <LucideIcon Kind="Building2" Size="20" StrokeWidth="1.5" />
                 </components:OverviewCard.Icon>
             </components:OverviewCard>
             <components:OverviewCard
             Title="Total Employees"
-            Value="{Binding Employees.Count, StringFormat={}{0}}">
+            Value="{Binding EmployeeCount, StringFormat={}{0}}">
                 <components:OverviewCard.Icon>
                     <LucideIcon Kind="Users" Size="20" StrokeWidth="1.5" />
                 </components:OverviewCard.Icon>
             </components:OverviewCard>
             <components:OverviewCard
             Title="Total Devices"
-            Value="{Binding Devices.Count, StringFormat={}{0}}">
+            Value="{Binding DeviceCount, StringFormat={}{0}}">
                 <components:OverviewCard.Icon>
                     <LucideIcon Kind="Laptop" Size="20" StrokeWidth="1.5" />
                 </components:OverviewCard.Icon>
             </components:OverviewCard>
             <components:OverviewCard
             Title="Total Incidents"
-            Value="{Binding Incidents.Count, StringFormat={}{0}}">
+            Value="{Binding IncidentCount, StringFormat={}{0}}">
                 <components:OverviewCard.Icon>
                     <LucideIcon Kind="Bug" Size="20" StrokeWidth="1.5" />
                 </components:OverviewCard.Icon>
             </components:OverviewCard>
             <components:OverviewCard
             Title="Total Security Measures"
-            Value="{Binding SecurityMeasures.Count, StringFormat={}{0}}">
+            Value="{Binding SecurityMeasureCount, StringFormat={}{0}}">
                 <components:OverviewCard.Icon>
                     <LucideIcon Kind="ShieldCheck" Size="20" StrokeWidth="1.5" />
                 </components:OverviewCard.Icon>
@@ -124,5 +126,9 @@ Loaded="OnLoaded">
             </Border>
         </Grid>
 
-    </StackPanel>
+        </StackPanel>
+
+        <shad:BusyArea CornerRadius="{DynamicResource 2XlCornerRadius}"
+            IsBusy="{Binding IsLoading}" />
+    </Grid>
 </UserControl>

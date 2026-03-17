@@ -36,6 +36,29 @@ public class SecurityMeasureService : ISecurityMeasureService
         return await db.SecurityMeasures.Include(sm => sm.Incident).Include(pb => pb.PerformedBy).ToListAsync();
     }
 
+    // read (count)
+    public async Task<int> ReadSecurityMeasuresCountAsync()
+    {
+        using var db = _dbContextFactory.CreateDbContext();
+        return await db.SecurityMeasures.AsNoTracking().CountAsync();
+    }
+
+    // read (leaderboard)
+    public async Task<List<(string Name, string Email, int Count)>> ReadTopSecurityMeasurePerformersAsync(int take)
+    {
+        using var db = _dbContextFactory.CreateDbContext();
+        var results = await db.SecurityMeasures
+            .AsNoTracking()
+            .Where(sm => sm.PerformedBy != null)
+            .GroupBy(sm => new { sm.PerformedBy!.Name, sm.PerformedBy!.Email })
+            .Select(g => new { g.Key.Name, g.Key.Email, Count = g.Count() })
+            .OrderByDescending(e => e.Count)
+            .Take(take)
+            .ToListAsync();
+
+        return results.Select(r => (r.Name, r.Email, r.Count)).ToList();
+    }
+
     // read (paged)
     public async Task<(List<SecurityMeasure> Items, int TotalCount)> ReadSecurityMeasuresPagedAsync(int page, int pageSize)
     {

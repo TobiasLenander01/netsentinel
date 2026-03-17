@@ -8,6 +8,7 @@ public interface IEmployeeService
 {
     Task AddEmployeeAsync(Employee employee);
     Task<List<Employee>> ReadAllEmployeesAsync();
+    Task<int> ReadEmployeesCountAsync();
     Task<(List<Employee> Items, int TotalCount)> ReadEmployeesPagedAsync(int page, int pageSize);
     Task<Employee?> ReadSingleEmployeeAsync(int id);
     Task<int> UpdateEmployeeAsync(Employee updatedEmployee);

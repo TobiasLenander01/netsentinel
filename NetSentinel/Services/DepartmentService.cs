@@ -32,6 +32,13 @@ public class DepartmentService : IDepartmentService
         return await db.Departments.Include(d => d.Employees).ToListAsync();
     }
 
+    // read (count)
+    public async Task<int> ReadDepartmentsCountAsync()
+    {
+        using var db = _dbContextFactory.CreateDbContext();
+        return await db.Departments.AsNoTracking().CountAsync();
+    }
+
     // read (paged)
     public async Task<(List<Department> Items, int TotalCount)> ReadDepartmentsPagedAsync(int page, int pageSize)
     {

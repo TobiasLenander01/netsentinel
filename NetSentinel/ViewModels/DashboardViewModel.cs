@@ -4,7 +4,6 @@ using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
 using NetSentinel.Interfaces;
 using System.Collections.ObjectModel;
-using NetSentinel.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
@@ -27,19 +26,19 @@ public partial class DashboardViewModel : ViewModelBase
     private readonly ToastManager _toastManager;
 
     [ObservableProperty]
-    private ObservableCollection<Incident> _incidents = new ObservableCollection<Incident>();
+    private int _departmentCount;
 
     [ObservableProperty]
-    private ObservableCollection<Device> _devices = new ObservableCollection<Device>();
+    private int _employeeCount;
 
     [ObservableProperty]
-    private ObservableCollection<Employee> _employees = new ObservableCollection<Employee>();
+    private int _deviceCount;
 
     [ObservableProperty]
-    private ObservableCollection<SecurityMeasure> _securityMeasures = new ObservableCollection<SecurityMeasure>();
+    private int _incidentCount;
 
     [ObservableProperty]
-    private ObservableCollection<Department> _departments = new ObservableCollection<Department>();
+    private int _securityMeasureCount;
 
     [ObservableProperty]
     private ISeries[] _series = [];
@@ -50,6 +49,9 @@ public partial class DashboardViewModel : ViewModelBase
     [ObservableProperty]
     private bool _hasLeaderboard = false;
 
+    [ObservableProperty]
+    private bool _isLoading = false;
+
      public DashboardViewModel(IIncidentService incidentService, IDepartmentService departmentService, IDeviceService deviceService, IEmployeeService employeeService, ISecurityMeasureService securityMeasureService, ToastManager toastManager) : base()
     {
         Title = "Dashboard";
@@ -59,103 +61,71 @@ public partial class DashboardViewModel : ViewModelBase
         _employeeService = employeeService;
         _securityMeasureService = securityMeasureService;
         _toastManager = toastManager;
-        
-        UpdateSeries();
+
+        Series = BuildSeries(new List<int> { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
     }
 
 
     [RelayCommand]
-    private async Task LoadDepartmentsAsync()
-    {
-        var departments = await _departmentService.ReadAllDepartmentsAsync();
-        Departments = new ObservableCollection<Department>(departments);
-    }
-
-    [RelayCommand]  
-    private async Task LoadDevicesAsync()
-    {
-        var devices = await _deviceService.ReadAllDevicesAsync();
-        Devices = new ObservableCollection<Device>(devices);
-    }
-
-    [RelayCommand]
-    private async Task LoadEmployeesAsync()
-    {
-        var employees = await _employeeService.ReadAllEmployeesAsync();
-        Employees = new ObservableCollection<Employee>(employees);
-    }
-
-    [RelayCommand]
-    private async Task LoadSecurityMeasuresAsync()
-    {
-        var securityMeasures = await _securityMeasureService.ReadAllSecurityMeasuresAsync();
-        SecurityMeasures = new ObservableCollection<SecurityMeasure>(securityMeasures);
-    }
-
-    [RelayCommand]
-    private async Task LoadIncidentsAsync()
+    private async Task LoadDashboardAsync()
     {
         try
         {
-            var incidents = await _incidentService.ReadAllIncidentsAsync();
-            Incidents = new ObservableCollection<Incident>(incidents);
+            IsLoading = true;
+
+            var departmentCountTask = _departmentService.ReadDepartmentsCountAsync();
+            var employeeCountTask = _employeeService.ReadEmployeesCountAsync();
+            var deviceCountTask = _deviceService.ReadDevicesCountAsync();
+            var incidentCountTask = _incidentService.ReadIncidentsCountAsync();
+            var securityMeasureCountTask = _securityMeasureService.ReadSecurityMeasuresCountAsync();
+            var incidentsByMonthTask = _incidentService.ReadIncidentCountsByMonthAsync();
+            var leaderboardTask = _securityMeasureService.ReadTopSecurityMeasurePerformersAsync(5);
+
+            await Task.WhenAll(
+                departmentCountTask,
+                employeeCountTask,
+                deviceCountTask,
+                incidentCountTask,
+                securityMeasureCountTask,
+                incidentsByMonthTask,
+                leaderboardTask
+            );
+
+            DepartmentCount = departmentCountTask.Result;
+            EmployeeCount = employeeCountTask.Result;
+            DeviceCount = deviceCountTask.Result;
+            IncidentCount = incidentCountTask.Result;
+            SecurityMeasureCount = securityMeasureCountTask.Result;
+
+            Series = BuildSeries(incidentsByMonthTask.Result);
+
+            var entries = leaderboardTask.Result
+                .Select((e, i) => new SecurityMeasureLeaderboardEntry(i + 1, e.Name, e.Email, e.Count));
+
+            Leaderboard = new ObservableCollection<SecurityMeasureLeaderboardEntry>(entries);
+            HasLeaderboard = Leaderboard.Count > 0;
         }
         catch (Exception ex)
         {
             _toastManager
-                .CreateToast("Failed to load incidents")
+                .CreateToast("Failed to load dashboard")
                 .WithContent(ex.Message)
                 .DismissOnClick()
                 .ShowError();
         }
-    }
-
-    partial void OnIncidentsChanged(ObservableCollection<Incident> value)
-    {
-        UpdateSeries();
-    }
-
-    partial void OnSecurityMeasuresChanged(ObservableCollection<SecurityMeasure> value)
-    {
-        UpdateLeaderboard();
-    }
-
-    private void UpdateLeaderboard()
-    {
-        var entries = SecurityMeasures
-            .Where(sm => sm.PerformedBy != null)
-            .GroupBy(sm => sm.PerformedBy!)
-            .Select(g => new { g.Key.Name, g.Key.Email, Count = g.Count() })
-            .OrderByDescending(e => e.Count)
-            .Take(5)
-            .Select((e, i) => new SecurityMeasureLeaderboardEntry(i + 1, e.Name, e.Email, e.Count));
-
-        Leaderboard = new ObservableCollection<SecurityMeasureLeaderboardEntry>(entries);
-        HasLeaderboard = Leaderboard.Count > 0;
-    }
-
-    private List<int> IncidentsPerMonth(ObservableCollection<Incident> incidents)
-    {
-        var counts = new List<int> { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // One count for each month
-
-        foreach (var incident in incidents)
+        finally
         {
-            // Logic to count incidents per month and update the counts list
-                int month = incident.CreatedAt.Month; // Get the month from the CreatedAt property
-                counts[month - 1]++; // Increment the count for the corresponding month (month - 1 because of zero-based index)
-
+            IsLoading = false;
         }
-
-        return counts;
     }
 
-    private void UpdateSeries()
+    private static ISeries[] BuildSeries(IReadOnlyCollection<int> countsByMonth)
     {
-        Series =
+        return
         [
             new ColumnSeries<int>
             {
-                Values = IncidentsPerMonth(Incidents),
+                Values = countsByMonth,
                 Fill = new SolidColorPaint(SKColors.DodgerBlue)
             }
         ];

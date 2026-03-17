@@ -37,6 +37,35 @@ public class IncidentService : IIncidentService
             .ToListAsync();
     }
 
+    // read (count)
+    public async Task<int> ReadIncidentsCountAsync()
+    {
+        using var db = _dbContextFactory.CreateDbContext();
+        return await db.Incidents.AsNoTracking().CountAsync();
+    }
+
+    // read (counts by month)
+    public async Task<List<int>> ReadIncidentCountsByMonthAsync()
+    {
+        using var db = _dbContextFactory.CreateDbContext();
+        var monthly = await db.Incidents
+            .AsNoTracking()
+            .GroupBy(i => i.CreatedAt.Month)
+            .Select(g => new { Month = g.Key, Count = g.Count() })
+            .ToListAsync();
+
+        var counts = new List<int> { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        foreach (var entry in monthly)
+        {
+            if (entry.Month >= 1 && entry.Month <= 12)
+            {
+                counts[entry.Month - 1] = entry.Count;
+            }
+        }
+
+        return counts;
+    }
+
     // read (paged)
     public async Task<(List<Incident> Items, int TotalCount)> ReadIncidentsPagedAsync(int page, int pageSize)
     {

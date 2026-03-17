@@ -37,6 +37,13 @@ public class EmployeeService : IEmployeeService
             .ToListAsync();
     }
 
+    // read (count)
+    public async Task<int> ReadEmployeesCountAsync()
+    {
+        using var db = _dbContextFactory.CreateDbContext();
+        return await db.Employees.AsNoTracking().CountAsync();
+    }
+
     // read (paged)
     public async Task<(List<Employee> Items, int TotalCount)> ReadEmployeesPagedAsync(int page, int pageSize)
     {
