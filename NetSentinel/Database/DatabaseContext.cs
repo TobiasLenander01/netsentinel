@@ -68,170 +68,115 @@ public class DatabaseContext : DbContext
     }
 
     /// <summary>
+    /// Returns true if any table contains data. Used to prevent seeding test data on top of real data.
+    /// </summary>
+    public async Task<bool> HasAnyDataAsync()
+    {
+        return await Departments.AnyAsync()
+            || await Employees.AnyAsync()
+            || await Devices.AnyAsync()
+            || await Incidents.AnyAsync()
+            || await SecurityMeasures.AnyAsync();
+    }
+
+    /// <summary>
     /// Inserts test data. Returns false (and does nothing) if any data already exists.
-    /// Call ClearAllAsync() first to start fresh.
     /// </summary>
     public async Task<bool> SeedAsync()
     {
-        bool hasData = await Departments.AnyAsync()
-                    || await Employees.AnyAsync()
-                    || await Devices.AnyAsync()
-                    || await Incidents.AnyAsync()
-                    || await SecurityMeasures.AnyAsync();
-
-        if (hasData)
+        if (await HasAnyDataAsync())
             return false;
 
-        var rng = new Random(42);
-
-        // --- Departments (20) ---
-        string[] deptNames = [
-            "IT", "HR", "Finance", "Security", "Legal",
-            "Marketing", "Sales", "Operations", "R&D", "Compliance",
-            "Customer Support", "Logistics", "Procurement", "Engineering", "Product",
-            "Data Analytics", "DevOps", "QA", "Infrastructure", "Executive",
-        ];
-        string[] locations = [
-            "Building A, Gondor", "Building B, Gondor", "Central Building, Rohan",
-            "Secondary Building, Rohan", "North Wing, Mordor", "East Tower, Mordor",
-            "West Campus, Shire", "South Block, Shire", "Main Hall, Rivendell",
-            "Annex, Rivendell",
-        ];
-        var generatedDepts = deptNames
-            .Select((name, i) => new Department(name, locations[i % locations.Length]))
-            .ToList();
-        Departments.AddRange(generatedDepts);
-
-        // --- Employees (50) ---
-        string[] firstNames = [
-            "Aragorn", "Boromir", "Frodo", "Bilbo", "Gimli",
-            "Legolas", "Gollum", "Gandalf", "Saruman", "Sauron",
-            "Eowyn", "Arwen", "Galadriel", "Elrond", "Treebeard",
-            "Pippin", "Merry", "Sam", "Faramir", "Denethor",
-            "Theoden", "Eomer", "Grima", "Radagast", "Glorfindel",
-            "Celeborn", "Haldir", "Lurtz", "Gothmog", "Shelob",
-            "Balrog", "Nazgul", "Ents", "Uruk", "Orc",
-            "Rohirrim", "Gondorian", "Hobbit", "Dwarf", "Elf",
-            "Ranger", "Wizard", "Steward", "Captain", "Scout",
-            "Healer", "Blacksmith", "Merchant", "Scholar", "Guard",
-        ];
-        var generatedEmployees = firstNames
-            .Select((name, i) =>
-            {
-                var department = generatedDepts[rng.Next(generatedDepts.Count)];
-                var email = $"{name.ToLowerInvariant()}.{i + 1}@netsentinel.se";
-                return new Employee($"EMP{i + 1:D3}", name, email, department);
-            })
-            .ToList();
-        Employees.AddRange(generatedEmployees);
-
-        // --- Devices (100) ---
-        string[] deviceTypes = [
-            "MacBook", "Windows PC", "Chromebook", "Workstation", "Tablet",
-            "Laptop", "Server", "Raspberry Pi", "Thin Client", "Desktop",
-        ];
-        var generatedDevices = Enumerable.Range(0, 100).Select(i =>
-        {
-            int subnet = (i / 254) + 1;
-            int host = (i % 254) + 1;
-            return new Device(
-                $"{deviceTypes[i % deviceTypes.Length]} {i + 1}",
-                $"192.168.{subnet}.{host}",
-                $"SN-{i + 1:D4}",
-                generatedEmployees[rng.Next(generatedEmployees.Count)]);
-        }).ToList();
-        Devices.AddRange(generatedDevices);
-
-        // --- Incidents & Security Measures (generated) ---
-        var devices = generatedDevices;
-        var employees = generatedEmployees;
-        var priorities = (Priority[])Enum.GetValues(typeof(Priority));
-        var statuses = (Status[])Enum.GetValues(typeof(Status));
-
-        string[] incidentDescriptions =
-        [
-            "Unauthorized login attempt detected",
-            "Malware signature found in downloaded file",
-            "Unusual outbound traffic spike",
-            "Outdated SSL certificate on internal service",
-            "Failed login attempts from unknown source",
-            "Phishing email reported by employee",
-            "Suspicious process running on endpoint",
-            "Data exfiltration attempt blocked by DLP",
-            "Ransomware activity detected on workstation",
-            "Privilege escalation attempt in admin portal",
-            "Unpatched vulnerability exploited on server",
-            "Brute-force attack on VPN gateway",
-            "Insider threat: bulk file download detected",
-            "DNS poisoning attempt identified",
-            "Man-in-the-middle attack on internal network",
-            "Zero-day exploit attempt on web application",
-            "Unauthorized USB device connected",
-            "Account takeover via stolen session token",
-            "SQL injection attempt on customer portal",
-            "Botnet C2 communication detected",
-        ];
-
-        string[] measureDescriptions =
-        [
-            "Reset user credentials and enforced MFA",
-            "Quarantined affected file and ran full AV scan",
-            "Blocked suspicious IP range at firewall",
-            "Renewed SSL certificate and updated configuration",
-            "Isolated affected endpoint from network",
-            "Applied emergency patch and rebooted service",
-            "Revoked session tokens and alerted user",
-            "Deployed WAF rule to block injection pattern",
-            "Disabled compromised account and notified manager",
-            "Reconfigured DNS resolver and cleared cache",
-        ];
-
-        string[] measureResults =
-        [
-            "Threat neutralized, no further activity observed",
-            "File removed, no additional threats found",
-            "Traffic normalized within 30 minutes",
-            "Certificate valid for 12 months",
-            "Endpoint re-imaged and returned to service",
-            "Patch applied successfully, vulnerability closed",
-            "Session invalidated, user re-authenticated securely",
-            "Attack pattern blocked, no data compromised",
-            "Account secured, audit log reviewed",
-            "DNS resolved correctly after cache flush",
-        ];
-
-        // Spread ~200 incidents evenly across the last 12 months
         var now = DateTime.UtcNow;
-        var generatedIncidents = new List<Incident>();
-        for (int i = 0; i < 200; i++)
-        {
-            // Pick a random day within the last 365 days
-            int daysAgo = rng.Next(0, 365);
-            var incident = new Incident(
-                incidentDescriptions[rng.Next(incidentDescriptions.Length)],
-                now.AddDays(-daysAgo),
-                priorities[rng.Next(priorities.Length)],
-                statuses[rng.Next(statuses.Length)],
-                devices[rng.Next(devices.Count)]);
-            generatedIncidents.Add(incident);
-        }
-        Incidents.AddRange(generatedIncidents);
 
-        // Add 1-2 security measures per incident
-        foreach (var incident in generatedIncidents)
-        {
-            int measureCount = rng.Next(1, 3);
-            for (int m = 0; m < measureCount; m++)
-            {
-                var performedAt = incident.CreatedAt.AddHours(rng.Next(1, 72));
-                SecurityMeasures.Add(new SecurityMeasure(
-                    measureDescriptions[rng.Next(measureDescriptions.Length)],
-                    measureResults[rng.Next(measureResults.Length)],
-                    incident,
-                    employees[rng.Next(employees.Count)],
-                    performedAt));
-            }
-        }
+        // --- Departments (6) ---
+        var deptIt = new Department("IT", "Building A, Gondor");
+        var deptHr = new Department("HR", "Building B, Gondor");
+        var deptFinance = new Department("Finance", "Central Building, Rohan");
+        var deptSecurity = new Department("Security", "North Wing, Mordor");
+        var deptOps = new Department("Operations", "West Campus, Shire");
+        var deptRnd = new Department("R&D", "Main Hall, Rivendell");
+        Departments.AddRange(deptIt, deptHr, deptFinance, deptSecurity, deptOps, deptRnd);
+
+        // --- Employees (12) ---
+        var emp1 = new Employee("EMP001", "Aragorn Elessar", "aragorn.elessar@netsentinel.se", deptSecurity);
+        var emp2 = new Employee("EMP002", "Boromir Denethor", "boromir.denethor@netsentinel.se", deptOps);
+        var emp3 = new Employee("EMP003", "Frodo Baggins", "frodo.baggins@netsentinel.se", deptIt);
+        var emp4 = new Employee("EMP004", "Bilbo Baggins", "bilbo.baggins@netsentinel.se", deptFinance);
+        var emp5 = new Employee("EMP005", "Gimli son of Gloin", "gimli.gloin@netsentinel.se", deptOps);
+        var emp6 = new Employee("EMP006", "Legolas Greenleaf", "legolas.greenleaf@netsentinel.se", deptSecurity);
+        var emp7 = new Employee("EMP007", "Gandalf Mithrandir", "gandalf.mithrandir@netsentinel.se", deptRnd);
+        var emp8 = new Employee("EMP008", "Eowyn Dernhelm", "eowyn.dernhelm@netsentinel.se", deptHr);
+        var emp9 = new Employee("EMP009", "Arwen Undomiel", "arwen.undomiel@netsentinel.se", deptIt);
+        var emp10 = new Employee("EMP010", "Galadriel Artanis", "galadriel.artanis@netsentinel.se", deptRnd);
+        var emp11 = new Employee("EMP011", "Elrond Halfelven", "elrond.halfelven@netsentinel.se", deptFinance);
+        var emp12 = new Employee("EMP012", "Faramir Ithilien", "faramir.ithilien@netsentinel.se", deptSecurity);
+        Employees.AddRange(emp1, emp2, emp3, emp4, emp5, emp6, emp7, emp8, emp9, emp10, emp11, emp12);
+
+        // --- Devices (15) ---
+        var device1 = new Device("MacBook 1", "192.168.1.10", "SN-0001", emp3);
+        var device2 = new Device("Windows PC 2", "192.168.1.11", "SN-0002", emp4);
+        var device3 = new Device("Chromebook 3", "192.168.1.12", "SN-0003", emp8);
+        var device4 = new Device("Workstation 4", "192.168.1.13", "SN-0004", emp1);
+        var device5 = new Device("Tablet 5", "192.168.1.14", "SN-0005", emp2);
+        var device6 = new Device("Laptop 6", "192.168.1.15", "SN-0006", emp9);
+        var device7 = new Device("Server 7", "192.168.1.16", "SN-0007", emp7);
+        var device8 = new Device("Raspberry Pi 8", "192.168.1.17", "SN-0008", emp10);
+        var device9 = new Device("Thin Client 9", "192.168.1.18", "SN-0009", emp5);
+        var device10 = new Device("Desktop 10", "192.168.1.19", "SN-0010", emp6);
+        var device11 = new Device("MacBook 11", "192.168.1.20", "SN-0011", emp11);
+        var device12 = new Device("Windows PC 12", "192.168.1.21", "SN-0012", emp12);
+        var device13 = new Device("Chromebook 13", "192.168.1.22", "SN-0013", emp3);
+        var device14 = new Device("Workstation 14", "192.168.1.23", "SN-0014", emp2);
+        var device15 = new Device("Tablet 15", "192.168.1.24", "SN-0015", emp8);
+        Devices.AddRange(device1, device2, device3, device4, device5, device6, device7, device8, device9, device10, device11, device12, device13, device14, device15);
+
+        // --- Incidents (18) ---
+        var incident1 = new Incident("Unauthorized login attempt detected", now.AddDays(-4), Priority.High, Status.InProgress, device1);
+        var incident2 = new Incident("Malware signature found in downloaded file", now.AddDays(-7), Priority.Medium, Status.Approved, device2);
+        var incident3 = new Incident("Unusual outbound traffic spike", now.AddDays(-10), Priority.High, Status.InProgress, device3);
+        var incident4 = new Incident("Outdated SSL certificate on internal service", now.AddDays(-14), Priority.Low, Status.Completed, device7);
+        var incident5 = new Incident("Failed login attempts from unknown source", now.AddDays(-18), Priority.Medium, Status.Rejected, device4);
+        var incident6 = new Incident("Phishing email reported by employee", now.AddDays(-23), Priority.Medium, Status.Approved, device5);
+        var incident7 = new Incident("Suspicious process running on endpoint", now.AddDays(-31), Priority.High, Status.InProgress, device6);
+        var incident8 = new Incident("Data exfiltration attempt blocked by DLP", now.AddDays(-37), Priority.Critical, Status.InProgress, device9);
+        var incident9 = new Incident("Ransomware activity detected on workstation", now.AddDays(-45), Priority.Critical, Status.Completed, device10);
+        var incident10 = new Incident("Privilege escalation attempt in admin portal", now.AddDays(-56), Priority.High, Status.InProgress, device11);
+        var incident11 = new Incident("Unpatched vulnerability exploited on server", now.AddDays(-68), Priority.Critical, Status.Approved, device7);
+        var incident12 = new Incident("Brute-force attack on VPN gateway", now.AddDays(-79), Priority.High, Status.Completed, device12);
+        var incident13 = new Incident("Insider threat: bulk file download detected", now.AddDays(-92), Priority.High, Status.InProgress, device13);
+        var incident14 = new Incident("DNS poisoning attempt identified", now.AddDays(-110), Priority.Medium, Status.Completed, device14);
+        var incident15 = new Incident("Man-in-the-middle attempt on internal network", now.AddDays(-130), Priority.High, Status.InProgress, device15);
+        var incident16 = new Incident("Zero-day exploit attempt on web application", now.AddDays(-155), Priority.Critical, Status.Approved, device8);
+        var incident17 = new Incident("Unauthorized USB device connected", now.AddDays(-180), Priority.Medium, Status.Completed, device5);
+        var incident18 = new Incident("SQL injection attempt on customer portal", now.AddDays(-210), Priority.High, Status.InProgress, device2);
+        Incidents.AddRange(incident1, incident2, incident3, incident4, incident5, incident6, incident7, incident8, incident9, incident10, incident11, incident12, incident13, incident14, incident15, incident16, incident17, incident18);
+
+        // --- Security Measures (23) ---
+        var measure1 = new SecurityMeasure("Reset user credentials and enforced MFA", "Threat neutralized, no further activity observed", incident1, emp1, incident1.CreatedAt.AddHours(3));
+        var measure2 = new SecurityMeasure("Quarantined affected file and ran full AV scan", "File removed, no additional threats found", incident2, emp4, incident2.CreatedAt.AddHours(5));
+        var measure3 = new SecurityMeasure("Blocked suspicious IP range at firewall", "Traffic normalized within 30 minutes", incident3, emp6, incident3.CreatedAt.AddHours(4));
+        var measure4 = new SecurityMeasure("Renewed SSL certificate and updated configuration", "Certificate valid for 12 months", incident4, emp7, incident4.CreatedAt.AddHours(2));
+        var measure5 = new SecurityMeasure("Isolated affected endpoint from network", "Endpoint re-imaged and returned to service", incident7, emp9, incident7.CreatedAt.AddHours(6));
+        var measure6 = new SecurityMeasure("Applied emergency patch and rebooted service", "Patch applied successfully, vulnerability closed", incident11, emp10, incident11.CreatedAt.AddHours(7));
+        var measure7 = new SecurityMeasure("Revoked session tokens and alerted user", "Session invalidated, user re-authenticated securely", incident10, emp12, incident10.CreatedAt.AddHours(3));
+        var measure8 = new SecurityMeasure("Deployed WAF rule to block injection pattern", "Attack pattern blocked, no data compromised", incident18, emp3, incident18.CreatedAt.AddHours(4));
+        var measure9 = new SecurityMeasure("Disabled compromised account and notified manager", "Account secured, audit log reviewed", incident5, emp2, incident5.CreatedAt.AddHours(5));
+        var measure10 = new SecurityMeasure("Reconfigured DNS resolver and cleared cache", "DNS resolved correctly after cache flush", incident14, emp11, incident14.CreatedAt.AddHours(2));
+        var measure11 = new SecurityMeasure("Revoked OAuth tokens and rotated secrets", "Secrets rotated, access validated", incident15, emp8, incident15.CreatedAt.AddHours(3));
+        var measure12 = new SecurityMeasure("Disabled vulnerable service and opened change ticket", "Service isolated pending remediation", incident12, emp7, incident12.CreatedAt.AddHours(4));
+        var measure13 = new SecurityMeasure("Forced password reset and sent advisory", "Passwords reset, users confirmed", incident6, emp1, incident6.CreatedAt.AddHours(2));
+        var measure14 = new SecurityMeasure("Updated IDS signatures and validated alerts", "Alerts verified, no false positives", incident3, emp10, incident3.CreatedAt.AddHours(6));
+        var measure15 = new SecurityMeasure("Restricted admin portal to trusted subnet", "Access restricted, admin portal stable", incident10, emp6, incident10.CreatedAt.AddHours(8));
+        var measure16 = new SecurityMeasure("Implemented rate limiting on login endpoint", "Login spikes reduced and monitored", incident1, emp4, incident1.CreatedAt.AddHours(9));
+        var measure17 = new SecurityMeasure("Blocked malicious domain at DNS sinkhole", "Malicious domain sinkholed successfully", incident9, emp12, incident9.CreatedAt.AddHours(3));
+        var measure18 = new SecurityMeasure("Migrated affected server to clean image", "Server rebuilt from clean baseline", incident11, emp7, incident11.CreatedAt.AddHours(10));
+        var measure19 = new SecurityMeasure("Enabled audit logging with SIEM forwarding", "Logs flowing to SIEM with alerts", incident8, emp5, incident8.CreatedAt.AddHours(6));
+        var measure20 = new SecurityMeasure("Removed unauthorized USB device and locked port", "USB policy enforced, no repeat", incident17, emp9, incident17.CreatedAt.AddHours(1));
+        var measure21 = new SecurityMeasure("Reset VPN keys and reissued certificates", "VPN certificates renewed and tested", incident12, emp2, incident12.CreatedAt.AddHours(5));
+        var measure22 = new SecurityMeasure("Segmented network and enforced ACLs", "ACLs enforced, lateral movement blocked", incident8, emp6, incident8.CreatedAt.AddHours(9));
+        var measure23 = new SecurityMeasure("Applied database input validation hotfix", "SQL injection blocked and tests passed", incident18, emp3, incident18.CreatedAt.AddHours(7));
+        SecurityMeasures.AddRange(measure1, measure2, measure3, measure4, measure5, measure6, measure7, measure8, measure9, measure10, measure11, measure12, measure13, measure14, measure15, measure16, measure17, measure18, measure19, measure20, measure21, measure22, measure23);
 
         await SaveChangesAsync();
         return true;
