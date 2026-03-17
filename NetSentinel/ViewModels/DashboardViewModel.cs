@@ -44,6 +44,12 @@ public partial class DashboardViewModel : ViewModelBase
     private ISeries[] _series = [];
 
     [ObservableProperty]
+    private Axis[] _yAxes = BuildYAxes(1);
+
+    [ObservableProperty]
+    private Axis[] _xAxes = BuildXAxes();
+
+    [ObservableProperty]
     private ObservableCollection<SecurityMeasureLeaderboardEntry> _leaderboard = new();
 
     [ObservableProperty]
@@ -52,7 +58,7 @@ public partial class DashboardViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isLoading = false;
 
-     public DashboardViewModel(IIncidentService incidentService, IDepartmentService departmentService, IDeviceService deviceService, IEmployeeService employeeService, ISecurityMeasureService securityMeasureService, ToastManager toastManager) : base()
+    public DashboardViewModel(IIncidentService incidentService, IDepartmentService departmentService, IDeviceService deviceService, IEmployeeService employeeService, ISecurityMeasureService securityMeasureService, ToastManager toastManager) : base()
     {
         Title = "Dashboard";
         _incidentService = incidentService;
@@ -63,6 +69,7 @@ public partial class DashboardViewModel : ViewModelBase
         _toastManager = toastManager;
 
         Series = BuildSeries(new List<int> { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
+        YAxes = BuildYAxes(1);
     }
 
     [RelayCommand]
@@ -87,6 +94,7 @@ public partial class DashboardViewModel : ViewModelBase
             SecurityMeasureCount = securityMeasureCount;
 
             Series = BuildSeries(incidentsByMonth);
+            YAxes = BuildYAxes(CalculateYAxisStep(incidentsByMonth));
 
             var entries = leaderboard
                 .Select((employee, index) => new SecurityMeasureLeaderboardEntry(index + 1, employee.Name, employee.Email, employee.Count));
@@ -122,26 +130,43 @@ public partial class DashboardViewModel : ViewModelBase
 
     public SolidColorPaint TooltipTextPaint { get; } = new SolidColorPaint { Color = SKColors.Gray };
 
-    public Axis[] XAxes { get; } =
-    [
-        new Axis
+    private static int CalculateYAxisStep(IReadOnlyCollection<int> countsByMonth)
+    {
+        if (countsByMonth.Count == 0)
         {
-            Labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-            LabelsPaint = new SolidColorPaint { Color = SKColors.Gray },
-            TextSize = 12,
-            MinStep = 1
+            return 1;
         }
-    ];
 
-    public Axis[] YAxes { get; } =
-    [
-        new Axis
-        {
-            Labeler = Labelers.Default,
-            LabelsPaint = new SolidColorPaint { Color = SKColors.Gray },
-            TextSize = 12,
-            MinStep = 10,
-            ShowSeparatorLines = false
-        }
-    ];
+        var max = countsByMonth.Max();
+        return Math.Max(1, (int)Math.Ceiling(max / 5.0));
+    }
+
+    private static Axis[] BuildXAxes()
+    {
+        return
+        [
+            new Axis
+            {
+                Labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                LabelsPaint = new SolidColorPaint { Color = SKColors.Gray },
+                TextSize = 12,
+                MinStep = 1
+            }
+        ];
+    }
+
+    private static Axis[] BuildYAxes(int minStep)
+    {
+        return
+        [
+            new Axis
+            {
+                Labeler = Labelers.Default,
+                LabelsPaint = new SolidColorPaint { Color = SKColors.Gray },
+                TextSize = 12,
+                MinStep = minStep,
+                ShowSeparatorLines = false
+            }
+        ];
+    }
 }
