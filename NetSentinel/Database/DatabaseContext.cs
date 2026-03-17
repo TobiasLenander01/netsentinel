@@ -9,18 +9,11 @@ using NetSentinel.Models;
 namespace NetSentinel.Database;
 
 /// <summary>
-/// AUTOMATIC MIGRATIONS
-/// 1. Install EF Core Tools
-/// dotnet tool install --global dotnet-ef
-/// 2. Create migration
-/// dotnet ef migrations add InitialCreate
-/// 3. Apply migration to database
-/// dotnet ef database update
+/// EF Core context for the NetSentinel app; exposes DbSets and configures model behavior.
 /// </summary>
-
 public class DatabaseContext : DbContext
 {
-    // define database tables
+    // DbSets represent tables in the database. Each one corresponds to a model class.
     public DbSet<Device> Devices {get; set;}
     public DbSet<Employee> Employees {get; set;}
     public DbSet<Incident> Incidents {get; set;}
@@ -30,27 +23,34 @@ public class DatabaseContext : DbContext
 
     public DatabaseContext (DbContextOptions<DatabaseContext> options) : base(options) {}
 
+    /// <summary>
+    /// Restrict = don't let the parent be deleted if kids still exist.
+    /// SetNull = allow the delete, but the kids forget who the parent was.
+    /// </summary>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // Delete behavior summary: Departments/Devices are protected by Restrict, while Employee deletions null out Device.Owner and SecurityMeasure.PerformedBy.
         modelBuilder.Entity<Employee>()
             .HasOne(e => e.Department)
             .WithMany(d => d.Employees)
+            // Can't delete a department while it still has employees.
             .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<Device>()
             .HasOne(d => d.Owner)
             .WithMany(e => e.Devices)
+            // Deleting an employee sets Device.Owner to null for their devices.
             .OnDelete(DeleteBehavior.SetNull);
 
         modelBuilder.Entity<Incident>()
             .HasOne(i => i.Device)
             .WithMany(d => d.Incidents)
+            // Can't delete a device while it still has incidents.
             .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<SecurityMeasure>()
             .HasOne(sm => sm.PerformedBy)
             .WithMany()
+            // Deleting an employee sets SecurityMeasure.PerformedBy to null.
             .OnDelete(DeleteBehavior.SetNull);
     }
 
