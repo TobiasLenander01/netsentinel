@@ -1,0 +1,37 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:NetSentinel.ViewModels"
+    xmlns:shad="clr-namespace:ShadUI;assembly=ShadUI"
+    x:Class="NetSentinel.Views.AIReportView"
+    x:DataType="vm:AIReportViewModel">
+
+    <Grid RowDefinitions="Auto,Auto,*" Margin="40">
+
+        <!-- Row 0: Title -->
+        <TextBlock Grid.Row="0" Text="AI Report" Classes="h1" Margin="0,0,0,20" />
+
+        <!-- Row 1: Button -->
+        <Grid Grid.Row="1" Margin="0,0,0,20">
+            <Button Content="Get AI Recommendations"
+                Classes="Primary"
+                HorizontalAlignment="Left"
+                Command="{Binding GetRecommendationsCommand}"
+                IsEnabled="{Binding !IsLoading}" />
+            <shad:BusyArea CornerRadius="{DynamicResource LgCornerRadius}"
+                IsBusy="{Binding IsLoading}" />
+        </Grid>
+
+        <!-- Row 2: Response -->
+        <Border Grid.Row="2"
+            Background="{DynamicResource CardBackgroundColor}"
+            CornerRadius="{DynamicResource LgCornerRadius}"
+            Padding="20"
+            IsVisible="{Binding Response, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+            <ScrollViewer>
+                <TextBlock Text="{Binding Response}" TextWrapping="Wrap" />
+            </ScrollViewer>
+        </Border>
+
+    </Grid>
+</UserControl>

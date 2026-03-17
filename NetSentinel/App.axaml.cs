@@ -60,6 +60,8 @@ public partial class App : Application
         builder.Services.AddScoped<IEmployeeService, EmployeeService>();
         builder.Services.AddScoped<ISecurityMeasureService, SecurityMeasureService>();
         builder.Services.AddScoped<IIncidentService, IncidentService>();
+        builder.Services.AddSingleton<IChatGptService, ChatGptService>();
+        builder.Services.AddTransient<AIReportViewModel>();
 
         // 2. Build the Service Provider
         Services = builder.Services.BuildServiceProvider();
