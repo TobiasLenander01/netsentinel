@@ -90,12 +90,12 @@ public class DatabaseContext : DbContext
         var now = DateTime.UtcNow;
 
         // --- Departments (6) ---
-        var deptIt = new Department("IT", "Building A, Gondor");
-        var deptHr = new Department("HR", "Building B, Gondor");
-        var deptFinance = new Department("Finance", "Central Building, Rohan");
-        var deptSecurity = new Department("Security", "North Wing, Mordor");
-        var deptOps = new Department("Operations", "West Campus, Shire");
-        var deptRnd = new Department("R&D", "Main Hall, Rivendell");
+        var deptIt = new Department("IT", "Gondor");
+        var deptHr = new Department("HR", "Rohan");
+        var deptFinance = new Department("Finance", "Shire");
+        var deptSecurity = new Department("Security", "Mordor");
+        var deptOps = new Department("Operations", "Bree");
+        var deptRnd = new Department("R&D", "Rivendell");
         Departments.AddRange(deptIt, deptHr, deptFinance, deptSecurity, deptOps, deptRnd);
 
         // --- Employees (12) ---

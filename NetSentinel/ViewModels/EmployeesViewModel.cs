@@ -31,10 +31,13 @@ public partial class EmployeesViewModel : ViewModelBase, IRefreshable
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(PreviousPageCommand))]
     [NotifyCanExecuteChangedFor(nameof(NextPageCommand))]
+    [NotifyCanExecuteChangedFor(nameof(FirstPageCommand))]
+    [NotifyCanExecuteChangedFor(nameof(LastPageCommand))]
     private int _currentPage = 1;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(NextPageCommand))]
+    [NotifyCanExecuteChangedFor(nameof(LastPageCommand))]
     private int _totalPages = 1;
 
     [ObservableProperty]
@@ -99,8 +102,24 @@ public partial class EmployeesViewModel : ViewModelBase, IRefreshable
         await LoadEmployeesAsync();
     }
 
+    [RelayCommand(CanExecute = nameof(CanGoFirst))]
+    private async Task FirstPageAsync()
+    {
+        CurrentPage = 1;
+        await LoadEmployeesAsync();
+    }
+
+    [RelayCommand(CanExecute = nameof(CanGoLast))]
+    private async Task LastPageAsync()
+    {
+        CurrentPage = TotalPages;
+        await LoadEmployeesAsync();
+    }
+
     private bool CanGoPrevious() => CurrentPage > 1;
     private bool CanGoNext() => CurrentPage < TotalPages;
+    private bool CanGoFirst() => CurrentPage > 1;
+    private bool CanGoLast() => CurrentPage < TotalPages;
 
     [RelayCommand]
     public async Task ShowNewEmployeeDialog()
