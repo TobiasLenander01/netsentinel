@@ -53,8 +53,8 @@ public partial class SecurityMeasureDialogViewModel : ViewModelBase
 
     [ObservableProperty]
     [NotifyDataErrorInfo]
-    [Range(0, 2359, ErrorMessage = "Time must be between 00:00 and 23:59")]
-    private int _performedTimeValue;
+    [Required(ErrorMessage = "Performed time is required")]
+    private TimeSpan? _performedTime;
 
     [ObservableProperty]
     private ObservableCollection<Incident> _incidents = new();
@@ -96,7 +96,6 @@ public partial class SecurityMeasureDialogViewModel : ViewModelBase
     [RelayCommand]
     private async Task SaveSecurityMeasureAsync()
     {
-        UpdatePerformedAt();
         ValidateAllProperties();
         if (HasErrors)
             return;
@@ -165,54 +164,8 @@ public partial class SecurityMeasureDialogViewModel : ViewModelBase
             ? DateTime.Now
             : securityMeasure.PerformedAt;
         PerformedDate = PerformedAt.Date;
-        PerformedTimeValue = NormalizeTimeValue((PerformedAt.Hour * 100) + PerformedAt.Minute);
+        PerformedTime = PerformedAt.TimeOfDay;
 
         ClearErrors();
-    }
-
-    partial void OnPerformedDateChanged(DateTime? value)
-    {
-        UpdatePerformedAt();
-    }
-
-    partial void OnPerformedTimeValueChanged(int value)
-    {
-        var normalized = NormalizeTimeValue(value);
-        if (normalized != value)
-        {
-            PerformedTimeValue = normalized;
-            return;
-        }
-
-        UpdatePerformedAt();
-    }
-
-    private void UpdatePerformedAt()
-    {
-        if (PerformedDate is null)
-            return;
-
-        var normalized = NormalizeTimeValue(PerformedTimeValue);
-        var hours = normalized / 100;
-        var minutes = normalized % 100;
-
-        PerformedAt = PerformedDate.Value.Date
-            .AddHours(hours)
-            .AddMinutes(minutes);
-    }
-
-    private static int NormalizeTimeValue(int value)
-    {
-        var clamped = Math.Clamp(value, 0, 2359);
-        var hours = clamped / 100;
-        var minutes = clamped % 100;
-
-        if (hours > 23)
-            hours = 23;
-
-        if (minutes > 59)
-            minutes = 59;
-
-        return (hours * 100) + minutes;
     }
 }

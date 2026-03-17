@@ -6,7 +6,7 @@
     x:DataType="vm:SecurityMeasureDialogViewModel">
 
     <Grid>
-        <StackPanel Spacing="20" Margin="40" Width="360" HorizontalAlignment="Left">
+        <StackPanel Spacing="20" Margin="40" MinWidth="360" HorizontalAlignment="Left">
 
             <TextBlock Text="{Binding Title}" Classes="h2" />
 
@@ -51,20 +51,14 @@
 
             <StackPanel Spacing="6">
                 <TextBlock Text="Performed At" />
-                <Grid ColumnDefinitions="*,12,*">
-                    <CalendarDatePicker Grid.Column="0"
-                        MinWidth="150"
-                        SelectedDate="{Binding PerformedDate}"
-                        HorizontalAlignment="Stretch" />
-                    <NumericUpDown Grid.Column="2"
-                        MinWidth="150"
-                        HorizontalAlignment="Stretch"
-                        Minimum="0"
-                        Maximum="2359"
-                        Value="{Binding PerformedTimeValue}"
-                        FormatString="00:00"
-                        Watermark="HH:MM" />
-                </Grid>
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <CalendarDatePicker
+                        MinWidth="200"
+                        SelectedDate="{Binding PerformedDate}"/>
+                    <TimePicker
+                        SelectedTime="{Binding PerformedTime}"
+                        ClockIdentifier="24HourClock" />
+                </StackPanel>
             </StackPanel>
 
             <Button Content="Save" Classes="Primary" Command="{Binding SaveSecurityMeasureCommand}" />
