@@ -12,6 +12,7 @@ using NetSentinel.Database;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 using ShadUI;
 using NetSentinel.Interfaces;
 
@@ -78,6 +79,7 @@ public partial class App : Application
         {
             DisableAvaloniaDataAnnotationValidation();
             desktop.MainWindow = new MainWindow { DataContext = Services.GetRequiredService<MainWindowViewModel>() };
+            WarmUpDatabaseInBackground();
             Services.GetRequiredService<INavigationService>().GoToDashboard();
         }
 
@@ -96,5 +98,25 @@ public partial class App : Application
         {
             BindingPlugins.DataValidators.Remove(plugin);
         }
+    }
+
+    private void WarmUpDatabaseInBackground()
+    {
+        if (Services == null)
+            return;
+
+        var dbContextFactory = Services.GetRequiredService<IDbContextFactory<DatabaseContext>>();
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                using var db = dbContextFactory.CreateDbContext();
+                await db.Database.ExecuteSqlRawAsync("SELECT 1");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[DatabaseWarmup] Failed: {ex.Message}");
+            }
+        });
     }
 }

@@ -65,7 +65,6 @@ public partial class DashboardViewModel : ViewModelBase
         Series = BuildSeries(new List<int> { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
     }
 
-
     [RelayCommand]
     private async Task LoadDashboardAsync()
     {
@@ -73,43 +72,33 @@ public partial class DashboardViewModel : ViewModelBase
         {
             IsLoading = true;
 
-            var departmentCountTask = _departmentService.ReadDepartmentsCountAsync();
-            var employeeCountTask = _employeeService.ReadEmployeesCountAsync();
-            var deviceCountTask = _deviceService.ReadDevicesCountAsync();
-            var incidentCountTask = _incidentService.ReadIncidentsCountAsync();
-            var securityMeasureCountTask = _securityMeasureService.ReadSecurityMeasuresCountAsync();
-            var incidentsByMonthTask = _incidentService.ReadIncidentCountsByMonthAsync();
-            var leaderboardTask = _securityMeasureService.ReadTopSecurityMeasurePerformersAsync(5);
+            var departmentCount = await _departmentService.ReadDepartmentsCountAsync();
+            var employeeCount = await _employeeService.ReadEmployeesCountAsync();
+            var deviceCount = await _deviceService.ReadDevicesCountAsync();
+            var incidentCount = await _incidentService.ReadIncidentsCountAsync();
+            var securityMeasureCount = await _securityMeasureService.ReadSecurityMeasuresCountAsync();
+            var incidentsByMonth = await _incidentService.ReadIncidentCountsByMonthAsync();
+            var leaderboard = await _securityMeasureService.ReadTopSecurityMeasurePerformersAsync(5);
 
-            await Task.WhenAll(
-                departmentCountTask,
-                employeeCountTask,
-                deviceCountTask,
-                incidentCountTask,
-                securityMeasureCountTask,
-                incidentsByMonthTask,
-                leaderboardTask
-            );
+            DepartmentCount = departmentCount;
+            EmployeeCount = employeeCount;
+            DeviceCount = deviceCount;
+            IncidentCount = incidentCount;
+            SecurityMeasureCount = securityMeasureCount;
 
-            DepartmentCount = departmentCountTask.Result;
-            EmployeeCount = employeeCountTask.Result;
-            DeviceCount = deviceCountTask.Result;
-            IncidentCount = incidentCountTask.Result;
-            SecurityMeasureCount = securityMeasureCountTask.Result;
+            Series = BuildSeries(incidentsByMonth);
 
-            Series = BuildSeries(incidentsByMonthTask.Result);
-
-            var entries = leaderboardTask.Result
-                .Select((e, i) => new SecurityMeasureLeaderboardEntry(i + 1, e.Name, e.Email, e.Count));
+            var entries = leaderboard
+                .Select((employee, index) => new SecurityMeasureLeaderboardEntry(index + 1, employee.Name, employee.Email, employee.Count));
 
             Leaderboard = new ObservableCollection<SecurityMeasureLeaderboardEntry>(entries);
             HasLeaderboard = Leaderboard.Count > 0;
         }
-        catch (Exception ex)
+        catch
         {
             _toastManager
                 .CreateToast("Failed to load dashboard")
-                .WithContent(ex.Message)
+                .WithContent("Verify your network connection and try again.")
                 .DismissOnClick()
                 .ShowError();
         }
