@@ -48,19 +48,27 @@ public class IncidentService : IIncidentService
     public async Task<List<int>> ReadIncidentCountsByMonthAsync()
     {
         using var db = _dbContextFactory.CreateDbContext();
+
+        var now = System.DateTime.UtcNow;
+        var start = new System.DateTime(now.Year, now.Month, 1, 0, 0, 0, System.DateTimeKind.Utc).AddMonths(-11);
+        var end = start.AddMonths(12);
+
         var monthly = await db.Incidents
             .AsNoTracking()
-            .GroupBy(i => i.CreatedAt.Month)
-            .Select(g => new { Month = g.Key, Count = g.Count() })
+            .Where(i => i.CreatedAt >= start && i.CreatedAt < end)
+            .GroupBy(i => new { i.CreatedAt.Year, i.CreatedAt.Month })
+            .Select(g => new { g.Key.Year, g.Key.Month, Count = g.Count() })
             .ToListAsync();
 
-        var counts = new List<int> { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        foreach (var entry in monthly)
+        var monthlyLookup = monthly.ToDictionary(
+            entry => (entry.Year, entry.Month),
+            entry => entry.Count);
+
+        var counts = new List<int>(12);
+        for (var i = 0; i < 12; i++)
         {
-            if (entry.Month >= 1 && entry.Month <= 12)
-            {
-                counts[entry.Month - 1] = entry.Count;
-            }
+            var month = start.AddMonths(i);
+            counts.Add(monthlyLookup.TryGetValue((month.Year, month.Month), out var count) ? count : 0);
         }
 
         return counts;

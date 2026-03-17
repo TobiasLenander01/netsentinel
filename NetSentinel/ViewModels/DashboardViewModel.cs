@@ -9,6 +9,7 @@ using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using ShadUI;
 
@@ -143,11 +144,17 @@ public partial class DashboardViewModel : ViewModelBase
 
     private static Axis[] BuildXAxes()
     {
+        var now = DateTime.UtcNow;
+        var start = new DateTime(now.Year, now.Month, 1).AddMonths(-11);
+        var labels = Enumerable.Range(0, 12)
+            .Select(offset => start.AddMonths(offset).ToString("MMM", CultureInfo.InvariantCulture))
+            .ToArray();
+
         return
         [
             new Axis
             {
-                Labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                Labels = labels,
                 LabelsPaint = new SolidColorPaint { Color = SKColors.Gray },
                 TextSize = 12,
                 MinStep = 1
