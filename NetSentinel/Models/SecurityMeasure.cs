@@ -8,10 +8,10 @@ public class SecurityMeasure
 {
     public int Id { get; set; }
 
-    [MaxLength(200)]
+    [MaxLength(400)]
     public string Description { get; set; } = string.Empty;
 
-    [MaxLength(50)]
+    [MaxLength(200)]
     public string Result { get; set; } = string.Empty;
 
     [Required]

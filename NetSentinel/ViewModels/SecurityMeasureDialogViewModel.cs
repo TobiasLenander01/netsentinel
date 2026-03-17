@@ -24,13 +24,13 @@ public partial class SecurityMeasureDialogViewModel : ViewModelBase
     [ObservableProperty]
     [NotifyDataErrorInfo]
     [Required(ErrorMessage = "Description is required")]
-    [MaxLength(200, ErrorMessage = "Description cannot exceed 200 characters")]
+    [MaxLength(400, ErrorMessage = "Description cannot exceed 400 characters")]
     private string _description = String.Empty;
 
     [ObservableProperty]
     [NotifyDataErrorInfo]
     [Required(ErrorMessage = "Result is required")]
-    [MaxLength(50, ErrorMessage = "Result cannot exceed 50 characters")]
+    [MaxLength(200, ErrorMessage = "Result cannot exceed 200 characters")]
     private string _result = String.Empty;
 
     [ObservableProperty]
