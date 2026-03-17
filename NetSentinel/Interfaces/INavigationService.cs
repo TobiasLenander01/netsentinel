@@ -13,5 +13,6 @@ public interface INavigationService : INotifyPropertyChanged
     void GoToIncidents();
     void GoToSecurityMeasures();
     void GoToSettings();
+    void GoToAIReport();
     void GoBack();
 }

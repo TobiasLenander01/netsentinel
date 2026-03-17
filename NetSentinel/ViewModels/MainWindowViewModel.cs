@@ -101,6 +101,12 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    public void GoToAIReport()
+    {
+        _navigator.GoToAIReport();
+    }
+
+    [RelayCommand]
     private void ToggleTheme()
     {
         IsDarkMode = !IsDarkMode;
