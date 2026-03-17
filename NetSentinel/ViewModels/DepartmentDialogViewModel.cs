@@ -21,11 +21,13 @@ public partial class DepartmentDialogViewModel : ViewModelBase
     [ObservableProperty]
     [NotifyDataErrorInfo]
     [Required(ErrorMessage = "Name is required")]
+    [MaxLength(50, ErrorMessage = "Name must be 50 characters or less")]
     private string _name = String.Empty;
 
     [ObservableProperty]
     [NotifyDataErrorInfo]
     [Required(ErrorMessage = "Location is required")]
+    [MaxLength(50, ErrorMessage = "Location must be 50 characters or less")]
     private string _location = String.Empty;
 
     public DepartmentDialogViewModel(DialogManager dialogManager, ToastManager toastManager, IDepartmentService departmentService) : base()

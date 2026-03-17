@@ -9,11 +9,11 @@ public class Department
     public int Id { get; set; }
 
     [Required]
-    [MaxLength(100)]
+    [MaxLength(50)]
     public string Location { get; set; } = String.Empty;
 
     [Required]
-    [MaxLength(100)]
+    [MaxLength(50)]
     public string Name { get; set; } = string.Empty;
 
     public List<Employee> Employees { get; set; } = new();

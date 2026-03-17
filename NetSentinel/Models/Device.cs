@@ -8,13 +8,13 @@ public class Device
 {
     public int Id {get; set;}
 
-    [MaxLength(100)]
+    [MaxLength(50)]
     public string Name {get; set;} = string.Empty;
 
-    [MaxLength(100)]
+    [MaxLength(50)]
     public string IPAddress {get; set;} = string.Empty;
 
-    [MaxLength(100)]
+    [MaxLength(50)]
     [Required]
     public string SerialNumber {get; set;} = string.Empty;
 
