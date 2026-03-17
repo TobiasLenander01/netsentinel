@@ -17,7 +17,7 @@ namespace NetSentinel.ViewModels;
 
 public record SecurityMeasureLeaderboardEntry(int Rank, string Name, string Email, int Count);
 
-public partial class DashboardViewModel : ViewModelBase
+public partial class DashboardViewModel : ViewModelBase, IRefreshable
 {
     private readonly IIncidentService _incidentService;
     private readonly IDepartmentService _departmentService;
@@ -176,4 +176,6 @@ public partial class DashboardViewModel : ViewModelBase
             }
         ];
     }
+
+    public Task RefreshAsync() => LoadDashboardAsync();
 }
