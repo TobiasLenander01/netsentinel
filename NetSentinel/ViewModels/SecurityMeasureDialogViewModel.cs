@@ -47,6 +47,16 @@ public partial class SecurityMeasureDialogViewModel : ViewModelBase
     private DateTime _performedAt = DateTime.Now;
 
     [ObservableProperty]
+    [NotifyDataErrorInfo]
+    [Required(ErrorMessage = "Performed date is required")]
+    private DateTime? _performedDate;
+
+    [ObservableProperty]
+    [NotifyDataErrorInfo]
+    [Range(0, 2359, ErrorMessage = "Time must be between 00:00 and 23:59")]
+    private int _performedTimeValue;
+
+    [ObservableProperty]
     private ObservableCollection<Incident> _incidents = new();
 
     [ObservableProperty]
@@ -86,6 +96,7 @@ public partial class SecurityMeasureDialogViewModel : ViewModelBase
     [RelayCommand]
     private async Task SaveSecurityMeasureAsync()
     {
+        UpdatePerformedAt();
         ValidateAllProperties();
         if (HasErrors)
             return;
@@ -94,6 +105,7 @@ public partial class SecurityMeasureDialogViewModel : ViewModelBase
         _securityMeasure.Result = Result;
         _securityMeasure.PerformedBy = SelectedEmployee;
         _securityMeasure.Incident = SelectedIncident;
+        _securityMeasure.PerformedAt = PerformedAt;
 
         try
         {
@@ -149,8 +161,58 @@ public partial class SecurityMeasureDialogViewModel : ViewModelBase
         Result = securityMeasure.Result;
         SelectedEmployee = securityMeasure.PerformedBy;
         SelectedIncident = securityMeasure.Incident;
-        PerformedAt = securityMeasure.PerformedAt;
+        PerformedAt = securityMeasure.PerformedAt == default
+            ? DateTime.Now
+            : securityMeasure.PerformedAt;
+        PerformedDate = PerformedAt.Date;
+        PerformedTimeValue = NormalizeTimeValue((PerformedAt.Hour * 100) + PerformedAt.Minute);
 
         ClearErrors();
+    }
+
+    partial void OnPerformedDateChanged(DateTime? value)
+    {
+        UpdatePerformedAt();
+    }
+
+    partial void OnPerformedTimeValueChanged(int value)
+    {
+        var normalized = NormalizeTimeValue(value);
+        if (normalized != value)
+        {
+            PerformedTimeValue = normalized;
+            return;
+        }
+
+        UpdatePerformedAt();
+    }
+
+    private void UpdatePerformedAt()
+    {
+        if (PerformedDate is null)
+            return;
+
+        var normalized = NormalizeTimeValue(PerformedTimeValue);
+        var hours = normalized / 100;
+        var minutes = normalized % 100;
+
+        PerformedAt = PerformedDate.Value.Date
+            .AddHours(hours)
+            .AddMinutes(minutes);
+    }
+
+    private static int NormalizeTimeValue(int value)
+    {
+        var clamped = Math.Clamp(value, 0, 2359);
+        var hours = clamped / 100;
+        var minutes = clamped % 100;
+
+        if (hours > 23)
+            hours = 23;
+
+        if (minutes > 59)
+            minutes = 59;
+
+        return (hours * 100) + minutes;
     }
 }
