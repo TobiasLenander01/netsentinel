@@ -134,26 +134,26 @@ public class DatabaseContext : DbContext
         // --- Incidents (22) ---
         var monthStart = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc);
         var incident1 = new Incident("Unauthorized login attempt detected", monthStart.AddMonths(-11).AddDays(3).AddHours(9).AddMinutes(15), Priority.High, Status.InProgress, device1);
-        var incident2 = new Incident("Malware signature found in downloaded file", monthStart.AddMonths(-10).AddDays(10).AddHours(14).AddMinutes(30), Priority.Medium, Status.Approved, device2);
-        var incident3 = new Incident("Unusual outbound traffic spike", monthStart.AddMonths(-10).AddDays(24).AddHours(8).AddMinutes(10), Priority.High, Status.InProgress, device3);
+        var incident2 = new Incident("Malware signature found in downloaded file", monthStart.AddMonths(-10).AddDays(10).AddHours(14).AddMinutes(30), Priority.Medium, Status.Approved, device1);
+        var incident3 = new Incident("Unusual outbound traffic spike", monthStart.AddMonths(-10).AddDays(24).AddHours(8).AddMinutes(10), Priority.High, Status.InProgress, device1);
         var incident4 = new Incident("Outdated SSL certificate on internal service", monthStart.AddMonths(-9).AddDays(8).AddHours(16).AddMinutes(45), Priority.Low, Status.Completed, device7);
-        var incident5 = new Incident("Failed login attempts from unknown source", monthStart.AddMonths(-8).AddDays(2).AddHours(11).AddMinutes(5), Priority.Medium, Status.Rejected, device4);
-        var incident6 = new Incident("Phishing email reported by employee", monthStart.AddMonths(-7).AddDays(17).AddHours(13).AddMinutes(20), Priority.Medium, Status.Approved, device5);
+        var incident5 = new Incident("Failed login attempts from unknown source", monthStart.AddMonths(-8).AddDays(2).AddHours(11).AddMinutes(5), Priority.Medium, Status.Rejected, device3);
+        var incident6 = new Incident("Phishing email reported by employee", monthStart.AddMonths(-7).AddDays(17).AddHours(13).AddMinutes(20), Priority.Medium, Status.Approved, device3);
         var incident7 = new Incident("Suspicious process running on endpoint", monthStart.AddMonths(-6).AddDays(6).AddHours(10).AddMinutes(50), Priority.High, Status.InProgress, device6);
         var incident8 = new Incident("Data exfiltration attempt blocked by DLP", monthStart.AddMonths(-5).AddDays(1).AddHours(9).AddMinutes(40), Priority.Critical, Status.InProgress, device9);
-        var incident9 = new Incident("Ransomware activity detected on workstation", monthStart.AddMonths(-5).AddDays(15).AddHours(15).AddMinutes(25), Priority.Critical, Status.Completed, device10);
-        var incident10 = new Incident("Privilege escalation attempt in admin portal", monthStart.AddMonths(-9).AddDays(27).AddHours(18).AddMinutes(5), Priority.High, Status.InProgress, device11);
+        var incident9 = new Incident("Ransomware activity detected on workstation", monthStart.AddMonths(-5).AddDays(15).AddHours(15).AddMinutes(25), Priority.Critical, Status.Completed, device12);
+        var incident10 = new Incident("Privilege escalation attempt in admin portal", monthStart.AddMonths(-9).AddDays(27).AddHours(18).AddMinutes(5), Priority.High, Status.InProgress, device12);
         var incident11 = new Incident("Unpatched vulnerability exploited on server", monthStart.AddMonths(-4).AddDays(11).AddHours(12), Priority.Critical, Status.Approved, device7);
         var incident12 = new Incident("Brute-force attack on VPN gateway", monthStart.AddMonths(-4).AddDays(5).AddHours(8).AddMinutes(30), Priority.High, Status.Completed, device12);
         var incident13 = new Incident("Insider threat: bulk file download detected", monthStart.AddMonths(-3).AddDays(18).AddHours(17).AddMinutes(15), Priority.High, Status.InProgress, device13);
-        var incident14 = new Incident("DNS poisoning attempt identified", monthStart.AddMonths(-3).AddDays(3).AddHours(9).AddMinutes(55), Priority.Medium, Status.Completed, device14);
-        var incident15 = new Incident("Man-in-the-middle attempt on internal network", monthStart.AddMonths(-3).AddDays(1).AddHours(7).AddMinutes(45), Priority.High, Status.InProgress, device15);
+        var incident14 = new Incident("DNS poisoning attempt identified", monthStart.AddMonths(-3).AddDays(3).AddHours(9).AddMinutes(55), Priority.Medium, Status.Completed, device13);
+        var incident15 = new Incident("Man-in-the-middle attempt on internal network", monthStart.AddMonths(-3).AddDays(1).AddHours(7).AddMinutes(45), Priority.High, Status.InProgress, device13);
         var incident16 = new Incident("Zero-day exploit attempt on web application", monthStart.AddMonths(-3).AddDays(9).AddHours(22).AddMinutes(10), Priority.Critical, Status.Approved, device8);
         var incident17 = new Incident("Unauthorized USB device connected", monthStart.AddMonths(-2).AddDays(17).AddHours(14).AddMinutes(5), Priority.Medium, Status.Completed, device5);
         var incident18 = new Incident("SQL injection attempt on customer portal", monthStart.AddMonths(-2).AddDays(26).AddHours(11).AddMinutes(35), Priority.High, Status.InProgress, device2);
-        var incident19 = new Incident("Suspicious admin API key usage detected", monthStart.AddMonths(-2).AddDays(2).AddHours(10).AddMinutes(20), Priority.High, Status.InProgress, device4);
+        var incident19 = new Incident("Suspicious admin API key usage detected", monthStart.AddMonths(-2).AddDays(2).AddHours(10).AddMinutes(20), Priority.High, Status.InProgress, device9);
         var incident20 = new Incident("Endpoint EDR agent tamper attempt", monthStart.AddMonths(-1).AddDays(18).AddHours(16).AddMinutes(50), Priority.Medium, Status.Approved, device6);
-        var incident21 = new Incident("Unexpected data sync to external cloud", monthStart.AddMonths(-1).AddDays(4).AddHours(7).AddMinutes(40), Priority.High, Status.InProgress, device11);
+        var incident21 = new Incident("Unexpected data sync to external cloud", monthStart.AddMonths(-1).AddDays(4).AddHours(7).AddMinutes(40), Priority.High, Status.InProgress, device6);
         var incident22 = new Incident("Multiple failed MFA challenges reported", monthStart.AddMonths(0).AddDays(20).AddHours(13).AddMinutes(10), Priority.Low, Status.Completed, device3);
         Incidents.AddRange(incident1, incident2, incident3, incident4, incident5, incident6, incident7, incident8, incident9, incident10, incident11, incident12, incident13, incident14, incident15, incident16, incident17, incident18, incident19, incident20, incident21, incident22);
 
