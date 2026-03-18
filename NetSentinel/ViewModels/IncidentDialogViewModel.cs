@@ -45,7 +45,7 @@ public partial class IncidentDialogViewModel : ViewModelBase
     [Required(ErrorMessage = "Choose an option for device")]
     private Device? _device = null;
 
-    public IncidentDialogViewModel(INavigationService navigator, DialogManager dialogManager, IIncidentService incidentService) : base(navigator)
+    public IncidentDialogViewModel(DialogManager dialogManager, IIncidentService incidentService) : base()
     {
         Title = "Incident Dialog";
         _incidentService = incidentService;
