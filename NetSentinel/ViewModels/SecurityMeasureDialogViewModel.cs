@@ -16,6 +16,7 @@ public partial class SecurityMeasureDialogViewModel : ViewModelBase
     private readonly IEmployeeService _employeeService;
     private readonly IIncidentService _incidentService;
     private readonly DialogManager _dialogManager;
+    private readonly ToastManager _toastManager;
 
     private SecurityMeasure _securityMeasure = new SecurityMeasure();
     private bool _isEditingExistingSecurityMeasure = false;
@@ -23,9 +24,13 @@ public partial class SecurityMeasureDialogViewModel : ViewModelBase
     [ObservableProperty]
     [NotifyDataErrorInfo]
     [Required(ErrorMessage = "Description is required")]
+    [MaxLength(400, ErrorMessage = "Description cannot exceed 400 characters")]
     private string _description = String.Empty;
 
     [ObservableProperty]
+    [NotifyDataErrorInfo]
+    [Required(ErrorMessage = "Result is required")]
+    [MaxLength(200, ErrorMessage = "Result cannot exceed 200 characters")]
     private string _result = String.Empty;
 
     [ObservableProperty]
@@ -35,6 +40,21 @@ public partial class SecurityMeasureDialogViewModel : ViewModelBase
     [NotifyDataErrorInfo]
     [Required(ErrorMessage = "Performed by is required")]
     private Employee? _selectedEmployee;
+
+    [ObservableProperty]
+    [NotifyDataErrorInfo]
+    [Required(ErrorMessage = "Performed at is required")]
+    private DateTime _performedAt = DateTime.Now;
+
+    [ObservableProperty]
+    [NotifyDataErrorInfo]
+    [Required(ErrorMessage = "Performed date is required")]
+    private DateTime? _performedDate;
+
+    [ObservableProperty]
+    [NotifyDataErrorInfo]
+    [Required(ErrorMessage = "Performed time is required")]
+    private TimeSpan? _performedTime;
 
     [ObservableProperty]
     private ObservableCollection<Incident> _incidents = new();
@@ -47,13 +67,14 @@ public partial class SecurityMeasureDialogViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isLoading;
 
-    public SecurityMeasureDialogViewModel(INavigationService navigator, DialogManager dialogManager, ISecurityMeasureService securityMeasureService, IEmployeeService employeeService, IIncidentService incidentService) : base(navigator)
+    public SecurityMeasureDialogViewModel(DialogManager dialogManager, ToastManager toastManager, ISecurityMeasureService securityMeasureService, IEmployeeService employeeService, IIncidentService incidentService) : base()
     {
         Title = "Security Measure Dialog";
         _securityMeasureService = securityMeasureService;
         _employeeService = employeeService;
         _incidentService = incidentService;
         _dialogManager = dialogManager;
+        _toastManager = toastManager;
     }
 
     [RelayCommand]
@@ -83,6 +104,7 @@ public partial class SecurityMeasureDialogViewModel : ViewModelBase
         _securityMeasure.Result = Result;
         _securityMeasure.PerformedBy = SelectedEmployee;
         _securityMeasure.Incident = SelectedIncident;
+        _securityMeasure.PerformedAt = PerformedAt;
 
         try
         {
@@ -93,8 +115,13 @@ public partial class SecurityMeasureDialogViewModel : ViewModelBase
 
             _dialogManager.Close(this, new CloseDialogOptions { Success = true });
         }
-        catch
+        catch (Exception ex)
         {
+            _toastManager
+                .CreateToast("Failed to save security measure")
+                .WithContent(ex.Message)
+                .DismissOnClick()
+                .ShowError();
             _dialogManager.Close(this, new CloseDialogOptions { Success = false });
         }
         finally
@@ -106,18 +133,57 @@ public partial class SecurityMeasureDialogViewModel : ViewModelBase
     private async Task InitializeProperties(SecurityMeasure securityMeasure)
     {
         IsLoading = true;
-        var employeeList = await _employeeService.ReadAllEmployeesAsync();
-        Employees = new ObservableCollection<Employee>(employeeList);
-        var incidentList = await _incidentService.ReadAllIncidentsAsync();
-        Incidents = new ObservableCollection<Incident>(incidentList);
-        IsLoading = false;
+        try
+        {
+            var employeeList = await _employeeService.ReadAllEmployeesAsync();
+            Employees = new ObservableCollection<Employee>(employeeList);
+            var incidentList = await _incidentService.ReadAllIncidentsAsync();
+            Incidents = new ObservableCollection<Incident>(incidentList);
+        }
+        catch (Exception ex)
+        {
+            Employees = new ObservableCollection<Employee>();
+            Incidents = new ObservableCollection<Incident>();
+            _toastManager
+                .CreateToast("Failed to load employees or incidents")
+                .WithContent(ex.Message)
+                .DismissOnClick()
+                .ShowError();
+        }
+        finally
+        {
+            IsLoading = false;
+        }
 
         _securityMeasure = securityMeasure;
         Description = securityMeasure.Description;
         Result = securityMeasure.Result;
         SelectedEmployee = securityMeasure.PerformedBy;
         SelectedIncident = securityMeasure.Incident;
+        PerformedAt = securityMeasure.PerformedAt == default
+            ? DateTime.Now
+            : securityMeasure.PerformedAt;
+        PerformedDate = PerformedAt.Date;
+        PerformedTime = PerformedAt.TimeOfDay;
 
         ClearErrors();
+    }
+
+    private void UpdatePerformedAtFromPickers()
+    {
+        if (PerformedDate.HasValue && PerformedTime.HasValue)
+        {
+            PerformedAt = PerformedDate.Value.Date + PerformedTime.Value;
+        }
+    }
+
+    partial void OnPerformedDateChanged(DateTime? value)
+    {
+        UpdatePerformedAtFromPickers();
+    }
+
+    partial void OnPerformedTimeChanged(TimeSpan? value)
+    {
+        UpdatePerformedAtFromPickers();
     }
 }

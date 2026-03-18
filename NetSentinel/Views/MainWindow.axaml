@@ -30,10 +30,6 @@
 
                 <StackPanel Spacing="4">
 
-                    <TextBlock Text="Platform" Classes="Caption Muted" FontWeight="SemiBold"
-                        Margin="12,0,0,8"
-                        IsVisible="{Binding $parent[shad:Sidebar].Expanded}" />
-
                     <shad:SidebarItem Content="Dashboard" Command="{Binding GoToDashboardCommand}">
                         <shad:SidebarItem.Icon>
                             <LucideIcon Kind="LayoutDashboard" Size="20" StrokeWidth="1.5" />
@@ -76,6 +72,13 @@
 
                 <shad:Sidebar.Footer>
                     <StackPanel Spacing="4">
+
+                        <shad:SidebarItem Content="AI Report"
+                            Command="{Binding GoToAIReportCommand}">
+                            <shad:SidebarItem.Icon>
+                                <LucideIcon Kind="Cpu" Size="20" StrokeWidth="1.5" />
+                            </shad:SidebarItem.Icon>
+                        </shad:SidebarItem>
 
                         <shad:SidebarItem Content="{Binding ThemeToggleText}"
                             Command="{Binding ToggleThemeCommand}">

@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.EntityFrameworkCore;
 using NetSentinel.Interfaces;
 using NetSentinel.Models;
 using ShadUI;
@@ -16,6 +17,8 @@ public partial class SecurityMeasuresViewModel : ViewModelBase, IRefreshable
     private readonly ToastManager _toastManager;
     private readonly SecurityMeasureDialogViewModel _securityMeasureDialogViewModel;
 
+    private const int PageSize = 12;
+
     [ObservableProperty]
     private ObservableCollection<SecurityMeasure> _securityMeasures = new();
 
@@ -25,7 +28,24 @@ public partial class SecurityMeasuresViewModel : ViewModelBase, IRefreshable
     [ObservableProperty]
     private bool _isEmpty;
 
-    public SecurityMeasuresViewModel(INavigationService navigator, ISecurityMeasureService securityMeasureService, DialogManager dialogManager, ToastManager toastManager, SecurityMeasureDialogViewModel securityMeasureDialogViewModel) : base(navigator)
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(PreviousPageCommand))]
+    [NotifyCanExecuteChangedFor(nameof(NextPageCommand))]
+    [NotifyCanExecuteChangedFor(nameof(FirstPageCommand))]
+    [NotifyCanExecuteChangedFor(nameof(LastPageCommand))]
+    private int _currentPage = 1;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(NextPageCommand))]
+    [NotifyCanExecuteChangedFor(nameof(LastPageCommand))]
+    private int _totalPages = 1;
+
+    [ObservableProperty]
+    private int _totalCount;
+
+    public string PageInfo => $"Page {CurrentPage} of {TotalPages}";
+
+    public SecurityMeasuresViewModel(ISecurityMeasureService securityMeasureService, DialogManager dialogManager, ToastManager toastManager, SecurityMeasureDialogViewModel securityMeasureDialogViewModel) : base()
     {
         Title = "Security Measures";
         _securityMeasureService = securityMeasureService;
@@ -33,6 +53,9 @@ public partial class SecurityMeasuresViewModel : ViewModelBase, IRefreshable
         _toastManager = toastManager;
         _securityMeasureDialogViewModel = securityMeasureDialogViewModel;
     }
+
+    partial void OnCurrentPageChanged(int value) => OnPropertyChanged(nameof(PageInfo));
+    partial void OnTotalPagesChanged(int value) => OnPropertyChanged(nameof(PageInfo));
 
     public Task RefreshAsync() => LoadSecurityMeasuresAsync();
 
@@ -45,9 +68,11 @@ public partial class SecurityMeasuresViewModel : ViewModelBase, IRefreshable
 
         try
         {
-            var securityMeasureList = await _securityMeasureService.ReadAllSecurityMeasuresAsync();
-            SecurityMeasures = new ObservableCollection<SecurityMeasure>(securityMeasureList);
-            IsEmpty = SecurityMeasures.Count == 0;
+            var (items, totalCount) = await _securityMeasureService.ReadSecurityMeasuresPagedAsync(CurrentPage, PageSize);
+            SecurityMeasures = new ObservableCollection<SecurityMeasure>(items);
+            TotalCount = totalCount;
+            TotalPages = Math.Max(1, (int)Math.Ceiling(totalCount / (double)PageSize));
+            IsEmpty = totalCount == 0;
         }
         catch (Exception ex)
         {
@@ -63,38 +88,93 @@ public partial class SecurityMeasuresViewModel : ViewModelBase, IRefreshable
         }
     }
 
+    [RelayCommand(CanExecute = nameof(CanGoPrevious))]
+    private async Task PreviousPageAsync()
+    {
+        CurrentPage--;
+        await LoadSecurityMeasuresAsync();
+    }
+
+    [RelayCommand(CanExecute = nameof(CanGoNext))]
+    private async Task NextPageAsync()
+    {
+        CurrentPage++;
+        await LoadSecurityMeasuresAsync();
+    }
+
+    [RelayCommand(CanExecute = nameof(CanGoFirst))]
+    private async Task FirstPageAsync()
+    {
+        CurrentPage = 1;
+        await LoadSecurityMeasuresAsync();
+    }
+
+    [RelayCommand(CanExecute = nameof(CanGoLast))]
+    private async Task LastPageAsync()
+    {
+        CurrentPage = TotalPages;
+        await LoadSecurityMeasuresAsync();
+    }
+
+    private bool CanGoPrevious() => CurrentPage > 1;
+    private bool CanGoNext() => CurrentPage < TotalPages;
+    private bool CanGoFirst() => CurrentPage > 1;
+    private bool CanGoLast() => CurrentPage < TotalPages;
+
     [RelayCommand]
     public async Task ShowNewSecurityMeasureDialog()
     {
-        await _securityMeasureDialogViewModel.LoadNewSecurityMeasureCommand.ExecuteAsync(null);
-        _dialogManager.CreateDialog(_securityMeasureDialogViewModel)
-        .Dismissible()
-        .WithSuccessCallback(() =>
-            {
-                _toastManager
-                    .CreateToast("Security measure added")
-                    .DismissOnClick()
-                    .ShowSuccess();
-                _ = LoadSecurityMeasuresAsync();
-            })
-        .Show();
+        try
+        {
+            await _securityMeasureDialogViewModel.LoadNewSecurityMeasureCommand.ExecuteAsync(null);
+            _dialogManager.CreateDialog(_securityMeasureDialogViewModel)
+            .Dismissible()
+            .WithSuccessCallback(() =>
+                {
+                    _toastManager
+                        .CreateToast("Security measure added")
+                        .DismissOnClick()
+                        .ShowSuccess();
+                    _ = LoadSecurityMeasuresAsync();
+                })
+            .Show();
+        }
+        catch (Exception ex)
+        {
+            _toastManager
+                .CreateToast("Failed to open new security measure")
+                .WithContent(ex.Message)
+                .DismissOnClick()
+                .ShowError();
+        }
     }
 
     [RelayCommand]
     public async Task ShowEditSecurityMeasureDialog(SecurityMeasure securityMeasure)
     {
-        await _securityMeasureDialogViewModel.LoadExistingSecurityMeasureCommand.ExecuteAsync(securityMeasure);
-        _dialogManager.CreateDialog(_securityMeasureDialogViewModel)
-        .Dismissible()
-        .WithSuccessCallback(() =>
-            {
-                _toastManager
-                    .CreateToast("Security measure updated")
-                    .DismissOnClick()
-                    .ShowSuccess();
-                _ = LoadSecurityMeasuresAsync();
-            })
-        .Show();
+        try
+        {
+            await _securityMeasureDialogViewModel.LoadExistingSecurityMeasureCommand.ExecuteAsync(securityMeasure);
+            _dialogManager.CreateDialog(_securityMeasureDialogViewModel)
+            .Dismissible()
+            .WithSuccessCallback(() =>
+                {
+                    _toastManager
+                        .CreateToast("Security measure updated")
+                        .DismissOnClick()
+                        .ShowSuccess();
+                    _ = LoadSecurityMeasuresAsync();
+                })
+            .Show();
+        }
+        catch (Exception ex)
+        {
+            _toastManager
+                .CreateToast("Failed to open security measure")
+                .WithContent(ex.Message)
+                .DismissOnClick()
+                .ShowError();
+        }
     }
 
     [RelayCommand]
@@ -105,12 +185,31 @@ public partial class SecurityMeasuresViewModel : ViewModelBase, IRefreshable
             "This will permanently delete this security measure.")
         .WithPrimaryButton("Confirm", async () =>
         {
-            await _securityMeasureService.DeleteSecurityMeasure(securityMeasure);
-            _toastManager.CreateToast("Security measure deleted")
-                .WithContent("Security measure deleted successfully!")
-                .DismissOnClick()
-                .ShowSuccess();
-            await LoadSecurityMeasuresAsync();
+            try
+            {
+                await _securityMeasureService.DeleteSecurityMeasure(securityMeasure);
+                _toastManager.CreateToast("Security measure deleted")
+                    .WithContent("Security measure deleted successfully!")
+                    .DismissOnClick()
+                    .ShowSuccess();
+                await LoadSecurityMeasuresAsync();
+            }
+            catch (DbUpdateException)
+            {
+                _toastManager
+                    .CreateToast("Cannot delete security measure")
+                    .WithContent("This security measure is still referenced by related data. Update or delete those records first.")
+                    .DismissOnClick()
+                    .ShowError();
+            }
+            catch (Exception ex)
+            {
+                _toastManager
+                    .CreateToast("Failed to delete security measure")
+                    .WithContent(ex.Message)
+                    .DismissOnClick()
+                    .ShowError();
+            }
         }, DialogButtonStyle.Destructive)
         .WithCancelButton("Cancel")
         .WithMaxWidth(512)

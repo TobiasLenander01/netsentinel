@@ -8,6 +8,8 @@ public interface IDeviceService
 {
     Task AddDeviceAsync(Device device);
     Task<List<Device>> ReadAllDevicesAsync();
+    Task<int> ReadDevicesCountAsync();
+    Task<(List<Device> Items, int TotalCount)> ReadDevicesPagedAsync(int page, int pageSize);
     Task<Device?> ReadSingleDeviceAsync(int id);
     Task<int> UpdateDeviceAsync(Device updatedDevice);
     Task<int> DeleteDevice(Device deviceToDelete);

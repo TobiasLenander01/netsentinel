@@ -2,67 +2,180 @@ using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
-using NetSentinel.Services;
 using NetSentinel.Interfaces;
 using System.Collections.ObjectModel;
-using NetSentinel.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using ShadUI;
 
 namespace NetSentinel.ViewModels;
 
-public partial class DashboardViewModel : ViewModelBase
+public record SecurityMeasureLeaderboardEntry(int Rank, string Name, string Email, int Count);
+
+public partial class DashboardViewModel : ViewModelBase, IRefreshable
 {
     private readonly IIncidentService _incidentService;
+    private readonly IDepartmentService _departmentService;
+    private readonly IDeviceService _deviceService;
+    private readonly IEmployeeService _employeeService;
+    private readonly ISecurityMeasureService _securityMeasureService;
+    private readonly ToastManager _toastManager;
 
     [ObservableProperty]
-    private ObservableCollection<Incident> _incidents = new ObservableCollection<Incident>();
+    private int _departmentCount;
 
-    [RelayCommand]
-    private async Task LoadIncidentsAsync()
-    {
-        var incidents = await _incidentService.ReadAllIncidentsAsync();
-        Incidents = new ObservableCollection<Incident>(incidents);
-    }
+    [ObservableProperty]
+    private int _employeeCount;
 
-    public ISeries[] Series { get; } =
-    [
-        new ColumnSeries<double>
-        {
-            Values = [2500, 3800, 1500, 4200, 3100, 4800, 2900, 3500, 4100, 2300, 3700, 4500],
-            Fill = new SolidColorPaint(SKColors.DodgerBlue)
-        }
-    ];
+    [ObservableProperty]
+    private int _deviceCount;
 
-    public SolidColorPaint TooltipTextPaint { get; } = new SolidColorPaint { Color = SKColors.Gray };
+    [ObservableProperty]
+    private int _incidentCount;
 
-    public Axis[] XAxes { get; } =
-    [
-        new Axis
-        {
-            Labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-            LabelsPaint = new SolidColorPaint { Color = SKColors.Gray },
-            TextSize = 12,
-            MinStep = 1
-        }
-    ];
+    [ObservableProperty]
+    private int _securityMeasureCount;
 
-    public Axis[] YAxes { get; } =
-    [
-        new Axis
-        {
-            Labeler = Labelers.Currency,
-            LabelsPaint = new SolidColorPaint { Color = SKColors.Gray },
-            TextSize = 12,
-            MinStep = 1500,
-            ShowSeparatorLines = false
-        }
-    ];
+    [ObservableProperty]
+    private ISeries[] _series = [];
 
-    public DashboardViewModel(INavigationService navigator, IIncidentService incidentService) : base(navigator)
+    [ObservableProperty]
+    private Axis[] _yAxes = BuildYAxes(1);
+
+    [ObservableProperty]
+    private Axis[] _xAxes = BuildXAxes();
+
+    [ObservableProperty]
+    private ObservableCollection<SecurityMeasureLeaderboardEntry> _leaderboard = new();
+
+    [ObservableProperty]
+    private bool _hasLeaderboard = false;
+
+    [ObservableProperty]
+    private bool _isLoading = false;
+
+    public DashboardViewModel(IIncidentService incidentService, IDepartmentService departmentService, IDeviceService deviceService, IEmployeeService employeeService, ISecurityMeasureService securityMeasureService, ToastManager toastManager) : base()
     {
         Title = "Dashboard";
         _incidentService = incidentService;
+        _departmentService = departmentService;
+        _deviceService = deviceService;
+        _employeeService = employeeService;
+        _securityMeasureService = securityMeasureService;
+        _toastManager = toastManager;
+
+        Series = BuildSeries(new List<int> { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
+        YAxes = BuildYAxes(1);
     }
+
+    [RelayCommand]
+    private async Task LoadDashboardAsync()
+    {
+        try
+        {
+            IsLoading = true;
+
+            var departmentCount = await _departmentService.ReadDepartmentsCountAsync();
+            var employeeCount = await _employeeService.ReadEmployeesCountAsync();
+            var deviceCount = await _deviceService.ReadDevicesCountAsync();
+            var incidentCount = await _incidentService.ReadIncidentsCountAsync();
+            var securityMeasureCount = await _securityMeasureService.ReadSecurityMeasuresCountAsync();
+            var incidentsByMonth = await _incidentService.ReadIncidentCountsByMonthAsync();
+            var leaderboard = await _securityMeasureService.ReadTopSecurityMeasurePerformersAsync(5);
+
+            DepartmentCount = departmentCount;
+            EmployeeCount = employeeCount;
+            DeviceCount = deviceCount;
+            IncidentCount = incidentCount;
+            SecurityMeasureCount = securityMeasureCount;
+
+            Series = BuildSeries(incidentsByMonth);
+            YAxes = BuildYAxes(CalculateYAxisStep(incidentsByMonth));
+
+            var entries = leaderboard
+                .Select((employee, index) => new SecurityMeasureLeaderboardEntry(index + 1, employee.Name, employee.Email, employee.Count));
+
+            Leaderboard = new ObservableCollection<SecurityMeasureLeaderboardEntry>(entries);
+            HasLeaderboard = Leaderboard.Count > 0;
+        }
+        catch
+        {
+            _toastManager
+                .CreateToast("Failed to load dashboard")
+                .WithContent("Verify your network connection and try again.")
+                .DismissOnClick()
+                .ShowError();
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private static ISeries[] BuildSeries(IReadOnlyCollection<int> countsByMonth)
+    {
+        return
+        [
+            new ColumnSeries<int>
+            {
+                Values = countsByMonth,
+                Fill = new SolidColorPaint(SKColors.DodgerBlue)
+            }
+        ];
+    }
+
+    public SolidColorPaint TooltipTextPaint { get; } = new SolidColorPaint { Color = SKColors.Gray };
+
+    private static int CalculateYAxisStep(IReadOnlyCollection<int> countsByMonth)
+    {
+        if (countsByMonth.Count == 0)
+        {
+            return 1;
+        }
+
+        var max = countsByMonth.Max();
+        return Math.Max(1, (int)Math.Ceiling(max / 5.0));
+    }
+
+    private static Axis[] BuildXAxes()
+    {
+        var now = DateTime.UtcNow;
+        var start = new DateTime(now.Year, now.Month, 1).AddMonths(-11);
+        var labels = Enumerable.Range(0, 12)
+            .Select(offset => start.AddMonths(offset).ToString("MMM", CultureInfo.InvariantCulture))
+            .ToArray();
+
+        return
+        [
+            new Axis
+            {
+                Labels = labels,
+                LabelsPaint = new SolidColorPaint { Color = SKColors.Gray },
+                TextSize = 12,
+                MinStep = 1
+            }
+        ];
+    }
+
+    private static Axis[] BuildYAxes(int minStep)
+    {
+        return
+        [
+            new Axis
+            {
+                Labeler = Labelers.Default,
+                LabelsPaint = new SolidColorPaint { Color = SKColors.Gray },
+                TextSize = 12,
+                MinStep = minStep,
+                ShowSeparatorLines = false
+            }
+        ];
+    }
+
+    public Task RefreshAsync() => LoadDashboardAsync();
 }

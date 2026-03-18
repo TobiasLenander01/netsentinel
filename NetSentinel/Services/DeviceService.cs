@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NetSentinel.Database;
@@ -21,6 +21,8 @@ public class DeviceService : IDeviceService
     public async Task AddDeviceAsync(Device device)
     {
         using var db = _dbContextFactory.CreateDbContext();
+        if (device.Owner != null)
+            db.Entry(device.Owner).State = EntityState.Unchanged;
         db.Devices.Add(device);
         await db.SaveChangesAsync();
     }
@@ -30,6 +32,31 @@ public class DeviceService : IDeviceService
     {
         using var db = _dbContextFactory.CreateDbContext();
         return await db.Devices.Include(d => d.Owner).Include(d => d.Incidents).ToListAsync();
+    }
+
+    // read (count)
+    public async Task<int> ReadDevicesCountAsync()
+    {
+        using var db = _dbContextFactory.CreateDbContext();
+        return await db.Devices.AsNoTracking().CountAsync();
+    }
+
+    // read (paged)
+    public async Task<(List<Device> Items, int TotalCount)> ReadDevicesPagedAsync(int page, int pageSize)
+    {
+        using var db = _dbContextFactory.CreateDbContext();
+        var query = db.Devices
+            .Include(d => d.Owner)
+            .Include(d => d.Incidents)
+            .OrderBy(d => d.Name);
+
+        var totalCount = await query.CountAsync();
+        var items = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return (items, totalCount);
     }
 
     // read (single)
@@ -43,6 +70,8 @@ public class DeviceService : IDeviceService
     public async Task<int> UpdateDeviceAsync(Device updatedDevice)
     {
         using var db = _dbContextFactory.CreateDbContext();
+        if (updatedDevice.Owner != null)
+            db.Entry(updatedDevice.Owner).State = EntityState.Unchanged;
         db.Devices.Update(updatedDevice);
         return await db.SaveChangesAsync();
     }

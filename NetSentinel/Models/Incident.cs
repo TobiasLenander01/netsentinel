@@ -28,8 +28,12 @@ public class Incident
 
     public Incident() {}
 
-    public Incident(string description)
+    public Incident(string description, DateTime createdAt, Priority priority, Status status, Device device)
     {
         Description = description;
+        CreatedAt = createdAt;
+        Priority = priority;
+        Status = status;
+        Device = device;
     }
 }

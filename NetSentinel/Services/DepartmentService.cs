@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NetSentinel.Database;
@@ -29,6 +30,30 @@ public class DepartmentService : IDepartmentService
     {
         using var db = _dbContextFactory.CreateDbContext();
         return await db.Departments.Include(d => d.Employees).ToListAsync();
+    }
+
+    // read (count)
+    public async Task<int> ReadDepartmentsCountAsync()
+    {
+        using var db = _dbContextFactory.CreateDbContext();
+        return await db.Departments.AsNoTracking().CountAsync();
+    }
+
+    // read (paged)
+    public async Task<(List<Department> Items, int TotalCount)> ReadDepartmentsPagedAsync(int page, int pageSize)
+    {
+        using var db = _dbContextFactory.CreateDbContext();
+        var query = db.Departments
+            .Include(d => d.Employees)
+            .OrderBy(d => d.Name);
+
+        var totalCount = await query.CountAsync();
+        var items = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return (items, totalCount);
     }
 
     // read (single)

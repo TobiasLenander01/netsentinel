@@ -16,6 +16,9 @@ namespace NetSentinel.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
+    private readonly INavigationService _navigator;
+    public INavigationService Navigator => _navigator;
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ThemeToggleText))]
     [NotifyPropertyChangedFor(nameof(ThemeToggleIcon))]
@@ -29,8 +32,9 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty]
     private ToastManager _toastManager;
 
-    public MainWindowViewModel(INavigationService navigator, DialogManager dialogManager, ToastManager toastManager) : base(navigator)
+    public MainWindowViewModel(INavigationService navigator, DialogManager dialogManager, ToastManager toastManager) : base()
     {
+        _navigator = navigator;
         _dialogManager = dialogManager;
         _toastManager = toastManager;
         if (Application.Current != null)
@@ -38,62 +42,68 @@ public partial class MainWindowViewModel : ViewModelBase
             // ActualThemeVariant resolves "Default" into either Light or Dark
             IsDarkMode = Application.Current.ActualThemeVariant == ThemeVariant.Dark;
         }
-        Navigator.PropertyChanged += (_, e) =>
+        _navigator.PropertyChanged += (_, e) =>
         {
-            if (e.PropertyName == nameof(Navigator.CurrentView))
+            if (e.PropertyName == nameof(_navigator.CurrentView))
                 OnPropertyChanged(nameof(CanRefresh));
         };
     }
 
-    public bool CanRefresh => Navigator.CurrentView is IRefreshable;
+    public bool CanRefresh => _navigator.CurrentView is IRefreshable;
 
     [RelayCommand]
     private async Task RefreshCurrentViewAsync()
     {
-        if (Navigator.CurrentView is IRefreshable refreshable)
+        if (_navigator.CurrentView is IRefreshable refreshable)
             await refreshable.RefreshAsync();
     }
 
     [RelayCommand]
     public void GoToDashboard()
     {
-        Navigator.GoToDashboard();
+        _navigator.GoToDashboard();
     }
 
     [RelayCommand]
     public void GoToDevices()
     {
-        Navigator.GoToDevices();
+        _navigator.GoToDevices();
     }
 
     [RelayCommand]
     public void GoToDepartments()
     {
-        Navigator.GoToDepartments();
+        _navigator.GoToDepartments();
     }
 
     [RelayCommand]
     public void GoToIncidents()
     {
-        Navigator.GoToIncidents();
+        _navigator.GoToIncidents();
     }
 
     [RelayCommand]
     public void GoToEmployees()
     {
-        Navigator.GoToEmployees();
+        _navigator.GoToEmployees();
     }
 
     [RelayCommand]
     public void GoToSecurityMeasures()
     {
-        Navigator.GoToSecurityMeasures();
+        _navigator.GoToSecurityMeasures();
     }
 
     [RelayCommand]
     public void GoToSettings()
     {
-        Navigator.GoToSettings();
+        _navigator.GoToSettings();
+    }
+
+    [RelayCommand]
+    public void GoToAIReport()
+    {
+        _navigator.GoToAIReport();
     }
 
     [RelayCommand]

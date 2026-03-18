@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.EntityFrameworkCore;
 using NetSentinel.Interfaces;
 using NetSentinel.Models;
 using ShadUI;
@@ -16,6 +17,8 @@ public partial class EmployeesViewModel : ViewModelBase, IRefreshable
     private readonly ToastManager _toastManager;
     private readonly EmployeeDialogViewModel _employeeDialogViewModel;
 
+    private const int PageSize = 10;
+
     [ObservableProperty]
     private ObservableCollection<Employee> _employees = new();
 
@@ -25,7 +28,24 @@ public partial class EmployeesViewModel : ViewModelBase, IRefreshable
     [ObservableProperty]
     private bool _isEmpty;
 
-    public EmployeesViewModel(INavigationService navigator, IEmployeeService employeeService, DialogManager dialogManager, ToastManager toastManager, EmployeeDialogViewModel employeeDialogViewModel) : base(navigator)
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(PreviousPageCommand))]
+    [NotifyCanExecuteChangedFor(nameof(NextPageCommand))]
+    [NotifyCanExecuteChangedFor(nameof(FirstPageCommand))]
+    [NotifyCanExecuteChangedFor(nameof(LastPageCommand))]
+    private int _currentPage = 1;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(NextPageCommand))]
+    [NotifyCanExecuteChangedFor(nameof(LastPageCommand))]
+    private int _totalPages = 1;
+
+    [ObservableProperty]
+    private int _totalCount;
+
+    public string PageInfo => $"Page {CurrentPage} of {TotalPages}";
+
+    public EmployeesViewModel(IEmployeeService employeeService, DialogManager dialogManager, ToastManager toastManager, EmployeeDialogViewModel employeeDialogViewModel) : base()
     {
         Title = "Employees";
         _employeeService = employeeService;
@@ -33,6 +53,9 @@ public partial class EmployeesViewModel : ViewModelBase, IRefreshable
         _toastManager = toastManager;
         _employeeDialogViewModel = employeeDialogViewModel;
     }
+
+    partial void OnCurrentPageChanged(int value) => OnPropertyChanged(nameof(PageInfo));
+    partial void OnTotalPagesChanged(int value) => OnPropertyChanged(nameof(PageInfo));
 
     public Task RefreshAsync() => LoadEmployeesAsync();
 
@@ -45,9 +68,11 @@ public partial class EmployeesViewModel : ViewModelBase, IRefreshable
 
         try
         {
-            var employeeList = await _employeeService.ReadAllEmployeesAsync();
-            Employees = new ObservableCollection<Employee>(employeeList);
-            IsEmpty = Employees.Count == 0;
+            var (items, totalCount) = await _employeeService.ReadEmployeesPagedAsync(CurrentPage, PageSize);
+            Employees = new ObservableCollection<Employee>(items);
+            TotalCount = totalCount;
+            TotalPages = Math.Max(1, (int)Math.Ceiling(totalCount / (double)PageSize));
+            IsEmpty = totalCount == 0;
         }
         catch (Exception ex)
         {
@@ -63,38 +88,93 @@ public partial class EmployeesViewModel : ViewModelBase, IRefreshable
         }
     }
 
+    [RelayCommand(CanExecute = nameof(CanGoPrevious))]
+    private async Task PreviousPageAsync()
+    {
+        CurrentPage--;
+        await LoadEmployeesAsync();
+    }
+
+    [RelayCommand(CanExecute = nameof(CanGoNext))]
+    private async Task NextPageAsync()
+    {
+        CurrentPage++;
+        await LoadEmployeesAsync();
+    }
+
+    [RelayCommand(CanExecute = nameof(CanGoFirst))]
+    private async Task FirstPageAsync()
+    {
+        CurrentPage = 1;
+        await LoadEmployeesAsync();
+    }
+
+    [RelayCommand(CanExecute = nameof(CanGoLast))]
+    private async Task LastPageAsync()
+    {
+        CurrentPage = TotalPages;
+        await LoadEmployeesAsync();
+    }
+
+    private bool CanGoPrevious() => CurrentPage > 1;
+    private bool CanGoNext() => CurrentPage < TotalPages;
+    private bool CanGoFirst() => CurrentPage > 1;
+    private bool CanGoLast() => CurrentPage < TotalPages;
+
     [RelayCommand]
     public async Task ShowNewEmployeeDialog()
     {
-        await _employeeDialogViewModel.LoadNewEmployeeCommand.ExecuteAsync(null);
-        _dialogManager.CreateDialog(_employeeDialogViewModel)
-            .Dismissible()
-            .WithSuccessCallback(() =>
-            {
-                _toastManager
-                    .CreateToast("Employee added")
-                    .DismissOnClick()
-                    .ShowSuccess();
-                _ = LoadEmployeesAsync();
-            })
-            .Show();
+        try
+        {
+            await _employeeDialogViewModel.LoadNewEmployeeCommand.ExecuteAsync(null);
+            _dialogManager.CreateDialog(_employeeDialogViewModel)
+                .Dismissible()
+                .WithSuccessCallback(() =>
+                {
+                    _toastManager
+                        .CreateToast("Employee added")
+                        .DismissOnClick()
+                        .ShowSuccess();
+                    _ = LoadEmployeesAsync();
+                })
+                .Show();
+        }
+        catch (Exception ex)
+        {
+            _toastManager
+                .CreateToast("Failed to open new employee")
+                .WithContent(ex.Message)
+                .DismissOnClick()
+                .ShowError();
+        }
     }
 
     [RelayCommand]
     public async Task ShowEditEmployeeDialog(Employee employee)
     {
-        await _employeeDialogViewModel.LoadExistingEmployeeCommand.ExecuteAsync(employee);
-        _dialogManager.CreateDialog(_employeeDialogViewModel)
-            .Dismissible()
-            .WithSuccessCallback(() =>
-            {
-                _toastManager
-                    .CreateToast("Employee edited")
-                    .DismissOnClick()
-                    .ShowSuccess();
-                _ = LoadEmployeesAsync();
-            })
-            .Show();
+        try
+        {
+            await _employeeDialogViewModel.LoadExistingEmployeeCommand.ExecuteAsync(employee);
+            _dialogManager.CreateDialog(_employeeDialogViewModel)
+                .Dismissible()
+                .WithSuccessCallback(() =>
+                {
+                    _toastManager
+                        .CreateToast("Employee edited")
+                        .DismissOnClick()
+                        .ShowSuccess();
+                    _ = LoadEmployeesAsync();
+                })
+                .Show();
+        }
+        catch (Exception ex)
+        {
+            _toastManager
+                .CreateToast("Failed to open employee")
+                .WithContent(ex.Message)
+                .DismissOnClick()
+                .ShowError();
+        }
     }
 
     [RelayCommand]
@@ -102,15 +182,34 @@ public partial class EmployeesViewModel : ViewModelBase, IRefreshable
     {
         _dialogManager.CreateDialog(
             "Are you absolutely sure?",
-            "This will permanently delete this employee.")
+            "This will permanently delete this employee. Owned devices will be left without an owner and security measures will remain.")
             .WithPrimaryButton("Confirm", async () =>
             {
-                await _employeeService.DeleteEmployeeAsync(employee);
-                _toastManager.CreateToast("Employee deleted")
-                    .WithContent("Employee deleted successfully!")
-                    .DismissOnClick()
-                    .ShowSuccess();
-                await LoadEmployeesAsync();
+                try
+                {
+                    await _employeeService.DeleteEmployeeAsync(employee);
+                    _toastManager.CreateToast("Employee deleted")
+                        .WithContent("Employee deleted successfully!")
+                        .DismissOnClick()
+                        .ShowSuccess();
+                    await LoadEmployeesAsync();
+                }
+                catch (DbUpdateException)
+                {
+                    _toastManager
+                        .CreateToast("Cannot delete employee")
+                        .WithContent("This employee is still referenced by related data. Update or delete those records first.")
+                        .DismissOnClick()
+                        .ShowError();
+                }
+                catch (Exception ex)
+                {
+                    _toastManager
+                        .CreateToast("Failed to delete employee")
+                        .WithContent(ex.Message)
+                        .DismissOnClick()
+                        .ShowError();
+                }
             }, DialogButtonStyle.Destructive)
             .WithCancelButton("Cancel")
             .WithMaxWidth(512)

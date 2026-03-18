@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NetSentinel.Database;
@@ -20,6 +21,8 @@ public class IncidentService : IIncidentService
     public async Task AddIncidentAsync(Incident incident)
     {
         using var db = _dbContextFactory.CreateDbContext();
+        if (incident.Device != null)
+            db.Entry(incident.Device).State = EntityState.Unchanged;
         db.Incidents.Add(incident);
         await db.SaveChangesAsync();
     }
@@ -32,6 +35,61 @@ public class IncidentService : IIncidentService
             .Include(i=> i.Device)
             .Include(i=> i.SecurityMeasures)
             .ToListAsync();
+    }
+
+    // read (count)
+    public async Task<int> ReadIncidentsCountAsync()
+    {
+        using var db = _dbContextFactory.CreateDbContext();
+        return await db.Incidents.AsNoTracking().CountAsync();
+    }
+
+    // read (counts by month)
+    public async Task<List<int>> ReadIncidentCountsByMonthAsync()
+    {
+        using var db = _dbContextFactory.CreateDbContext();
+
+        var now = System.DateTime.UtcNow;
+        var start = new System.DateTime(now.Year, now.Month, 1, 0, 0, 0, System.DateTimeKind.Utc).AddMonths(-11);
+        var end = start.AddMonths(12);
+
+        var monthly = await db.Incidents
+            .AsNoTracking()
+            .Where(i => i.CreatedAt >= start && i.CreatedAt < end)
+            .GroupBy(i => new { i.CreatedAt.Year, i.CreatedAt.Month })
+            .Select(g => new { g.Key.Year, g.Key.Month, Count = g.Count() })
+            .ToListAsync();
+
+        var monthlyLookup = monthly.ToDictionary(
+            entry => (entry.Year, entry.Month),
+            entry => entry.Count);
+
+        var counts = new List<int>(12);
+        for (var i = 0; i < 12; i++)
+        {
+            var month = start.AddMonths(i);
+            counts.Add(monthlyLookup.TryGetValue((month.Year, month.Month), out var count) ? count : 0);
+        }
+
+        return counts;
+    }
+
+    // read (paged)
+    public async Task<(List<Incident> Items, int TotalCount)> ReadIncidentsPagedAsync(int page, int pageSize)
+    {
+        using var db = _dbContextFactory.CreateDbContext();
+        var query = db.Incidents
+            .Include(i => i.Device)
+            .Include(i => i.SecurityMeasures)
+            .OrderByDescending(i => i.CreatedAt);
+
+        var totalCount = await query.CountAsync();
+        var items = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return (items, totalCount);
     }
 
     // read (single)
@@ -48,6 +106,8 @@ public class IncidentService : IIncidentService
     public async Task<int> UpdateIncidentAsync(Incident updatedIncident)
     {
         using var db = _dbContextFactory.CreateDbContext();
+        if (updatedIncident.Device != null)
+            db.Entry(updatedIncident.Device).State = EntityState.Unchanged;
         db.Incidents.Update(updatedIncident);
         return await db.SaveChangesAsync();
     }

@@ -8,15 +8,13 @@ public class Device
 {
     public int Id {get; set;}
 
-    [Required]
-    [MaxLength(100)]
+    [MaxLength(50)]
     public string Name {get; set;} = string.Empty;
 
-    [Required]
-    [MaxLength(15)]
+    [MaxLength(50)]
     public string IPAddress {get; set;} = string.Empty;
 
-    [MaxLength(17)]
+    [MaxLength(50)]
     [Required]
     public string SerialNumber {get; set;} = string.Empty;
 
@@ -24,6 +22,15 @@ public class Device
 
     public bool HasIncidents => Incidents.Count > 0;
 
-    [Required]
     public Employee? Owner {get; set;}
+
+    public Device() {}
+
+    public Device(string name, string ipAddress, string serialNumber, Employee owner)
+    {
+        Name = name;
+        IPAddress = ipAddress;
+        SerialNumber = serialNumber;
+        Owner = owner;
+    }
 }

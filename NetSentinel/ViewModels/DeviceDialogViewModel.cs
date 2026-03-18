@@ -15,6 +15,7 @@ public partial class DeviceDialogViewModel : ViewModelBase
     private readonly IDeviceService _deviceService;
     private readonly IEmployeeService _employeeService;
     private readonly DialogManager _dialogManager;
+    private readonly ToastManager _toastManager;
 
     private Device _device = new Device();
     private bool _isEditingExistingDevice = false;
@@ -22,16 +23,19 @@ public partial class DeviceDialogViewModel : ViewModelBase
     [ObservableProperty]
     [NotifyDataErrorInfo]
     [Required(ErrorMessage = "Name is required")]
+    [MaxLength(50, ErrorMessage = "Name must be 50 characters or less")]
     private string _name = String.Empty;
 
     [ObservableProperty]
     [NotifyDataErrorInfo]
     [Required(ErrorMessage = "IP Address is required")]
+    [MaxLength(50, ErrorMessage = "IP Address must be 50 characters or less")]
     private string _ipAddress = String.Empty;
 
     [ObservableProperty]
     [NotifyDataErrorInfo]
     [Required(ErrorMessage = "Serial Number is required")]
+    [MaxLength(50, ErrorMessage = "Serial Number must be 50 characters or less")]
     private string _serialNumber = String.Empty;
 
     [ObservableProperty]
@@ -45,12 +49,13 @@ public partial class DeviceDialogViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isLoading;
 
-    public DeviceDialogViewModel(INavigationService navigator, DialogManager dialogManager, IDeviceService deviceService, IEmployeeService employeeService) : base(navigator)
+    public DeviceDialogViewModel(DialogManager dialogManager, ToastManager toastManager, IDeviceService deviceService, IEmployeeService employeeService) : base()
     {
         Title = "Device Dialog";
         _deviceService = deviceService;
         _employeeService = employeeService;
         _dialogManager = dialogManager;
+        _toastManager = toastManager;
     }
 
     [RelayCommand]
@@ -91,8 +96,13 @@ public partial class DeviceDialogViewModel : ViewModelBase
 
             _dialogManager.Close(this, new CloseDialogOptions { Success = true });
         }
-        catch
+        catch (Exception ex)
         {
+            _toastManager
+                .CreateToast("Failed to save device")
+                .WithContent(ex.Message)
+                .DismissOnClick()
+                .ShowError();
             _dialogManager.Close(this, new CloseDialogOptions { Success = false });
         }
         finally
@@ -105,9 +115,24 @@ public partial class DeviceDialogViewModel : ViewModelBase
     {
         // Load employees into drop down menu
         IsLoading = true;
-        var list = await _employeeService.ReadAllEmployeesAsync();
-        Employees = new ObservableCollection<Employee>(list);
-        IsLoading = false;
+        try
+        {
+            var list = await _employeeService.ReadAllEmployeesAsync();
+            Employees = new ObservableCollection<Employee>(list);
+        }
+        catch (Exception ex)
+        {
+            Employees = new ObservableCollection<Employee>();
+            _toastManager
+                .CreateToast("Failed to load employees")
+                .WithContent(ex.Message)
+                .DismissOnClick()
+                .ShowError();
+        }
+        finally
+        {
+            IsLoading = false;
+        }
 
         // Observe device properties
         _device = device;

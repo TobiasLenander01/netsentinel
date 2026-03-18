@@ -9,6 +9,8 @@ public interface IDepartmentService
 {
     public Task AddDepartmentAsync(Department department);
     public Task<List<Department>> ReadAllDepartmentsAsync();
+    public Task<int> ReadDepartmentsCountAsync();
+    public Task<(List<Department> Items, int TotalCount)> ReadDepartmentsPagedAsync(int page, int pageSize);
     public Task<Department?> ReadSingleDepartmentAsync(int id);
     public Task<int> UpdateDepartmentAsync(Department updatedDepartment);
     public Task<int> DeleteDepartmentAsync(Department departmentToDelete);

@@ -87,6 +87,15 @@ public partial class NavigationService : ObservableObject, INavigationService
         }
     }
 
+    public void GoToAIReport()
+    {
+        if (CurrentView is not AIReportViewModel)
+        {
+            var aiReportView = _serviceProvider.GetRequiredService<AIReportViewModel>();
+            NavigateTo(aiReportView);
+        }
+    }
+
     public void GoBack()
     {
         if (_navigationHistoryStack.Count > 0)

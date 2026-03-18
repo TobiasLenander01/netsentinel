@@ -8,70 +8,86 @@
     x:DataType="vm:DepartmentsViewModel"
     Loaded="OnLoaded">
 
-    <Grid>
+    <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="40">
 
-        <StackPanel Spacing="20" Margin="40">
+        <!-- Row 0: Title -->
+        <TextBlock Grid.Row="0" Text="{Binding Title}" Classes="h1" Margin="0,0,0,20" />
 
-            <TextBlock Text="{Binding Title}" Classes="h1" />
+        <!-- Row 1: Add button -->
+        <Grid Grid.Row="1" Margin="0,0,0,20">
+            <Button Content="Add department" Classes="Primary"
+                Command="{Binding ShowNewDepartmentDialogCommand}"
+                HorizontalAlignment="Left" IsEnabled="{Binding !IsLoading}" />
+        </Grid>
 
-            <Grid>
-                <Button Content="Add department" Classes="Primary"
-                    Command="{Binding ShowNewDepartmentDialogCommand}"
-                    HorizontalAlignment="Left" IsEnabled="{Binding !IsLoading}" />
-            </Grid>
+        <!-- Row 2: DataGrid -->
+        <Grid Grid.Row="2">
+            <DataGrid x:Name="DataGrid"
+                ItemsSource="{Binding Departments}"
+                CanUserSortColumns="True"
+                IsReadOnly="True"
+                IsEnabled="{Binding !IsLoading}"
+                Background="{DynamicResource CardBackgroundColor}"
+                GridLinesVisibility="Horizontal"
+                VerticalAlignment="Top">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="auto" />
+                    <DataGridTextColumn Header="Location" Binding="{Binding Location}" Width="auto" />
+                    <DataGridTextColumn Header="Employees" Binding="{Binding Employees.Count}" Width="*" />
 
-            <Grid>
+                    <DataGridTemplateColumn Header="Actions">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="models:Department">
+                                <Button Content="..." Classes="Ghost"
+                                    HorizontalAlignment="Center"
+                                    HorizontalContentAlignment="Center">
+                                    <Button.Flyout>
+                                        <MenuFlyout>
+                                            <MenuItem Header="Edit department" Cursor="Hand"
+                                                Command="{Binding $parent[UserControl].((vm:DepartmentsViewModel)DataContext).ShowEditDepartmentDialogCommand}"
+                                                CommandParameter="{Binding}" />
+                                            <MenuItem Header="Delete department" Cursor="Hand"
+                                                Command="{Binding $parent[UserControl].((vm:DepartmentsViewModel)DataContext).ShowDeleteDepartmentDialogCommand}"
+                                                CommandParameter="{Binding}" />
+                                        </MenuFlyout>
+                                    </Button.Flyout>
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
 
-                <DataGrid x:Name="DataGrid"
-                    ItemsSource="{Binding Departments}"
-                    CanUserSortColumns="True"
-                    IsReadOnly="True"
-                    IsEnabled="{Binding !IsLoading}"
-                    Background="{DynamicResource CardBackgroundColor}"
-                    GridLinesVisibility="Horizontal">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="auto" />
-                        <DataGridTextColumn Header="Location" Binding="{Binding Location}"
-                            Width="auto" />
-                        <DataGridTextColumn Header="Employees" Binding="{Binding Employees.Count}"
-                            Width="*" />
+                </DataGrid.Columns>
+            </DataGrid>
 
-                        <DataGridTemplateColumn Header="Actions">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate x:DataType="models:Department">
-                                    <Button Content="..." Classes="Ghost"
-                                        HorizontalAlignment="Center"
-                                        HorizontalContentAlignment="Center">
-                                        <Button.Flyout>
-                                            <MenuFlyout>
-                                                <MenuItem Header="Edit department" Cursor="Hand"
-                                                    Command="{Binding $parent[UserControl].((vm:DepartmentsViewModel)DataContext).ShowEditDepartmentDialogCommand}"
-                                                    CommandParameter="{Binding}" />
-                                                <MenuItem Header="Delete department" Cursor="Hand"
-                                                    Command="{Binding $parent[UserControl].((vm:DepartmentsViewModel)DataContext).DeleteDepartmentCommand}"
-                                                    CommandParameter="{Binding}" />
-                                            </MenuFlyout>
-                                        </Button.Flyout>
-                                    </Button>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-
-                    </DataGrid.Columns>
-                </DataGrid>
-
-                <TextBlock Text="No departments found."
-                    IsVisible="{Binding IsEmpty}"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Foreground="Gray"
-                    Margin="0,50,0,0" />
-
-
-            </Grid>
+            <TextBlock Text="No departments found."
+                IsVisible="{Binding IsEmpty}"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Foreground="Gray"
+                Margin="0,50,0,0" />
 
             <shad:BusyArea CornerRadius="{DynamicResource LgCornerRadius}"
                 IsBusy="{Binding IsLoading}" />
+        </Grid>
+
+        <!-- Row 3: Pagination -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center"
+            Spacing="12" Margin="0,12,0,0" IsVisible="{Binding !IsEmpty}">
+            <Button Classes="Outline" Command="{Binding FirstPageCommand}" ToolTip.Tip="First page">
+                <LucideIcon Kind="ArrowLeftToLine" Size="16" />
+            </Button>
+            <Button Classes="Outline" Command="{Binding PreviousPageCommand}" ToolTip.Tip="Previous page">
+                <LucideIcon Kind="ArrowLeft" Size="16" />
+            </Button>
+            <TextBlock Text="{Binding PageInfo}"
+                VerticalAlignment="Center" />
+            <Button Classes="Outline" Command="{Binding NextPageCommand}" ToolTip.Tip="Next page">
+                <LucideIcon Kind="ArrowRight" Size="16" />
+            </Button>
+            <Button Classes="Outline" Command="{Binding LastPageCommand}" ToolTip.Tip="Last page">
+                <LucideIcon Kind="ArrowRightToLine" Size="16" />
+            </Button>
         </StackPanel>
+
     </Grid>
 </UserControl>

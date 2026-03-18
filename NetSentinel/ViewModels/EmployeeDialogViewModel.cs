@@ -4,6 +4,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using NetSentinel.Interfaces;
 using NetSentinel.Models;
 using ShadUI;
@@ -15,6 +17,7 @@ public partial class EmployeeDialogViewModel : ViewModelBase
     private readonly IEmployeeService _employeeService;
     private readonly IDepartmentService _departmentService;
     private readonly DialogManager _dialogManager;
+    private readonly ToastManager _toastManager;
 
     private Employee _employee = new Employee();
     private bool _isEditingExistingEmployee = false;
@@ -22,13 +25,20 @@ public partial class EmployeeDialogViewModel : ViewModelBase
     [ObservableProperty]
     [NotifyDataErrorInfo]
     [Required(ErrorMessage = "Name is required")]
-
+    [MaxLength(50, ErrorMessage = "Name must be 50 characters or less")]
     private string _name = String.Empty;
 
     [ObservableProperty]
     [NotifyDataErrorInfo]
     [Required(ErrorMessage = "Employee Number is required")]
+    [MaxLength(50, ErrorMessage = "Employee number must be 50 characters or less")]
     private string _employeeNo = String.Empty;
+
+    [ObservableProperty]
+    [NotifyDataErrorInfo]
+    [Required(ErrorMessage = "Email is required")]
+    [MaxLength(50, ErrorMessage = "Email must be 50 characters or less")]
+    private string _email = String.Empty;
 
     [ObservableProperty]
     private bool _isLoading;
@@ -41,12 +51,13 @@ public partial class EmployeeDialogViewModel : ViewModelBase
     [Required(ErrorMessage = "Department is required")]
     private Department? _selectedDepartment;
 
-    public EmployeeDialogViewModel(INavigationService navigator, DialogManager dialogManager, IEmployeeService employeeService, IDepartmentService departmentService) : base(navigator)
+    public EmployeeDialogViewModel(DialogManager dialogManager, ToastManager toastManager, IEmployeeService employeeService, IDepartmentService departmentService) : base()
     {
         Title = "Employee Dialog";
         _employeeService = employeeService;
         _departmentService = departmentService;
         _dialogManager = dialogManager;
+        _toastManager = toastManager;
     }
 
      [RelayCommand]
@@ -73,6 +84,7 @@ public partial class EmployeeDialogViewModel : ViewModelBase
             return;
         
         _employee.Name = Name;
+        _employee.Email = Email;
         _employee.EmployeeNo = EmployeeNo;
         _employee.Department = SelectedDepartment;
 
@@ -85,8 +97,14 @@ public partial class EmployeeDialogViewModel : ViewModelBase
 
             _dialogManager.Close(this, new CloseDialogOptions { Success = true });
         }
-        catch
+        catch (Exception ex)
         {
+            var userMessage = BuildSaveErrorMessage(ex);
+            _toastManager
+                .CreateToast("Unable to save employee")
+                .WithContent(userMessage)
+                .DismissOnClick()
+                .ShowError();
             _dialogManager.Close(this, new CloseDialogOptions { Success = false });
         }
         finally
@@ -102,14 +120,40 @@ public partial class EmployeeDialogViewModel : ViewModelBase
 
         // Load departments into drop down menu
         IsLoading = true;
-        var list = await _departmentService.ReadAllDepartmentsAsync();
-        Departments = new ObservableCollection<Department>(list);
-        IsLoading = false;
+        try
+        {
+            var list = await _departmentService.ReadAllDepartmentsAsync();
+            Departments = new ObservableCollection<Department>(list);
+        }
+        catch (Exception ex)
+        {
+            Departments = new ObservableCollection<Department>();
+            _toastManager
+                .CreateToast("Failed to load departments")
+                .WithContent(ex.Message)
+                .DismissOnClick()
+                .ShowError();
+        }
+        finally
+        {
+            IsLoading = false;
+        }
 
         // Observe Employee properties
         _employee = employee;
         Name = employee.Name;
+        Email = employee.Email;
         EmployeeNo = employee.EmployeeNo;
         SelectedDepartment = employee.Department;
+    }
+
+    private static string BuildSaveErrorMessage(Exception ex)
+    {
+        if (ex is DbUpdateException { InnerException: SqlException sqlEx } && sqlEx.Number == 2628)
+        {
+            return "One or more fields are too long. Name max 50, employee number max 15, email max 40.";
+        }
+
+        return "Please check required fields and length limits, then try again.";
     }
 }
