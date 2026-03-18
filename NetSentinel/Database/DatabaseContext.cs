@@ -70,16 +70,17 @@ public class DatabaseContext : DbContext
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         // Max 50 employees per department
-        var newEmployees = ChangeTracker.Entries<Employee>()
-            .Where(e => e.State == EntityState.Added)
+        var employeesToCheck = ChangeTracker.Entries<Employee>()
+            .Where(e => e.State == EntityState.Added ||
+                       (e.State == EntityState.Modified && e.Property("DepartmentId").IsModified))
             .Select(e => e.Entity);
 
-        foreach (var employee in newEmployees)
+        foreach (var employee in employeesToCheck)
         {
             if (employee.Department is null) continue;
 
             var count = await Employees
-                .CountAsync(e => e.Department!.Id == employee.Department.Id, cancellationToken);
+                .CountAsync(e => e.Department!.Id == employee.Department.Id && e.Id != employee.Id, cancellationToken);
 
             if (count >= 50)
                 throw new InvalidOperationException(
@@ -87,16 +88,17 @@ public class DatabaseContext : DbContext
         }
 
         // Max 3 devices per employee
-        var newDevices = ChangeTracker.Entries<Device>()
-            .Where(e => e.State == EntityState.Added)
+        var devicesToCheck = ChangeTracker.Entries<Device>()
+            .Where(e => e.State == EntityState.Added ||
+                       (e.State == EntityState.Modified && e.Property("OwnerId").IsModified))
             .Select(e => e.Entity);
 
-        foreach (var device in newDevices)
+        foreach (var device in devicesToCheck)
         {
             if (device.Owner is null) continue;
 
             var count = await Devices
-                .CountAsync(d => d.Owner!.Id == device.Owner.Id, cancellationToken);
+                .CountAsync(d => d.Owner!.Id == device.Owner.Id && d.Id != device.Id, cancellationToken);
 
             if (count >= 3)
                 throw new InvalidOperationException(
