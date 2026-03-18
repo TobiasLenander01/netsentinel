@@ -1,6 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -151,6 +152,8 @@ public partial class EmployeeDialogViewModel : ViewModelBase
         Name = employee.Name;
         Email = employee.Email;
         EmployeeNo = employee.EmployeeNo;
-        SelectedDepartment = employee.Department;
+        SelectedDepartment = employee.Department is null
+            ? null
+            : Departments.FirstOrDefault(d => d.Id == employee.Department.Id) ?? employee.Department;
     }
 }
