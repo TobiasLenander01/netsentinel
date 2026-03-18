@@ -10,40 +10,15 @@ using ShadUI;
 
 namespace NetSentinel.ViewModels;
 
-public partial class DevicesViewModel : ViewModelBase, IRefreshable
+public partial class DevicesViewModel : PaginatedViewModelBase
 {
     private readonly IDeviceService _deviceService;
     private readonly DialogManager _dialogManager;
     private readonly ToastManager _toastManager;
     private readonly DeviceDialogViewModel _deviceDialogViewModel;
 
-    private const int PageSize = 10;
-
     [ObservableProperty]
     private ObservableCollection<Device> _devices = new();
-
-    [ObservableProperty]
-    private bool _isLoading;
-
-    [ObservableProperty]
-    private bool _isEmpty;
-
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(PreviousPageCommand))]
-    [NotifyCanExecuteChangedFor(nameof(NextPageCommand))]
-    [NotifyCanExecuteChangedFor(nameof(FirstPageCommand))]
-    [NotifyCanExecuteChangedFor(nameof(LastPageCommand))]
-    private int _currentPage = 1;
-
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(NextPageCommand))]
-    [NotifyCanExecuteChangedFor(nameof(LastPageCommand))]
-    private int _totalPages = 1;
-
-    [ObservableProperty]
-    private int _totalCount;
-
-    public string PageInfo => $"Page {CurrentPage} of {TotalPages}";
 
     public DevicesViewModel(IDeviceService deviceService, DialogManager dialogManager, ToastManager toastManager, DeviceDialogViewModel deviceDialogViewModel) : base()
     {
@@ -54,13 +29,10 @@ public partial class DevicesViewModel : ViewModelBase, IRefreshable
         _deviceDialogViewModel = deviceDialogViewModel;
     }
 
-    partial void OnCurrentPageChanged(int value) => OnPropertyChanged(nameof(PageInfo));
-    partial void OnTotalPagesChanged(int value) => OnPropertyChanged(nameof(PageInfo));
-
-    public Task RefreshAsync() => LoadDevicesAsync();
-
     [RelayCommand]
-    private async Task LoadDevicesAsync()
+    private Task LoadDevicesAsync() => LoadPageAsync();
+
+    protected override async Task LoadPageAsync()
     {
         IsLoading = true;
         IsEmpty = false;
@@ -87,39 +59,6 @@ public partial class DevicesViewModel : ViewModelBase, IRefreshable
             IsLoading = false;
         }
     }
-
-    [RelayCommand(CanExecute = nameof(CanGoPrevious))]
-    private async Task PreviousPageAsync()
-    {
-        CurrentPage--;
-        await LoadDevicesAsync();
-    }
-
-    [RelayCommand(CanExecute = nameof(CanGoNext))]
-    private async Task NextPageAsync()
-    {
-        CurrentPage++;
-        await LoadDevicesAsync();
-    }
-
-    [RelayCommand(CanExecute = nameof(CanGoFirst))]
-    private async Task FirstPageAsync()
-    {
-        CurrentPage = 1;
-        await LoadDevicesAsync();
-    }
-
-    [RelayCommand(CanExecute = nameof(CanGoLast))]
-    private async Task LastPageAsync()
-    {
-        CurrentPage = TotalPages;
-        await LoadDevicesAsync();
-    }
-
-    private bool CanGoPrevious() => CurrentPage > 1;
-    private bool CanGoNext() => CurrentPage < TotalPages;
-    private bool CanGoFirst() => CurrentPage > 1;
-    private bool CanGoLast() => CurrentPage < TotalPages;
 
     [RelayCommand]
     public async Task ShowNewDeviceDialog()

@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.EntityFrameworkCore;
 using NetSentinel.Enums;
 using NetSentinel.Interfaces;
 using NetSentinel.Models;
@@ -11,7 +12,7 @@ using ShadUI;
 
 namespace NetSentinel.ViewModels;
 
-public partial class IncidentDialogViewModel : ViewModelBase 
+public partial class IncidentDialogViewModel : ViewModelBase
 {
     private readonly IIncidentService _incidentService;
     private readonly IDeviceService _deviceService;
@@ -106,16 +107,29 @@ public partial class IncidentDialogViewModel : ViewModelBase
 
         try
         {
-            if(_isEditingExistingIncident)
+            if (_isEditingExistingIncident)
                 await _incidentService.UpdateIncidentAsync(_incident);
             else
                 await _incidentService.AddIncidentAsync(_incident);
 
-            _dialogManager.Close(this, new CloseDialogOptions { Success = true});
+            _dialogManager.Close(this, new CloseDialogOptions { Success = true });
+        }
+        catch (InvalidOperationException ex)
+        {
+            _toastManager
+                .CreateToast("Failed to save incident")
+                .WithContent(ex.Message)
+                .DismissOnClick()
+                .ShowError();
+            _dialogManager.Close(this, new CloseDialogOptions { Success = false });
         }
         catch
         {
-            _dialogManager.Close(this, new CloseDialogOptions { Success = false});
+            _toastManager
+                .CreateToast("Failed to save incident")
+                .DismissOnClick()
+                .ShowError();
+            _dialogManager.Close(this, new CloseDialogOptions { Success = false });
         }
         finally
         {

@@ -75,11 +75,10 @@ public partial class DepartmentDialogViewModel : ViewModelBase
 
             _dialogManager.Close(this, new CloseDialogOptions { Success = true });
         }
-        catch (Exception ex)
+        catch
         {
             _toastManager
                 .CreateToast("Failed to save department")
-                .WithContent(ex.Message)
                 .DismissOnClick()
                 .ShowError();
             _dialogManager.Close(this, new CloseDialogOptions { Success = false });

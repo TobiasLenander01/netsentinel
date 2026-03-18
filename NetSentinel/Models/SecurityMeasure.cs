@@ -1,7 +1,5 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using NetSentinel.Enums;
-using NetSentinel.Validation;
 
 namespace NetSentinel.Models;
 
@@ -20,7 +18,7 @@ public class SecurityMeasure
 
     public Employee? PerformedBy { get; set; }
 
-    [Required] [NotInFuture]
+    [Required]
     public DateTime PerformedAt { get; set; }
 
     public SecurityMeasure()

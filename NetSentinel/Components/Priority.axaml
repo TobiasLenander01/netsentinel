@@ -1,0 +1,57 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="NetSentinel.Components.Priority"
+             x:Name="Root"
+             x:CompileBindings="False">
+    <UserControl.Styles>
+        <Style Selector="Border.badge">
+            <Setter Property="Padding" Value="10,4" />
+            <Setter Property="CornerRadius" Value="999" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="Border.badge.priority-low">
+            <Setter Property="Background" Value="{DynamicResource SecondaryColor50}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SecondaryColor75}" />
+        </Style>
+        <Style Selector="Border.badge.priority-medium">
+            <Setter Property="Background" Value="{DynamicResource InfoColor10}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource InfoColor20}" />
+        </Style>
+        <Style Selector="Border.badge.priority-high">
+            <Setter Property="Background" Value="{DynamicResource WarningColor10}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource WarningColor20}" />
+        </Style>
+        <Style Selector="Border.badge.priority-critical">
+            <Setter Property="Background" Value="{DynamicResource ErrorColor10}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ErrorColor20}" />
+        </Style>
+
+        <Style Selector="TextBlock.badge-text">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="TextBlock.badge-text.priority-low">
+            <Setter Property="Foreground" Value="{DynamicResource SecondaryForegroundColor}" />
+        </Style>
+        <Style Selector="TextBlock.badge-text.priority-medium">
+            <Setter Property="Foreground" Value="{DynamicResource InfoColor}" />
+        </Style>
+        <Style Selector="TextBlock.badge-text.priority-high">
+            <Setter Property="Foreground" Value="{DynamicResource WarningColor}" />
+        </Style>
+        <Style Selector="TextBlock.badge-text.priority-critical">
+            <Setter Property="Foreground" Value="{DynamicResource ErrorColor}" />
+        </Style>
+    </UserControl.Styles>
+
+    <Border x:Name="Badge"
+            Classes="badge">
+        <TextBlock x:Name="Label"
+                   Classes="badge-text"
+                   Text="{Binding DisplayText, ElementName=Root}" />
+    </Border>
+</UserControl>

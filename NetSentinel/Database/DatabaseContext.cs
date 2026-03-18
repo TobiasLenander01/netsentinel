@@ -69,40 +69,77 @@ public class DatabaseContext : DbContext
     /// </summary>
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
+        // Incidents and security measures cannot be set to a future date.
+        var now = DateTime.UtcNow;
+
+        var futureIncident = ChangeTracker.Entries<Incident>()
+            .Where(e => (e.State == EntityState.Added || e.State == EntityState.Modified)
+                        && e.Entity.CreatedAt > now)
+            .Select(e => e.Entity)
+            .FirstOrDefault();
+
+        if (futureIncident is not null)
+            throw new InvalidOperationException("Incident date cannot be in the future.");
+
+        var futureSecurityMeasure = ChangeTracker.Entries<SecurityMeasure>()
+            .Where(e => (e.State == EntityState.Added || e.State == EntityState.Modified)
+                        && e.Entity.PerformedAt > now)
+            .Select(e => e.Entity)
+            .FirstOrDefault();
+
+        if (futureSecurityMeasure is not null)
+            throw new InvalidOperationException("Security measure date cannot be in the future.");
+
         // Max 50 employees per department
         var employeesToCheck = ChangeTracker.Entries<Employee>()
             .Where(e => e.State == EntityState.Added ||
-                       (e.State == EntityState.Modified && e.Property("DepartmentId").IsModified))
-            .Select(e => e.Entity);
+                       (e.State == EntityState.Modified && e.Property("DepartmentId").IsModified));
 
-        foreach (var employee in employeesToCheck)
+        foreach (var employeeEntry in employeesToCheck)
         {
-            if (employee.Department is null) continue;
+            var departmentIdValue = employeeEntry.Property("DepartmentId").CurrentValue;
+            if (departmentIdValue is null) continue;
+
+            var departmentId = Convert.ToInt32(departmentIdValue);
 
             var count = await Employees
-                .CountAsync(e => e.Department!.Id == employee.Department.Id && e.Id != employee.Id, cancellationToken);
+                .CountAsync(e => e.Department != null && e.Department.Id == departmentId && e.Id != employeeEntry.Entity.Id, cancellationToken);
 
             if (count >= 50)
+            {
+                var departmentName = employeeEntry.Entity.Department?.Name
+                    ?? await Departments.Where(d => d.Id == departmentId).Select(d => d.Name).FirstOrDefaultAsync(cancellationToken)
+                    ?? $"ID {departmentId}";
+
                 throw new InvalidOperationException(
-                    $"Department '{employee.Department.Name}' already has the maximum of 50 employees.");
+                    $"Department '{departmentName}' already has the maximum of 50 employees.");
+            }
         }
 
         // Max 3 devices per employee
         var devicesToCheck = ChangeTracker.Entries<Device>()
             .Where(e => e.State == EntityState.Added ||
-                       (e.State == EntityState.Modified && e.Property("OwnerId").IsModified))
-            .Select(e => e.Entity);
+                       (e.State == EntityState.Modified && e.Property("OwnerId").IsModified));
 
-        foreach (var device in devicesToCheck)
+        foreach (var deviceEntry in devicesToCheck)
         {
-            if (device.Owner is null) continue;
+            var ownerIdValue = deviceEntry.Property("OwnerId").CurrentValue;
+            if (ownerIdValue is null) continue;
+
+            var ownerId = Convert.ToInt32(ownerIdValue);
 
             var count = await Devices
-                .CountAsync(d => d.Owner!.Id == device.Owner.Id && d.Id != device.Id, cancellationToken);
+                .CountAsync(d => d.Owner != null && d.Owner.Id == ownerId && d.Id != deviceEntry.Entity.Id, cancellationToken);
 
             if (count >= 3)
+            {
+                var ownerName = deviceEntry.Entity.Owner?.Name
+                    ?? await Employees.Where(e => e.Id == ownerId).Select(e => e.Name).FirstOrDefaultAsync(cancellationToken)
+                    ?? $"ID {ownerId}";
+
                 throw new InvalidOperationException(
-                    $"Employee '{device.Owner.Name}' already has the maximum of 3 devices.");
+                    $"Employee '{ownerName}' already has the maximum of 3 devices.");
+            }
         }
 
         return await base.SaveChangesAsync(cancellationToken);
