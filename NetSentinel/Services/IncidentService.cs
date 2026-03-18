@@ -21,6 +21,7 @@ public class IncidentService : IIncidentService
     public async Task AddIncidentAsync(Incident incident)
     {
         using var db = _dbContextFactory.CreateDbContext();
+        incident.CreatedAt = NormalizeToUtc(incident.CreatedAt);
         if (incident.Device != null)
             db.Entry(incident.Device).State = EntityState.Unchanged;
         db.Incidents.Add(incident);
@@ -106,10 +107,21 @@ public class IncidentService : IIncidentService
     public async Task<int> UpdateIncidentAsync(Incident updatedIncident)
     {
         using var db = _dbContextFactory.CreateDbContext();
+        updatedIncident.CreatedAt = NormalizeToUtc(updatedIncident.CreatedAt);
         if (updatedIncident.Device != null)
             db.Entry(updatedIncident.Device).State = EntityState.Unchanged;
         db.Incidents.Update(updatedIncident);
         return await db.SaveChangesAsync();
+    }
+
+    private static System.DateTime NormalizeToUtc(System.DateTime value)
+    {
+        return value.Kind switch
+        {
+            System.DateTimeKind.Utc => value,
+            System.DateTimeKind.Local => value.ToUniversalTime(),
+            _ => value
+        };
     }
 
     // delete

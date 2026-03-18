@@ -6,14 +6,80 @@
   x:DataType="vm:IncidentDialogViewModel">
 
   <Grid>
-    <StackPanel Spacing="20" Margin="40" Width="400" HorizontalAlignment="Left">
+    <StackPanel Spacing="20" Margin="40" MinWidth="360" MaxWidth="500" HorizontalAlignment="Left">
 
       <TextBlock Text="{Binding Title}" Classes="h2" />
 
-      <CalendarDatePicker
-        Width="240"
-        HorizontalAlignment="Center"
-        VerticalAlignment="Center" />
+      <StackPanel Spacing="6">
+        <TextBlock Text="Description" />
+        <TextBox Text="{Binding Description}"
+          Watermark="Describe the incident"
+          AcceptsReturn="True"
+          TextWrapping="Wrap"
+          shad:ControlAssist.Height="100" />
+      </StackPanel>
+
+      <StackPanel Spacing="6">
+        <TextBlock Text="Priority" />
+        <ComboBox
+          ItemsSource="{Binding Priorities}"
+          SelectedItem="{Binding Priority}"
+          HorizontalAlignment="Stretch"
+          PlaceholderText="Select a priority">
+          <ComboBox.ItemTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding .}" />
+            </DataTemplate>
+          </ComboBox.ItemTemplate>
+        </ComboBox>
+      </StackPanel>
+
+      <StackPanel Spacing="6">
+        <TextBlock Text="Status" />
+        <ComboBox
+          ItemsSource="{Binding Statuses}"
+          SelectedItem="{Binding Status}"
+          HorizontalAlignment="Stretch"
+          PlaceholderText="Select a status">
+          <ComboBox.ItemTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding .}" />
+            </DataTemplate>
+          </ComboBox.ItemTemplate>
+        </ComboBox>
+      </StackPanel>
+
+      <StackPanel Spacing="6">
+        <TextBlock Text="Device" />
+        <ComboBox
+          ItemsSource="{Binding Devices}"
+          SelectedItem="{Binding Device}"
+          HorizontalAlignment="Stretch"
+          PlaceholderText="Select a device">
+          <ComboBox.ItemTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding Name}" />
+            </DataTemplate>
+          </ComboBox.ItemTemplate>
+        </ComboBox>
+      </StackPanel>
+
+
+      <StackPanel Spacing="6">
+        <TextBlock Text="Created at" />
+        <Grid ColumnDefinitions="*,10,*">
+          <CalendarDatePicker
+            Grid.Column="0"
+            HorizontalAlignment="Stretch"
+            SelectedDate="{Binding CreatedAtDate, Mode=TwoWay}" />
+          <TimePicker
+            Grid.Column="2"
+            HorizontalAlignment="Stretch"
+            SelectedTime="{Binding CreatedAtTime, Mode=TwoWay}"
+            ClockIdentifier="24HourClock" />
+
+        </Grid>
+      </StackPanel>
 
       <Button Content="Save" Classes="Primary" Command="{Binding SaveIncidentCommand}" />
 
