@@ -1,0 +1,57 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="NetSentinel.Components.Status"
+             x:Name="Root"
+             x:CompileBindings="False">
+    <UserControl.Styles>
+        <Style Selector="Border.badge">
+            <Setter Property="Padding" Value="10,4" />
+            <Setter Property="CornerRadius" Value="999" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="Border.badge.status-approved">
+            <Setter Property="Background" Value="{DynamicResource SuccessColor10}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SuccessColor20}" />
+        </Style>
+        <Style Selector="Border.badge.status-rejected">
+            <Setter Property="Background" Value="{DynamicResource ErrorColor10}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ErrorColor20}" />
+        </Style>
+        <Style Selector="Border.badge.status-inprogress">
+            <Setter Property="Background" Value="{DynamicResource WarningColor10}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource WarningColor20}" />
+        </Style>
+        <Style Selector="Border.badge.status-completed">
+            <Setter Property="Background" Value="{DynamicResource InfoColor10}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource InfoColor20}" />
+        </Style>
+
+        <Style Selector="TextBlock.badge-text">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="TextBlock.badge-text.status-approved">
+            <Setter Property="Foreground" Value="{DynamicResource SuccessColor}" />
+        </Style>
+        <Style Selector="TextBlock.badge-text.status-rejected">
+            <Setter Property="Foreground" Value="{DynamicResource ErrorColor}" />
+        </Style>
+        <Style Selector="TextBlock.badge-text.status-inprogress">
+            <Setter Property="Foreground" Value="{DynamicResource WarningColor}" />
+        </Style>
+        <Style Selector="TextBlock.badge-text.status-completed">
+            <Setter Property="Foreground" Value="{DynamicResource InfoColor}" />
+        </Style>
+    </UserControl.Styles>
+
+    <Border x:Name="Badge"
+            Classes="badge">
+        <TextBlock x:Name="Label"
+                   Classes="badge-text"
+                   Text="{Binding DisplayText, ElementName=Root}" />
+    </Border>
+</UserControl>

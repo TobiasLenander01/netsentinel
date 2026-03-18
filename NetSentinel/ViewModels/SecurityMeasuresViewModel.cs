@@ -17,8 +17,6 @@ public partial class SecurityMeasuresViewModel : PaginatedViewModelBase
     private readonly ToastManager _toastManager;
     private readonly SecurityMeasureDialogViewModel _securityMeasureDialogViewModel;
 
-    protected override int PageSize => 12;
-
     [ObservableProperty]
     private ObservableCollection<SecurityMeasure> _securityMeasures = new();
 

@@ -34,10 +34,22 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Description" Binding="{Binding Description}"
                             Width="*" />
-                        <DataGridTextColumn Header="CreatedAt" Binding="{Binding CreatedAt}"
+                        <DataGridTextColumn Header="Created At" Binding="{Binding CreatedAt}"
                             Width="auto" />
-                        <DataGridTextColumn Header="Priority" Binding="{Binding Priority}" Width="auto" />
-                        <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="auto" />
+                        <DataGridTemplateColumn Header="Priority" Width="auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate x:DataType="models:Incident">
+                                    <components:Priority Value="{Binding Priority}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Status" Width="auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate x:DataType="models:Incident">
+                                    <components:Status Value="{Binding Status}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                         <DataGridTextColumn Header="Device" Binding="{Binding Device.Name}" Width="auto" />
 
                         <DataGridTemplateColumn Header="Actions">
