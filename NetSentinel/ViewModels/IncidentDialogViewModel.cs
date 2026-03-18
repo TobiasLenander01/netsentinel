@@ -1,6 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -162,7 +163,9 @@ public partial class IncidentDialogViewModel : ViewModelBase
         CreatedAtTime = createdAtValue.TimeOfDay;
         Priority = incident.Priority;
         Status = incident.Status;
-        Device = incident.Device;
+        Device = incident.Device is null
+            ? null
+            : Devices.FirstOrDefault(d => d.Id == incident.Device.Id) ?? incident.Device;
 
         ClearErrors();
     }

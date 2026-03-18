@@ -143,7 +143,6 @@ public partial class IncidentsViewModel : PaginatedViewModelBase
                 await LoadIncidentsAsync();
             }, DialogButtonStyle.Destructive)
             .WithCancelButton("Cancel")
-            .WithMaxWidth(512)
             .Dismissible()
             .Show();
     }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -167,8 +168,12 @@ public partial class SecurityMeasureDialogViewModel : ViewModelBase
         _securityMeasure = securityMeasure;
         Description = securityMeasure.Description;
         Result = securityMeasure.Result;
-        SelectedEmployee = securityMeasure.PerformedBy;
-        SelectedIncident = securityMeasure.Incident;
+        SelectedEmployee = securityMeasure.PerformedBy is null
+            ? null
+            : Employees.FirstOrDefault(e => e.Id == securityMeasure.PerformedBy.Id) ?? securityMeasure.PerformedBy;
+        SelectedIncident = securityMeasure.Incident is null
+            ? null
+            : Incidents.FirstOrDefault(i => i.Id == securityMeasure.Incident.Id) ?? securityMeasure.Incident;
         PerformedAt = securityMeasure.PerformedAt == default
             ? DateTime.Now
             : securityMeasure.PerformedAt;

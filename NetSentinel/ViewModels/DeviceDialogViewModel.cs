@@ -1,6 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -139,7 +140,9 @@ public partial class DeviceDialogViewModel : ViewModelBase
         Name = device.Name;
         IpAddress = device.IPAddress;
         SerialNumber = device.SerialNumber;
-        SelectedEmployee = device.Owner;
+        SelectedEmployee = device.Owner is null
+            ? null
+            : Employees.FirstOrDefault(e => e.Id == device.Owner.Id) ?? device.Owner;
 
         ClearErrors();
     }

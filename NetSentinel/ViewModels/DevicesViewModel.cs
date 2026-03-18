@@ -160,7 +160,6 @@ public partial class DevicesViewModel : PaginatedViewModelBase
             }
         }, DialogButtonStyle.Destructive)
         .WithCancelButton("Cancel")
-        .WithMaxWidth(512)
         .Dismissible()
         .Show();
     }

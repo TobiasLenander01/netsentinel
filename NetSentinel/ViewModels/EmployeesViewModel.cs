@@ -151,7 +151,6 @@ public partial class EmployeesViewModel : PaginatedViewModelBase
                 }
             }, DialogButtonStyle.Destructive)
             .WithCancelButton("Cancel")
-            .WithMaxWidth(512)
             .Dismissible()
             .Show();
     }
