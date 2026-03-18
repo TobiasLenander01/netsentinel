@@ -6,7 +6,8 @@
     x:DataType="vm:SecurityMeasureDialogViewModel">
 
     <Grid>
-        <StackPanel Spacing="20" Margin="40" MinWidth="360" MaxWidth="500" HorizontalAlignment="Left">
+        <StackPanel Spacing="20" Margin="40" MinWidth="360" Width="500" MaxWidth="500"
+            HorizontalAlignment="Left">
 
             <TextBlock Text="{Binding Title}" Classes="h2" />
 

@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.EntityFrameworkCore;
 using NetSentinel.Interfaces;
 using NetSentinel.Models;
 using ShadUI;
@@ -115,11 +116,19 @@ public partial class SecurityMeasureDialogViewModel : ViewModelBase
 
             _dialogManager.Close(this, new CloseDialogOptions { Success = true });
         }
-        catch (Exception ex)
+        catch (InvalidOperationException ex)
         {
             _toastManager
                 .CreateToast("Failed to save security measure")
                 .WithContent(ex.Message)
+                .DismissOnClick()
+                .ShowError();
+            _dialogManager.Close(this, new CloseDialogOptions { Success = false });
+        }
+        catch
+        {
+            _toastManager
+                .CreateToast("Failed to save security measure")
                 .DismissOnClick()
                 .ShowError();
             _dialogManager.Close(this, new CloseDialogOptions { Success = false });
