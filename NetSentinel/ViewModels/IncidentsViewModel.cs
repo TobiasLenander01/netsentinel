@@ -17,6 +17,8 @@ public partial class IncidentsViewModel : ViewModelBase, IRefreshable
     private readonly ToastManager _toastManager;
     private readonly IncidentDialogViewModel _incidentDialogViewModel;
 
+    private const int PageSize = 10;
+
     [ObservableProperty]
     private ObservableCollection<Incident> _incidents = new();
 
@@ -26,6 +28,23 @@ public partial class IncidentsViewModel : ViewModelBase, IRefreshable
     [ObservableProperty]
     private bool _isEmpty;
 
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(PreviousPageCommand))]
+    [NotifyCanExecuteChangedFor(nameof(NextPageCommand))]
+    [NotifyCanExecuteChangedFor(nameof(FirstPageCommand))]
+    [NotifyCanExecuteChangedFor(nameof(LastPageCommand))]
+    private int _currentPage = 1;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(NextPageCommand))]
+    [NotifyCanExecuteChangedFor(nameof(LastPageCommand))]
+    private int _totalPages = 1;
+
+    [ObservableProperty]
+    private int _totalCount;
+
+    public string PageInfo => $"Page {CurrentPage} of {TotalPages}";
+
     public IncidentsViewModel(IIncidentService incidentService, DialogManager dialogManager, ToastManager toastManager, IncidentDialogViewModel incidentDialogViewModel) : base()
     {
         Title = "Incidents";
@@ -34,6 +53,10 @@ public partial class IncidentsViewModel : ViewModelBase, IRefreshable
         _toastManager = toastManager;
         _incidentDialogViewModel = incidentDialogViewModel;
     }
+
+    partial void OnCurrentPageChanged(int value) => OnPropertyChanged(nameof(PageInfo));
+    partial void OnTotalPagesChanged(int value) => OnPropertyChanged(nameof(PageInfo));
+
 
     public Task RefreshAsync() => LoadIncidentsAsync();
 
@@ -46,9 +69,11 @@ public partial class IncidentsViewModel : ViewModelBase, IRefreshable
 
         try
         {
-            var list = await _incidentService.ReadAllIncidentsAsync();
-            Incidents = new ObservableCollection<Incident>(list);
-            IsEmpty = Incidents.Count == 0;
+            var (items, totalCount) = await _incidentService.ReadIncidentsPagedAsync(CurrentPage, PageSize);
+            Incidents = new ObservableCollection<Incident>(items);
+            TotalCount = totalCount;
+            TotalPages = Math.Max(1, (int)Math.Ceiling(totalCount / (double)PageSize));
+            IsEmpty = totalCount == 0;
         }
         catch (Exception ex)
         {
@@ -59,10 +84,44 @@ public partial class IncidentsViewModel : ViewModelBase, IRefreshable
                 .ShowError();
         }
 
-        finally {
+        finally
+        {
             IsLoading = false;
         }
     }
+
+    [RelayCommand(CanExecute = nameof(CanGoPrevious))]
+    private async Task PreviousPageAsync()
+    {
+        CurrentPage--;
+        await LoadIncidentsAsync();
+    }
+
+    [RelayCommand(CanExecute = nameof(CanGoNext))]
+    private async Task NextPageAsync()
+    {
+        CurrentPage++;
+        await LoadIncidentsAsync();
+    }
+
+    [RelayCommand(CanExecute = nameof(CanGoFirst))]
+    private async Task FirstPageAsync()
+    {
+        CurrentPage = 1;
+        await LoadIncidentsAsync();
+    }
+
+    [RelayCommand(CanExecute = nameof(CanGoLast))]
+    private async Task LastPageAsync()
+    {
+        CurrentPage = TotalPages;
+        await LoadIncidentsAsync();
+    }
+
+    private bool CanGoPrevious() => CurrentPage > 1;
+    private bool CanGoNext() => CurrentPage < TotalPages;
+    private bool CanGoFirst() => CurrentPage > 1;
+    private bool CanGoLast() => CurrentPage < TotalPages;
 
     [RelayCommand]
     private async Task DeleteIncidentAsync(Incident incident)
@@ -107,8 +166,8 @@ public partial class IncidentsViewModel : ViewModelBase, IRefreshable
                 .CreateToast("Incident added")
                 .DismissOnClick()
                 .ShowSuccess();
-                _ = LoadIncidentsAsync();
-                
+            _ = LoadIncidentsAsync();
+
         })
         .Show();
     }
@@ -125,7 +184,7 @@ public partial class IncidentsViewModel : ViewModelBase, IRefreshable
                 .CreateToast("Incident edited")
                 .DismissOnClick()
                 .ShowSuccess();
-                _= LoadIncidentsAsync();
+            _ = LoadIncidentsAsync();
         })
         .Show();
     }
@@ -143,7 +202,7 @@ public partial class IncidentsViewModel : ViewModelBase, IRefreshable
                 .WithContent("Incident deleted successfully!")
                 .DismissOnClick()
                 .ShowSuccess();
-            await LoadIncidentsAsync();
+                await LoadIncidentsAsync();
             }, DialogButtonStyle.Destructive)
             .WithCancelButton("Cancel")
             .WithMaxWidth(512)
