@@ -11,7 +11,7 @@ public class SecurityMeasure
     [MaxLength(400)]
     public string Description { get; set; } = string.Empty;
 
-    [MaxLength(200)]
+    [MaxLength(200)] [Required]
     public string Result { get; set; } = string.Empty;
 
     [Required]

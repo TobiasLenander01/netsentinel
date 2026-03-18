@@ -10,13 +10,12 @@ using ShadUI;
 
 namespace NetSentinel.ViewModels;
 
-public partial class IncidentsViewModel : ViewModelBase
+public partial class IncidentsViewModel : ViewModelBase, IRefreshable
 {
     private readonly IIncidentService _incidentService;
     private readonly DialogManager _dialogManager;
     private readonly ToastManager _toastManager;
-
-    private const int PageSize = 12;
+    private readonly IncidentDialogViewModel _incidentDialogViewModel;
 
     [ObservableProperty]
     private ObservableCollection<Incident> _incidents = new();
@@ -27,33 +26,14 @@ public partial class IncidentsViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isEmpty;
 
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(PreviousPageCommand))]
-    [NotifyCanExecuteChangedFor(nameof(NextPageCommand))]
-    [NotifyCanExecuteChangedFor(nameof(FirstPageCommand))]
-    [NotifyCanExecuteChangedFor(nameof(LastPageCommand))]
-    private int _currentPage = 1;
-
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(NextPageCommand))]
-    [NotifyCanExecuteChangedFor(nameof(LastPageCommand))]
-    private int _totalPages = 1;
-
-    [ObservableProperty]
-    private int _totalCount;
-
-    public string PageInfo => $"Page {CurrentPage} of {TotalPages}";
-
-    public IncidentsViewModel(IIncidentService incidentService, DialogManager dialogManager, ToastManager toastManager) : base()
+    public IncidentsViewModel(IIncidentService incidentService, DialogManager dialogManager, ToastManager toastManager, IncidentDialogViewModel incidentDialogViewModel) : base()
     {
         Title = "Incidents";
         _incidentService = incidentService;
         _dialogManager = dialogManager;
         _toastManager = toastManager;
+        _incidentDialogViewModel = incidentDialogViewModel;
     }
-
-    partial void OnCurrentPageChanged(int value) => OnPropertyChanged(nameof(PageInfo));
-    partial void OnTotalPagesChanged(int value) => OnPropertyChanged(nameof(PageInfo));
 
     public Task RefreshAsync() => LoadIncidentsAsync();
 
@@ -66,11 +46,9 @@ public partial class IncidentsViewModel : ViewModelBase
 
         try
         {
-            var (items, totalCount) = await _incidentService.ReadIncidentsPagedAsync(CurrentPage, PageSize);
-            Incidents = new ObservableCollection<Incident>(items);
-            TotalCount = totalCount;
-            TotalPages = Math.Max(1, (int)Math.Ceiling(totalCount / (double)PageSize));
-            IsEmpty = totalCount == 0;
+            var list = await _incidentService.ReadAllIncidentsAsync();
+            Incidents = new ObservableCollection<Incident>(list);
+            IsEmpty = Incidents.Count == 0;
         }
         catch (Exception ex)
         {
@@ -86,39 +64,7 @@ public partial class IncidentsViewModel : ViewModelBase
         }
     }
 
-    [RelayCommand(CanExecute = nameof(CanGoPrevious))]
-    private async Task PreviousPageAsync()
-    {
-        CurrentPage--;
-        await LoadIncidentsAsync();
-    }
-
-    [RelayCommand(CanExecute = nameof(CanGoNext))]
-    private async Task NextPageAsync()
-    {
-        CurrentPage++;
-        await LoadIncidentsAsync();
-    }
-
-    [RelayCommand(CanExecute = nameof(CanGoFirst))]
-    private async Task FirstPageAsync()
-    {
-        CurrentPage = 1;
-        await LoadIncidentsAsync();
-    }
-
-    [RelayCommand(CanExecute = nameof(CanGoLast))]
-    private async Task LastPageAsync()
-    {
-        CurrentPage = TotalPages;
-        await LoadIncidentsAsync();
-    }
-
-    private bool CanGoPrevious() => CurrentPage > 1;
-    private bool CanGoNext() => CurrentPage < TotalPages;
-    private bool CanGoFirst() => CurrentPage > 1;
-    private bool CanGoLast() => CurrentPage < TotalPages;
-
+    [RelayCommand]
     private async Task DeleteIncidentAsync(Incident incident)
     {
         try
@@ -150,18 +96,59 @@ public partial class IncidentsViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    public async Task ShowNewIncidentDialog()
+    {
+        await _incidentDialogViewModel.LoadNewIncidentCommand.ExecuteAsync(null);
+        _dialogManager.CreateDialog(_incidentDialogViewModel)
+        .Dismissible()
+        .WithSuccessCallback(() =>
+        {
+            _toastManager
+                .CreateToast("Incident added")
+                .DismissOnClick()
+                .ShowSuccess();
+                _ = LoadIncidentsAsync();
+                
+        })
+        .Show();
+    }
+
+    [RelayCommand]
+    public async Task ShowEditIncidentDialog(Incident incident)
+    {
+        await _incidentDialogViewModel.LoadExistingIncidentCommand.ExecuteAsync(incident);
+        _dialogManager.CreateDialog(_incidentDialogViewModel)
+        .Dismissible()
+        .WithSuccessCallback(() =>
+        {
+            _toastManager
+                .CreateToast("Incident edited")
+                .DismissOnClick()
+                .ShowSuccess();
+                _= LoadIncidentsAsync();
+        })
+        .Show();
+    }
+
+    [RelayCommand]
     public void ShowDeleteIncidentDialog(Incident incident)
     {
         _dialogManager.CreateDialog(
-            "Are you absolutely sure?",
-            "This will permanently delete this incident. Associated security measures will also be deleted.")
+            "Are you certain?",
+            "This action will permanently delete this incident.")
             .WithPrimaryButton("Confirm", async () =>
             {
-                await DeleteIncidentAsync(incident);
+                await _incidentService.DeleteIncidentAsync(incident);
+                _toastManager.CreateToast("Incident deleted")
+                .WithContent("Incident deleted successfully!")
+                .DismissOnClick()
+                .ShowSuccess();
+            await LoadIncidentsAsync();
             }, DialogButtonStyle.Destructive)
             .WithCancelButton("Cancel")
             .WithMaxWidth(512)
             .Dismissible()
             .Show();
     }
+
 }

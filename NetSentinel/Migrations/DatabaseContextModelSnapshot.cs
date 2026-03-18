@@ -42,7 +42,7 @@ namespace NetSentinel.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Departments");
+                    b.ToTable("Departments", (string)null);
                 });
 
             modelBuilder.Entity("NetSentinel.Models.Device", b =>
@@ -75,7 +75,7 @@ namespace NetSentinel.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Devices");
+                    b.ToTable("Devices", (string)null);
                 });
 
             modelBuilder.Entity("NetSentinel.Models.Employee", b =>
@@ -108,7 +108,7 @@ namespace NetSentinel.Migrations
 
                     b.HasIndex("DepartmentId");
 
-                    b.ToTable("Employees");
+                    b.ToTable("Employees", (string)null);
                 });
 
             modelBuilder.Entity("NetSentinel.Models.Incident", b =>
@@ -140,7 +140,7 @@ namespace NetSentinel.Migrations
 
                     b.HasIndex("DeviceId");
 
-                    b.ToTable("Incidents");
+                    b.ToTable("Incidents", (string)null);
                 });
 
             modelBuilder.Entity("NetSentinel.Models.SecurityMeasure", b =>
@@ -176,7 +176,7 @@ namespace NetSentinel.Migrations
 
                     b.HasIndex("PerformedById");
 
-                    b.ToTable("SecurityMeasures");
+                    b.ToTable("SecurityMeasures", (string)null);
                 });
 
             modelBuilder.Entity("NetSentinel.Models.Device", b =>

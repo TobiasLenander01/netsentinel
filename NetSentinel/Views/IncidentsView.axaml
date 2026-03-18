@@ -16,6 +16,7 @@
         <!-- Row 1: Add button -->
         <Grid Grid.Row="1" Margin="0,0,0,20">
             <Button Content="Add incident" Classes="Primary"
+                Command="{Binding ShowNewIncidentDialogCommand}"
                 HorizontalAlignment="Left" IsEnabled="{Binding !IsLoading}" />
         </Grid>
 
@@ -46,7 +47,9 @@
                                     HorizontalContentAlignment="Center">
                                     <Button.Flyout>
                                         <MenuFlyout>
-                                            <MenuItem Header="Edit incident" Cursor="Hand" />
+                                            <MenuItem Header="Edit incident" Cursor="Hand"
+                                                Command="{Binding $parent[UserControl].((vm:IncidentsViewModel)DataContext).ShowEditIncidentDialogCommand}"
+                                                CommandParameter="{Binding}" />
                                             <MenuItem Header="Delete incident" Cursor="Hand"
                                                 Command="{Binding $parent[UserControl].((vm:IncidentsViewModel)DataContext).ShowDeleteIncidentDialogCommand}"
                                                 CommandParameter="{Binding}" />
@@ -70,25 +73,6 @@
             <shad:BusyArea CornerRadius="{DynamicResource LgCornerRadius}"
                 IsBusy="{Binding IsLoading}" />
         </Grid>
-
-        <!-- Row 3: Pagination -->
-        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center"
-            Spacing="12" Margin="0,12,0,0" IsVisible="{Binding !IsEmpty}">
-            <Button Classes="Outline" Command="{Binding FirstPageCommand}" ToolTip.Tip="First page">
-                <LucideIcon Kind="ArrowLeftToLine" Size="16" />
-            </Button>
-            <Button Classes="Outline" Command="{Binding PreviousPageCommand}" ToolTip.Tip="Previous page">
-                <LucideIcon Kind="ArrowLeft" Size="16" />
-            </Button>
-            <TextBlock Text="{Binding PageInfo}"
-                VerticalAlignment="Center" />
-            <Button Classes="Outline" Command="{Binding NextPageCommand}" ToolTip.Tip="Next page">
-                <LucideIcon Kind="ArrowRight" Size="16" />
-            </Button>
-            <Button Classes="Outline" Command="{Binding LastPageCommand}" ToolTip.Tip="Last page">
-                <LucideIcon Kind="ArrowRightToLine" Size="16" />
-            </Button>
-        </StackPanel>
 
     </Grid>
 </UserControl>

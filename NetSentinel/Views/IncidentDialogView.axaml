@@ -1,0 +1,22 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:vm="using:NetSentinel.ViewModels"
+  xmlns:shad="clr-namespace:ShadUI;assembly=ShadUI"
+  x:Class="NetSentinel.Views.IncidentDialogView"
+  x:DataType="vm:IncidentDialogViewModel">
+
+  <Grid>
+    <StackPanel Spacing="20" Margin="40" Width="400" HorizontalAlignment="Left">
+
+      <TextBlock Text="{Binding Title}" Classes="h2" />
+
+      <CalendarDatePicker
+        Width="240"
+        HorizontalAlignment="Center"
+        VerticalAlignment="Center" />
+
+      <Button Content="Save" Classes="Primary" Command="{Binding SaveIncidentCommand}" />
+
+    </StackPanel>
+  </Grid>
+</UserControl>

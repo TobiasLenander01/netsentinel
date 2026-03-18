@@ -13,22 +13,30 @@ namespace NetSentinel.Services;
 public class ChatGptService : IChatGptService
 {
     private readonly HttpClient _httpClient;
-    private readonly string _baseUrl;
+    private readonly string? _baseUrl;
+    private readonly string? _apiKey;
     private readonly string _endpoint = "chat/completions";
 
     public ChatGptService(IConfiguration configuration)
     {
         _httpClient = new HttpClient();
-        _baseUrl = configuration["AppSettings:BaseUrl"] ?? throw new InvalidOperationException("AppSettings:BaseUrl is not configured.");
-        var apiKey = configuration["AppSettings:ApiKey"] ?? throw new InvalidOperationException("AppSettings:ApiKey is not configured.");
+        _baseUrl = configuration["ChatGpt:BaseUrl"];
+        _apiKey = configuration["ChatGpt:ApiKey"];
         _httpClient.DefaultRequestHeaders.Accept.Clear();
         _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
         _httpClient.DefaultRequestHeaders.Add("User-Agent", "Informatics.ChatGpt");
     }
 
     public async Task<ChatGptResponse?> GenerateResponseAsync(ChatGptRequest request)
     {
+        if (string.IsNullOrWhiteSpace(_baseUrl))
+            throw new InvalidOperationException("AI service is not configured. Missing AppSettings:BaseUrl in appsettings.json.");
+
+        if (string.IsNullOrWhiteSpace(_apiKey))
+            throw new InvalidOperationException("AI service is not configured. Missing AppSettings:ApiKey in appsettings.json.");
+
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _apiKey);
+
         var options = new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower

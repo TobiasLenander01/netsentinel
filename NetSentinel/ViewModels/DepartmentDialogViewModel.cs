@@ -17,7 +17,7 @@ public partial class DepartmentDialogViewModel : ViewModelBase
 
     private Department _department = new Department();
     private bool _isEditingExistingDepartment = false;
-
+    
     [ObservableProperty]
     [NotifyDataErrorInfo]
     [Required(ErrorMessage = "Name is required")]
