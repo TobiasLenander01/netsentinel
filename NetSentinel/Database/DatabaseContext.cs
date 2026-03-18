@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NetSentinel.Enums;
@@ -52,6 +53,57 @@ public class DatabaseContext : DbContext
             .WithMany()
             // Deleting an employee sets SecurityMeasure.PerformedBy to null.
             .OnDelete(DeleteBehavior.SetNull);
+
+        // Incidents and security measures cannot be set to a future date.
+        modelBuilder.Entity<Incident>()
+            .HasCheckConstraint("CK_Incidents_CreatedAt_NotFuture", "CreatedAt <= GETUTCDATE()");
+
+        modelBuilder.Entity<SecurityMeasure>()
+            .HasCheckConstraint("CK_SecurityMeasures_PerformedAt_NotFuture", "PerformedAt <= GETUTCDATE()");
+    }
+
+    /// <summary>
+    /// Enforces business rules before saving:
+    /// - A department may not exceed 50 employees.
+    /// - An employee may not own more than 3 devices.
+    /// </summary>
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        // Max 50 employees per department
+        var newEmployees = ChangeTracker.Entries<Employee>()
+            .Where(e => e.State == EntityState.Added)
+            .Select(e => e.Entity);
+
+        foreach (var employee in newEmployees)
+        {
+            if (employee.Department is null) continue;
+
+            var count = await Employees
+                .CountAsync(e => e.Department!.Id == employee.Department.Id, cancellationToken);
+
+            if (count >= 50)
+                throw new InvalidOperationException(
+                    $"Department '{employee.Department.Name}' already has the maximum of 50 employees.");
+        }
+
+        // Max 3 devices per employee
+        var newDevices = ChangeTracker.Entries<Device>()
+            .Where(e => e.State == EntityState.Added)
+            .Select(e => e.Entity);
+
+        foreach (var device in newDevices)
+        {
+            if (device.Owner is null) continue;
+
+            var count = await Devices
+                .CountAsync(d => d.Owner!.Id == device.Owner.Id, cancellationToken);
+
+            if (count >= 3)
+                throw new InvalidOperationException(
+                    $"Employee '{device.Owner.Name}' already has the maximum of 3 devices.");
+        }
+
+        return await base.SaveChangesAsync(cancellationToken);
     }
 
     /// <summary>
