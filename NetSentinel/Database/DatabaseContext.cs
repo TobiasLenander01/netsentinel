@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NetSentinel.Enums;
@@ -52,6 +53,59 @@ public class DatabaseContext : DbContext
             .WithMany()
             // Deleting an employee sets SecurityMeasure.PerformedBy to null.
             .OnDelete(DeleteBehavior.SetNull);
+
+        // Incidents and security measures cannot be set to a future date.
+        modelBuilder.Entity<Incident>()
+            .ToTable(t => t.HasCheckConstraint("CK_Incidents_CreatedAt_NotFuture", "CreatedAt <= GETUTCDATE()"));
+
+        modelBuilder.Entity<SecurityMeasure>()
+            .ToTable(t => t.HasCheckConstraint("CK_SecurityMeasures_PerformedAt_NotFuture", "PerformedAt <= GETUTCDATE()"));
+    }
+
+    /// <summary>
+    /// Enforces business rules before saving:
+    /// - A department may not exceed 50 employees.
+    /// - An employee may not own more than 3 devices.
+    /// </summary>
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        // Max 50 employees per department
+        var employeesToCheck = ChangeTracker.Entries<Employee>()
+            .Where(e => e.State == EntityState.Added ||
+                       (e.State == EntityState.Modified && e.Property("DepartmentId").IsModified))
+            .Select(e => e.Entity);
+
+        foreach (var employee in employeesToCheck)
+        {
+            if (employee.Department is null) continue;
+
+            var count = await Employees
+                .CountAsync(e => e.Department!.Id == employee.Department.Id && e.Id != employee.Id, cancellationToken);
+
+            if (count >= 50)
+                throw new InvalidOperationException(
+                    $"Department '{employee.Department.Name}' already has the maximum of 50 employees.");
+        }
+
+        // Max 3 devices per employee
+        var devicesToCheck = ChangeTracker.Entries<Device>()
+            .Where(e => e.State == EntityState.Added ||
+                       (e.State == EntityState.Modified && e.Property("OwnerId").IsModified))
+            .Select(e => e.Entity);
+
+        foreach (var device in devicesToCheck)
+        {
+            if (device.Owner is null) continue;
+
+            var count = await Devices
+                .CountAsync(d => d.Owner!.Id == device.Owner.Id && d.Id != device.Id, cancellationToken);
+
+            if (count >= 3)
+                throw new InvalidOperationException(
+                    $"Employee '{device.Owner.Name}' already has the maximum of 3 devices.");
+        }
+
+        return await base.SaveChangesAsync(cancellationToken);
     }
 
     /// <summary>
@@ -154,7 +208,7 @@ public class DatabaseContext : DbContext
         var incident19 = new Incident("Suspicious admin API key usage detected", monthStart.AddMonths(-2).AddDays(2).AddHours(10).AddMinutes(20), Priority.High, Status.InProgress, device9);
         var incident20 = new Incident("Endpoint EDR agent tamper attempt", monthStart.AddMonths(-1).AddDays(18).AddHours(16).AddMinutes(50), Priority.Medium, Status.Approved, device6);
         var incident21 = new Incident("Unexpected data sync to external cloud", monthStart.AddMonths(-1).AddDays(4).AddHours(7).AddMinutes(40), Priority.High, Status.InProgress, device6);
-        var incident22 = new Incident("Multiple failed MFA challenges reported", monthStart.AddMonths(0).AddDays(20).AddHours(13).AddMinutes(10), Priority.Low, Status.Completed, device3);
+        var incident22 = new Incident("Multiple failed MFA challenges reported", monthStart.AddDays(10).AddHours(13).AddMinutes(10), Priority.Low, Status.Completed, device3);
         Incidents.AddRange(incident1, incident2, incident3, incident4, incident5, incident6, incident7, incident8, incident9, incident10, incident11, incident12, incident13, incident14, incident15, incident16, incident17, incident18, incident19, incident20, incident21, incident22);
 
         // --- Security Measures (27) ---

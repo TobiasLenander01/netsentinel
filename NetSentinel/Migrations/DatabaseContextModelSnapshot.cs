@@ -42,7 +42,7 @@ namespace NetSentinel.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Departments", (string)null);
+                    b.ToTable("Departments");
                 });
 
             modelBuilder.Entity("NetSentinel.Models.Device", b =>
@@ -75,7 +75,7 @@ namespace NetSentinel.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Devices", (string)null);
+                    b.ToTable("Devices");
                 });
 
             modelBuilder.Entity("NetSentinel.Models.Employee", b =>
@@ -108,7 +108,7 @@ namespace NetSentinel.Migrations
 
                     b.HasIndex("DepartmentId");
 
-                    b.ToTable("Employees", (string)null);
+                    b.ToTable("Employees");
                 });
 
             modelBuilder.Entity("NetSentinel.Models.Incident", b =>
@@ -140,7 +140,10 @@ namespace NetSentinel.Migrations
 
                     b.HasIndex("DeviceId");
 
-                    b.ToTable("Incidents", (string)null);
+                    b.ToTable("Incidents", t =>
+                        {
+                            t.HasCheckConstraint("CK_Incidents_CreatedAt_NotFuture", "CreatedAt <= GETUTCDATE()");
+                        });
                 });
 
             modelBuilder.Entity("NetSentinel.Models.SecurityMeasure", b =>
@@ -176,7 +179,10 @@ namespace NetSentinel.Migrations
 
                     b.HasIndex("PerformedById");
 
-                    b.ToTable("SecurityMeasures", (string)null);
+                    b.ToTable("SecurityMeasures", t =>
+                        {
+                            t.HasCheckConstraint("CK_SecurityMeasures_PerformedAt_NotFuture", "PerformedAt <= GETUTCDATE()");
+                        });
                 });
 
             modelBuilder.Entity("NetSentinel.Models.Device", b =>
