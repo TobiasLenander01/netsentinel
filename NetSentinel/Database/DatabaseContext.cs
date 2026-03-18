@@ -56,10 +56,10 @@ public class DatabaseContext : DbContext
 
         // Incidents and security measures cannot be set to a future date.
         modelBuilder.Entity<Incident>()
-            .HasCheckConstraint("CK_Incidents_CreatedAt_NotFuture", "CreatedAt <= GETUTCDATE()");
+            .ToTable(t => t.HasCheckConstraint("CK_Incidents_CreatedAt_NotFuture", "CreatedAt <= GETUTCDATE()"));
 
         modelBuilder.Entity<SecurityMeasure>()
-            .HasCheckConstraint("CK_SecurityMeasures_PerformedAt_NotFuture", "PerformedAt <= GETUTCDATE()");
+            .ToTable(t => t.HasCheckConstraint("CK_SecurityMeasures_PerformedAt_NotFuture", "PerformedAt <= GETUTCDATE()"));
     }
 
     /// <summary>
@@ -206,7 +206,7 @@ public class DatabaseContext : DbContext
         var incident19 = new Incident("Suspicious admin API key usage detected", monthStart.AddMonths(-2).AddDays(2).AddHours(10).AddMinutes(20), Priority.High, Status.InProgress, device9);
         var incident20 = new Incident("Endpoint EDR agent tamper attempt", monthStart.AddMonths(-1).AddDays(18).AddHours(16).AddMinutes(50), Priority.Medium, Status.Approved, device6);
         var incident21 = new Incident("Unexpected data sync to external cloud", monthStart.AddMonths(-1).AddDays(4).AddHours(7).AddMinutes(40), Priority.High, Status.InProgress, device6);
-        var incident22 = new Incident("Multiple failed MFA challenges reported", monthStart.AddMonths(0).AddDays(20).AddHours(13).AddMinutes(10), Priority.Low, Status.Completed, device3);
+        var incident22 = new Incident("Multiple failed MFA challenges reported", monthStart.AddDays(10).AddHours(13).AddMinutes(10), Priority.Low, Status.Completed, device3);
         Incidents.AddRange(incident1, incident2, incident3, incident4, incident5, incident6, incident7, incident8, incident9, incident10, incident11, incident12, incident13, incident14, incident15, incident16, incident17, incident18, incident19, incident20, incident21, incident22);
 
         // --- Security Measures (27) ---
