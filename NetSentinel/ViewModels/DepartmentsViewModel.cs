@@ -110,7 +110,6 @@ public partial class DepartmentsViewModel : PaginatedViewModelBase
                 await DeleteDepartmentAsync(department);
             }, DialogButtonStyle.Destructive)
             .WithCancelButton("Cancel")
-            .WithMaxWidth(512)
             .Dismissible()
             .Show();
     }

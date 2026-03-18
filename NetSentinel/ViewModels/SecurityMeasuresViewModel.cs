@@ -151,7 +151,6 @@ public partial class SecurityMeasuresViewModel : PaginatedViewModelBase
             }
         }, DialogButtonStyle.Destructive)
         .WithCancelButton("Cancel")
-        .WithMaxWidth(512)
         .Dismissible()
         .Show();
     }
