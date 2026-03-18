@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using NetSentinel.Enums;
-using NetSentinel.Validation;
 
 namespace NetSentinel.Models;
 
@@ -13,7 +12,7 @@ public class Incident
     [Required] [MaxLength(200)]
     public string Description {get; set;} = String.Empty;
 
-    [Required] [NotInFuture]
+    [Required]
     public DateTime CreatedAt {get; set;}
 
     [Required]
