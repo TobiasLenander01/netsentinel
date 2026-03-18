@@ -10,40 +10,15 @@ using ShadUI;
 
 namespace NetSentinel.ViewModels;
 
-public partial class DepartmentsViewModel : ViewModelBase, IRefreshable
+public partial class DepartmentsViewModel : PaginatedViewModelBase
 {
     private readonly IDepartmentService _departmentService;
     private readonly DialogManager _dialogManager;
     private readonly ToastManager _toastManager;
     private readonly DepartmentDialogViewModel _departmentDialogViewModel;
 
-    private const int PageSize = 10;
-
     [ObservableProperty]
     private ObservableCollection<Department> _departments = new();
-
-    [ObservableProperty]
-    private bool _isLoading;
-
-    [ObservableProperty]
-    private bool _isEmpty;
-
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(PreviousPageCommand))]
-    [NotifyCanExecuteChangedFor(nameof(NextPageCommand))]
-    [NotifyCanExecuteChangedFor(nameof(FirstPageCommand))]
-    [NotifyCanExecuteChangedFor(nameof(LastPageCommand))]
-    private int _currentPage = 1;
-
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(NextPageCommand))]
-    [NotifyCanExecuteChangedFor(nameof(LastPageCommand))]
-    private int _totalPages = 1;
-
-    [ObservableProperty]
-    private int _totalCount;
-
-    public string PageInfo => $"Page {CurrentPage} of {TotalPages}";
 
     public DepartmentsViewModel(IDepartmentService departmentService, DialogManager dialogManager, ToastManager toastManager, DepartmentDialogViewModel departmentDialogViewModel) : base()
     {
@@ -54,13 +29,10 @@ public partial class DepartmentsViewModel : ViewModelBase, IRefreshable
         _departmentDialogViewModel = departmentDialogViewModel;
     }
 
-    partial void OnCurrentPageChanged(int value) => OnPropertyChanged(nameof(PageInfo));
-    partial void OnTotalPagesChanged(int value) => OnPropertyChanged(nameof(PageInfo));
-
-    public Task RefreshAsync() => LoadDepartmentsAsync();
-
     [RelayCommand]
-    private async Task LoadDepartmentsAsync()
+    private Task LoadDepartmentsAsync() => LoadPageAsync();
+
+    protected override async Task LoadPageAsync()
     {
         IsLoading = true;
         IsEmpty = false;
@@ -87,39 +59,6 @@ public partial class DepartmentsViewModel : ViewModelBase, IRefreshable
             IsLoading = false;
         }
     }
-
-    [RelayCommand(CanExecute = nameof(CanGoPrevious))]
-    private async Task PreviousPageAsync()
-    {
-        CurrentPage--;
-        await LoadDepartmentsAsync();
-    }
-
-    [RelayCommand(CanExecute = nameof(CanGoNext))]
-    private async Task NextPageAsync()
-    {
-        CurrentPage++;
-        await LoadDepartmentsAsync();
-    }
-
-    [RelayCommand(CanExecute = nameof(CanGoFirst))]
-    private async Task FirstPageAsync()
-    {
-        CurrentPage = 1;
-        await LoadDepartmentsAsync();
-    }
-
-    [RelayCommand(CanExecute = nameof(CanGoLast))]
-    private async Task LastPageAsync()
-    {
-        CurrentPage = TotalPages;
-        await LoadDepartmentsAsync();
-    }
-
-    private bool CanGoPrevious() => CurrentPage > 1;
-    private bool CanGoNext() => CurrentPage < TotalPages;
-    private bool CanGoFirst() => CurrentPage > 1;
-    private bool CanGoLast() => CurrentPage < TotalPages;
 
     private async Task DeleteDepartmentAsync(Department department)
     {

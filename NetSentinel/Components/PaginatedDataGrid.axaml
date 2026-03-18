@@ -1,0 +1,46 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:components="using:NetSentinel.Components"
+             xmlns:shad="clr-namespace:ShadUI;assembly=ShadUI"
+             x:Class="NetSentinel.Components.PaginatedDataGrid"
+             x:Name="Root"
+             x:CompileBindings="False">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        
+        <Grid Grid.Row="0">
+            <ContentPresenter Content="{Binding DataGridContent, ElementName=Root}" />
+            
+            <TextBlock Text="{Binding EmptyText, ElementName=Root}"
+                       IsVisible="{Binding IsEmpty}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Foreground="Gray"
+                       Margin="0,50,0,0" />
+
+            <shad:BusyArea CornerRadius="{DynamicResource LgCornerRadius}" 
+                           IsBusy="{Binding IsLoading}" />
+        </Grid>
+
+        <!-- Pagination -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center"
+                    Spacing="12" Margin="0,12,0,0" IsVisible="{Binding !IsEmpty}">
+            <Button Classes="Outline" Command="{Binding FirstPageCommand}" ToolTip.Tip="First page">
+                <LucideIcon Kind="ArrowLeftToLine" Size="16" />
+            </Button>
+            <Button Classes="Outline" Command="{Binding PreviousPageCommand}" ToolTip.Tip="Previous page">
+                <LucideIcon Kind="ArrowLeft" Size="16" />
+            </Button>
+            <TextBlock Text="{Binding PageInfo}" VerticalAlignment="Center" />
+            <Button Classes="Outline" Command="{Binding NextPageCommand}" ToolTip.Tip="Next page">
+                <LucideIcon Kind="ArrowRight" Size="16" />
+            </Button>
+            <Button Classes="Outline" Command="{Binding LastPageCommand}" ToolTip.Tip="Last page">
+                <LucideIcon Kind="ArrowRightToLine" Size="16" />
+            </Button>
+        </StackPanel>
+    </Grid>
+</UserControl>
