@@ -17,7 +17,7 @@
             <Grid>
                 <Button Content="Add department" Classes="Primary"
                     Command="{Binding ShowNewDepartmentDialogCommand}"
-                    HorizontalAlignment="Left" IsEnabled="{Binding !IsLoading}"/>
+                    HorizontalAlignment="Left" IsEnabled="{Binding !IsLoading}" />
             </Grid>
 
             <Grid>
@@ -31,8 +31,10 @@
                     GridLinesVisibility="Horizontal">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="auto" />
-                        <DataGridTextColumn Header="Location" Binding="{Binding Location}" Width="auto" />
-                        <DataGridTextColumn Header="Employees" Binding="{Binding Employees.Count}" Width="*" />
+                        <DataGridTextColumn Header="Location" Binding="{Binding Location}"
+                            Width="auto" />
+                        <DataGridTextColumn Header="Employees" Binding="{Binding Employees.Count}"
+                            Width="*" />
 
                         <DataGridTemplateColumn Header="Actions">
                             <DataGridTemplateColumn.CellTemplate>
@@ -65,11 +67,11 @@
                     Foreground="Gray"
                     Margin="0,50,0,0" />
 
-                    
-                </Grid>
-                
-                <shad:BusyArea CornerRadius="{DynamicResource LgCornerRadius}"
-                    IsBusy="{Binding IsLoading}" />
+
+            </Grid>
+
+            <shad:BusyArea CornerRadius="{DynamicResource LgCornerRadius}"
+                IsBusy="{Binding IsLoading}" />
         </StackPanel>
     </Grid>
 </UserControl>
