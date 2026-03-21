@@ -107,12 +107,8 @@ public class DatabaseContext : DbContext
 
             if (count >= 50)
             {
-                var departmentName = employeeEntry.Entity.Department?.Name
-                    ?? await Departments.Where(d => d.Id == departmentId).Select(d => d.Name).FirstOrDefaultAsync(cancellationToken)
-                    ?? $"ID {departmentId}";
-
                 throw new InvalidOperationException(
-                    $"Department '{departmentName}' already has the maximum of 50 employees.");
+                    "Department already has the maximum of 50 employees.");
             }
         }
 
@@ -133,12 +129,8 @@ public class DatabaseContext : DbContext
 
             if (count >= 3)
             {
-                var ownerName = deviceEntry.Entity.Owner?.Name
-                    ?? await Employees.Where(e => e.Id == ownerId).Select(e => e.Name).FirstOrDefaultAsync(cancellationToken)
-                    ?? $"ID {ownerId}";
-
                 throw new InvalidOperationException(
-                    $"Employee '{ownerName}' already has the maximum of 3 devices.");
+                    "Employee already has the maximum of 3 devices.");
             }
         }
 
