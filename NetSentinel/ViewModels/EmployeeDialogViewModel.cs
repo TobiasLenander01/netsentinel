@@ -124,7 +124,6 @@ public partial class EmployeeDialogViewModel : ViewModelBase
 
     private async Task InitializeProperties(Employee employee)
     {
-        ClearErrors();
 
         // Load departments into drop down menu
         IsLoading = true;
@@ -155,5 +154,8 @@ public partial class EmployeeDialogViewModel : ViewModelBase
         SelectedDepartment = employee.Department is null
             ? null
             : Departments.FirstOrDefault(d => d.Id == employee.Department.Id) ?? employee.Department;
+
+
+        ClearErrors();
     }
 }
