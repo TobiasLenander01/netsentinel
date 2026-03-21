@@ -46,7 +46,7 @@
                         </DataGridTemplateColumn>
                         <DataGridTextColumn Header="Result" Binding="{Binding Result}" Width="*" />
                         <DataGridTextColumn Header="Performed By" Binding="{Binding PerformedBy.Name}" Width="*" />
-                        <DataGridTextColumn Header="Performed At" Binding="{Binding PerformedAt}" Width="auto" />
+                        <DataGridTextColumn Header="Performed At" Binding="{Binding PerformedAt}" Width="*" />
                         <DataGridTextColumn Header="Incident" Binding="{Binding Incident.Description}" Width="*" />
 
                         <DataGridTemplateColumn Header="Actions" Width="auto">
