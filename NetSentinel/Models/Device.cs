@@ -6,25 +6,27 @@ namespace NetSentinel.Models;
 
 public class Device
 {
-    public int Id {get; set;}
-
-    [MaxLength(50)]
-    public string Name {get; set;} = string.Empty;
-
-    [MaxLength(50)]
-    public string IPAddress {get; set;} = string.Empty;
+    public int Id { get; set; }
 
     [MaxLength(50)]
     [Required]
-    public string SerialNumber {get; set;} = string.Empty;
+    public string Name { get; set; } = string.Empty;
 
-    public List<Incident> Incidents {get; set;} = new();
+    [MaxLength(50)]
+    [Required]
+    public string IPAddress { get; set; } = string.Empty;
+
+    [MaxLength(50)]
+    [Required]
+    public string SerialNumber { get; set; } = string.Empty;
+
+    public List<Incident> Incidents { get; set; } = new();
 
     public bool HasIncidents => Incidents.Count > 0;
 
-    public Employee? Owner {get; set;}
+    public Employee? Owner { get; set; }
 
-    public Device() {}
+    public Device() { }
 
     public Device(string name, string ipAddress, string serialNumber, Employee owner)
     {

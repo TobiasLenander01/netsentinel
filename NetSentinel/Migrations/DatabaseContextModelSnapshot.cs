@@ -42,6 +42,9 @@ namespace NetSentinel.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Name")
+                        .IsUnique();
+
                     b.ToTable("Departments");
                 });
 
@@ -75,6 +78,9 @@ namespace NetSentinel.Migrations
 
                     b.HasIndex("OwnerId");
 
+                    b.HasIndex("SerialNumber")
+                        .IsUnique();
+
                     b.ToTable("Devices");
                 });
 
@@ -94,7 +100,7 @@ namespace NetSentinel.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("EmployeeNo")
+                    b.Property<string>("EmployeeNumber")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -107,6 +113,9 @@ namespace NetSentinel.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DepartmentId");
+
+                    b.HasIndex("EmployeeNumber")
+                        .IsUnique();
 
                     b.ToTable("Employees");
                 });
@@ -130,6 +139,11 @@ namespace NetSentinel.Migrations
                     b.Property<int>("DeviceId")
                         .HasColumnType("int");
 
+                    b.Property<string>("IncidentNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<int>("Priority")
                         .HasColumnType("int");
 
@@ -139,6 +153,9 @@ namespace NetSentinel.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DeviceId");
+
+                    b.HasIndex("IncidentNumber")
+                        .IsUnique();
 
                     b.ToTable("Incidents", t =>
                         {
@@ -173,11 +190,19 @@ namespace NetSentinel.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<string>("SecurityMeasureNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("IncidentId");
 
                     b.HasIndex("PerformedById");
+
+                    b.HasIndex("SecurityMeasureNumber")
+                        .IsUnique();
 
                     b.ToTable("SecurityMeasures", t =>
                         {

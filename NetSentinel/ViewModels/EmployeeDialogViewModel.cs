@@ -86,7 +86,7 @@ public partial class EmployeeDialogViewModel : ViewModelBase
         
         _employee.Name = Name;
         _employee.Email = Email;
-        _employee.EmployeeNo = EmployeeNo;
+        _employee.EmployeeNumber = EmployeeNo;
         _employee.Department = SelectedDepartment;
 
         try
@@ -150,7 +150,7 @@ public partial class EmployeeDialogViewModel : ViewModelBase
         _employee = employee;
         Name = employee.Name;
         Email = employee.Email;
-        EmployeeNo = employee.EmployeeNo;
+        EmployeeNo = employee.EmployeeNumber;
         SelectedDepartment = employee.Department is null
             ? null
             : Departments.FirstOrDefault(d => d.Id == employee.Department.Id) ?? employee.Department;

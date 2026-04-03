@@ -30,6 +30,26 @@ public class DatabaseContext : DbContext
     /// </summary>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Department>()
+            .HasIndex(d => d.Name)
+            .IsUnique();
+
+        modelBuilder.Entity<Device>()
+            .HasIndex(d => d.SerialNumber)
+            .IsUnique();
+
+        modelBuilder.Entity<Employee>()
+            .HasIndex(e => e.EmployeeNumber)
+            .IsUnique();
+
+        modelBuilder.Entity<Incident>()
+            .HasIndex(i => i.IncidentNumber)
+            .IsUnique();
+
+        modelBuilder.Entity<SecurityMeasure>()
+            .HasIndex(sm => sm.SecurityMeasureNumber)
+            .IsUnique();
+
         modelBuilder.Entity<Employee>()
             .HasOne(e => e.Department)
             .WithMany(d => d.Employees)
@@ -69,6 +89,58 @@ public class DatabaseContext : DbContext
     /// </summary>
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
+        var incidentsNeedingNumber = ChangeTracker.Entries<Incident>()
+            .Where(e => e.State == EntityState.Added && string.IsNullOrWhiteSpace(e.Entity.IncidentNumber))
+            .Select(e => e.Entity)
+            .ToList();
+
+        if (incidentsNeedingNumber.Count > 0)
+        {
+            var existingIncidentNumbers = await Incidents
+                .AsNoTracking()
+                .Select(i => i.IncidentNumber)
+                .ToListAsync(cancellationToken);
+
+            var nextIncidentSequence = existingIncidentNumbers
+                .Where(n => !string.IsNullOrWhiteSpace(n) && n.StartsWith("INC", StringComparison.OrdinalIgnoreCase))
+                .Select(n => n![3..])
+                .Select(s => int.TryParse(s, out var parsed) ? parsed : 0)
+                .DefaultIfEmpty(0)
+                .Max() + 1;
+
+            foreach (var incident in incidentsNeedingNumber)
+            {
+                incident.IncidentNumber = GenerateNatualKey("INC", nextIncidentSequence);
+                nextIncidentSequence++;
+            }
+        }
+
+        var measuresNeedingNumber = ChangeTracker.Entries<SecurityMeasure>()
+            .Where(e => e.State == EntityState.Added && string.IsNullOrWhiteSpace(e.Entity.SecurityMeasureNumber))
+            .Select(e => e.Entity)
+            .ToList();
+
+        if (measuresNeedingNumber.Count > 0)
+        {
+            var existingMeasureNumbers = await SecurityMeasures
+                .AsNoTracking()
+                .Select(sm => sm.SecurityMeasureNumber)
+                .ToListAsync(cancellationToken);
+
+            var nextMeasureSequence = existingMeasureNumbers
+                .Where(n => !string.IsNullOrWhiteSpace(n) && n.StartsWith("SM", StringComparison.OrdinalIgnoreCase))
+                .Select(n => n![2..])
+                .Select(s => int.TryParse(s, out var parsed) ? parsed : 0)
+                .DefaultIfEmpty(0)
+                .Max() + 1;
+
+            foreach (var measure in measuresNeedingNumber)
+            {
+                measure.SecurityMeasureNumber = GenerateNatualKey("SM", nextMeasureSequence);
+                nextMeasureSequence++;
+            }
+        }
+
         // Incidents and security measures cannot be set to a future date.
         var now = DateTime.UtcNow;
 
@@ -135,6 +207,11 @@ public class DatabaseContext : DbContext
         }
 
         return await base.SaveChangesAsync(cancellationToken);
+    }
+
+    private static string GenerateNatualKey(string prefix, int sequence)
+    {
+        return $"{prefix}{sequence:0000}";
     }
 
     /// <summary>
@@ -238,7 +315,16 @@ public class DatabaseContext : DbContext
         var incident20 = new Incident("Endpoint EDR agent tamper attempt", monthStart.AddMonths(-1).AddDays(18).AddHours(16).AddMinutes(50), Priority.Medium, Status.Approved, device6);
         var incident21 = new Incident("Unexpected data sync to external cloud", monthStart.AddMonths(-1).AddDays(4).AddHours(7).AddMinutes(40), Priority.High, Status.InProgress, device6);
         var incident22 = new Incident("Multiple failed MFA challenges reported", monthStart.AddDays(10).AddHours(13).AddMinutes(10), Priority.Low, Status.Completed, device3);
-        Incidents.AddRange(incident1, incident2, incident3, incident4, incident5, incident6, incident7, incident8, incident9, incident10, incident11, incident12, incident13, incident14, incident15, incident16, incident17, incident18, incident19, incident20, incident21, incident22);
+        var incidents = new[]
+        {
+            incident1, incident2, incident3, incident4, incident5, incident6, incident7, incident8, incident9, incident10, incident11,
+            incident12, incident13, incident14, incident15, incident16, incident17, incident18, incident19, incident20, incident21, incident22
+        };
+        for (var i = 0; i < incidents.Length; i++)
+        {
+            incidents[i].IncidentNumber = $"INC{i + 1:0000}";
+        }
+        Incidents.AddRange(incidents);
 
         // --- Security Measures (27) ---
         var measure1 = new SecurityMeasure("Reset user credentials and enforced MFA", "Threat neutralized, no further activity observed", incident1, emp1, incident1.CreatedAt.AddHours(3));
@@ -268,7 +354,17 @@ public class DatabaseContext : DbContext
         var measure25 = new SecurityMeasure("Reinstalled EDR agent and locked service", "Agent healthy and tamper protection enabled", incident20, emp7, incident20.CreatedAt.AddHours(3));
         var measure26 = new SecurityMeasure("Blocked external sync endpoint and started investigation", "Sync halted, investigation ticket opened", incident21, emp7, incident21.CreatedAt.AddHours(5));
         var measure27 = new SecurityMeasure("Forced MFA re-enrollment for affected users", "Re-enrollment complete, no further failures", incident22, emp7, incident22.CreatedAt.AddHours(2));
-        SecurityMeasures.AddRange(measure1, measure2, measure3, measure4, measure5, measure6, measure7, measure8, measure9, measure10, measure11, measure12, measure13, measure14, measure15, measure16, measure17, measure18, measure19, measure20, measure21, measure22, measure23, measure24, measure25, measure26, measure27);
+        var measures = new[]
+        {
+            measure1, measure2, measure3, measure4, measure5, measure6, measure7, measure8, measure9, measure10, measure11, measure12,
+            measure13, measure14, measure15, measure16, measure17, measure18, measure19, measure20, measure21, measure22, measure23,
+            measure24, measure25, measure26, measure27
+        };
+        for (var i = 0; i < measures.Length; i++)
+        {
+            measures[i].SecurityMeasureNumber = $"SM{i + 1:0000}";
+        }
+        SecurityMeasures.AddRange(measures);
 
         await SaveChangesAsync();
         return true;

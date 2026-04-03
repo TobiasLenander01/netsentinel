@@ -10,24 +10,24 @@ public class Employee
     public int Id { get; set;}
     
     [Required] [MaxLength(50)]
-    public string EmployeeNo {get; set;} = String.Empty;
+    public string EmployeeNumber {get; set;} = string.Empty;
     
     [Required] [MaxLength(50)]
-    public string Name {get; set;} = String.Empty;
+    public string Name {get; set;} = string.Empty;
 
     public List<Device> Devices {get; set;} = new();
 
     [Required] [MaxLength(50)]
-    public string Email {get; set;} = String.Empty;
+    public string Email {get; set;} = string.Empty;
 
     [Required]
     public Department? Department {get; set;}
 
     public Employee(){}
 
-    public Employee(string employeeNo, string name, string email, Department? department)
+    public Employee(string employeeNumber, string name, string email, Department? department)
     {
-        EmployeeNo = employeeNo;
+        EmployeeNumber = employeeNumber;
         Name = name;
         Email = email;
         Department = department;
