@@ -32,6 +32,8 @@
                     GridLinesVisibility="Horizontal"
                     VerticalAlignment="Top">
                     <DataGrid.Columns>
+                        <DataGridTextColumn Header="Incident Number"
+                            Binding="{Binding IncidentNumber}" Width="auto" />
                         <DataGridTextColumn Header="Description" Binding="{Binding Description}"
                             Width="*" />
                         <DataGridTextColumn Header="Created At" Binding="{Binding CreatedAt}"
@@ -50,7 +52,8 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTextColumn Header="Device" Binding="{Binding Device.Name}" Width="auto" />
+                        <DataGridTextColumn Header="Device" Binding="{Binding Device.Name}"
+                            Width="auto" />
 
                         <DataGridTemplateColumn Header="Actions">
                             <DataGridTemplateColumn.CellTemplate>

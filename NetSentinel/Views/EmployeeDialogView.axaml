@@ -22,11 +22,6 @@
             </StackPanel>
 
             <StackPanel Spacing="6">
-                <TextBlock Text="Employee Number" />
-                <TextBox Text="{Binding EmployeeNumber}" Watermark="e.g. EMP001" />
-            </StackPanel>
-
-            <StackPanel Spacing="6">
                 <TextBlock Text="Department" />
                 <ComboBox ItemsSource="{Binding Departments}"
                     SelectedItem="{Binding SelectedDepartment}"

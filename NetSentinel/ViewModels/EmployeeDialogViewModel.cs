@@ -5,8 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 using NetSentinel.Interfaces;
 using NetSentinel.Models;
 using ShadUI;
@@ -28,12 +26,6 @@ public partial class EmployeeDialogViewModel : ViewModelBase
     [Required(ErrorMessage = "Name is required")]
     [MaxLength(50, ErrorMessage = "Name must be 50 characters or less")]
     private string _name = String.Empty;
-
-    [ObservableProperty]
-    [NotifyDataErrorInfo]
-    [Required(ErrorMessage = "Employee Number is required")]
-    [MaxLength(50, ErrorMessage = "Employee number must be 50 characters or less")]
-    private string _EmployeeNumber = String.Empty;
 
     [ObservableProperty]
     [NotifyDataErrorInfo]
@@ -86,7 +78,6 @@ public partial class EmployeeDialogViewModel : ViewModelBase
         
         _employee.Name = Name;
         _employee.Email = Email;
-        _employee.EmployeeNumber = EmployeeNumber;
         _employee.Department = SelectedDepartment;
 
         try
@@ -150,7 +141,6 @@ public partial class EmployeeDialogViewModel : ViewModelBase
         _employee = employee;
         Name = employee.Name;
         Email = employee.Email;
-        EmployeeNumber = employee.EmployeeNumber;
         SelectedDepartment = employee.Department is null
             ? null
             : Departments.FirstOrDefault(d => d.Id == employee.Department.Id) ?? employee.Department;

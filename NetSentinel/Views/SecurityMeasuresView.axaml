@@ -32,6 +32,8 @@
                     GridLinesVisibility="Horizontal"
                     VerticalAlignment="Top">
                     <DataGrid.Columns>
+                        <DataGridTextColumn Header="Security Measure Number"
+                            Binding="{Binding SecurityMeasureNumber}" Width="auto" />
                         <DataGridTemplateColumn Header="Description" Width="*">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate x:DataType="models:SecurityMeasure">
@@ -45,9 +47,12 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTextColumn Header="Result" Binding="{Binding Result}" Width="*" />
-                        <DataGridTextColumn Header="Performed By" Binding="{Binding PerformedBy.Name}" Width="*" />
-                        <DataGridTextColumn Header="Performed At" Binding="{Binding PerformedAt}" Width="*" />
-                        <DataGridTextColumn Header="Incident" Binding="{Binding Incident.Description}" Width="*" />
+                        <DataGridTextColumn Header="Performed By"
+                            Binding="{Binding PerformedBy.Name}" Width="*" />
+                        <DataGridTextColumn Header="Performed At" Binding="{Binding PerformedAt}"
+                            Width="*" />
+                        <DataGridTextColumn Header="Incident"
+                            Binding="{Binding Incident.Description}" Width="*" />
 
                         <DataGridTemplateColumn Header="Actions" Width="auto">
                             <DataGridTemplateColumn.CellTemplate>
@@ -57,10 +62,12 @@
                                         HorizontalContentAlignment="Center">
                                         <Button.Flyout>
                                             <MenuFlyout>
-                                                <MenuItem Header="Edit security measure" Cursor="Hand"
+                                                <MenuItem Header="Edit security measure"
+                                                    Cursor="Hand"
                                                     Command="{Binding $parent[UserControl].((vm:SecurityMeasuresViewModel)DataContext).ShowEditSecurityMeasureDialogCommand}"
                                                     CommandParameter="{Binding}" />
-                                                <MenuItem Header="Delete security measure" Cursor="Hand"
+                                                <MenuItem Header="Delete security measure"
+                                                    Cursor="Hand"
                                                     Command="{Binding $parent[UserControl].((vm:SecurityMeasuresViewModel)DataContext).ShowDeleteSecurityMeasureDialogCommand}"
                                                     CommandParameter="{Binding}" />
                                             </MenuFlyout>

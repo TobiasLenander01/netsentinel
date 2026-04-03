@@ -86,9 +86,37 @@ public class DatabaseContext : DbContext
     /// Enforces business rules before saving:
     /// - A department may not exceed 50 employees.
     /// - An employee may not own more than 3 devices.
+    /// - Incidents and security measures cannot be set to a future date.
+    /// - Automatically generates sequential natural keys.
     /// </summary>
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
+        var employeesNeedingNumber = ChangeTracker.Entries<Employee>()
+            .Where(e => e.State == EntityState.Added && string.IsNullOrWhiteSpace(e.Entity.EmployeeNumber))
+            .Select(e => e.Entity)
+            .ToList();
+
+        if (employeesNeedingNumber.Count > 0)
+        {
+            var existingEmployeeNumbers = await Employees
+                .AsNoTracking()
+                .Select(e => e.EmployeeNumber)
+                .ToListAsync(cancellationToken);
+
+            var nextEmployeeSequence = existingEmployeeNumbers
+                .Where(n => !string.IsNullOrWhiteSpace(n) && n.StartsWith("EMP", StringComparison.OrdinalIgnoreCase))
+                .Select(n => n![3..])
+                .Select(s => int.TryParse(s, out var parsed) ? parsed : 0)
+                .DefaultIfEmpty(0)
+                .Max() + 1;
+
+            foreach (var employee in employeesNeedingNumber)
+            {
+                employee.EmployeeNumber = GenerateNatualKey("EMP", nextEmployeeSequence, 3);
+                nextEmployeeSequence++;
+            }
+        }
+
         var incidentsNeedingNumber = ChangeTracker.Entries<Incident>()
             .Where(e => e.State == EntityState.Added && string.IsNullOrWhiteSpace(e.Entity.IncidentNumber))
             .Select(e => e.Entity)
@@ -209,9 +237,9 @@ public class DatabaseContext : DbContext
         return await base.SaveChangesAsync(cancellationToken);
     }
 
-    private static string GenerateNatualKey(string prefix, int sequence)
+    private static string GenerateNatualKey(string prefix, int sequence, int digits = 4)
     {
-        return $"{prefix}{sequence:0000}";
+        return $"{prefix}{sequence.ToString($"D{digits}")}";
     }
 
     /// <summary>
