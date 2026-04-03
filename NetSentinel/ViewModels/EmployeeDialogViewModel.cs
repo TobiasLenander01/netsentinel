@@ -33,7 +33,7 @@ public partial class EmployeeDialogViewModel : ViewModelBase
     [NotifyDataErrorInfo]
     [Required(ErrorMessage = "Employee Number is required")]
     [MaxLength(50, ErrorMessage = "Employee number must be 50 characters or less")]
-    private string _employeeNo = String.Empty;
+    private string _EmployeeNumber = String.Empty;
 
     [ObservableProperty]
     [NotifyDataErrorInfo]
@@ -86,7 +86,7 @@ public partial class EmployeeDialogViewModel : ViewModelBase
         
         _employee.Name = Name;
         _employee.Email = Email;
-        _employee.EmployeeNumber = EmployeeNo;
+        _employee.EmployeeNumber = EmployeeNumber;
         _employee.Department = SelectedDepartment;
 
         try
@@ -150,7 +150,7 @@ public partial class EmployeeDialogViewModel : ViewModelBase
         _employee = employee;
         Name = employee.Name;
         Email = employee.Email;
-        EmployeeNo = employee.EmployeeNumber;
+        EmployeeNumber = employee.EmployeeNumber;
         SelectedDepartment = employee.Department is null
             ? null
             : Departments.FirstOrDefault(d => d.Id == employee.Department.Id) ?? employee.Department;

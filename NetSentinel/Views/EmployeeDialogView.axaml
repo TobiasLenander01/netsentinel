@@ -23,7 +23,7 @@
 
             <StackPanel Spacing="6">
                 <TextBlock Text="Employee Number" />
-                <TextBox Text="{Binding EmployeeNo}" Watermark="e.g. EMP001" />
+                <TextBox Text="{Binding EmployeeNumber}" Watermark="e.g. EMP001" />
             </StackPanel>
 
             <StackPanel Spacing="6">
